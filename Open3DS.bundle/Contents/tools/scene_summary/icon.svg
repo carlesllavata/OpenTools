@@ -1,9 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-  <!-- Open3DS original icon: clipboard with a bar chart (Scene Summary). MIT. -->
-  <rect x="8" y="6" width="32" height="38" rx="5" fill="#3f8fe0" stroke="#2a6bb0" stroke-width="1.5"/>
-  <rect x="17" y="3" width="14" height="7" rx="2.5" fill="#d7e6f7" stroke="#2a6bb0" stroke-width="1.5"/>
-  <rect x="13" y="14" width="22" height="25" rx="2" fill="#f4f8fd"/>
-  <rect x="16" y="28" width="4" height="8" rx="1" fill="#2fa395"/>
-  <rect x="22" y="22" width="4" height="14" rx="1" fill="#e08a2c"/>
-  <rect x="28" y="18" width="4" height="18" rx="1" fill="#3f8fe0"/>
+  <!-- Open3DS original icon: magnifying glass over a scene box with a check mark (Scene Inspector). MIT. -->
+  <g stroke="#1f6e63" stroke-width="1.4" stroke-linejoin="round">
+    <path d="M4 15 L17 8.5 L30 15 L17 21.5 Z" fill="#7fd6c7"/>
+    <path d="M4 15 V31 L17 37.5 V21.5 Z" fill="#2fa395"/>
+    <path d="M17 21.5 V37.5 L30 31 V15 Z" fill="#23877b"/>
+  </g>
+  <circle cx="30" cy="27" r="10.5" fill="#ffffff" fill-opacity="0.92" stroke="#e8e8e8" stroke-width="3.2"/>
+  <path d="M25.2 27.3 L28.6 30.6 L35 23.6" fill="none" stroke="#5ba84f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M37.8 34.8 L45 42" stroke="#e8e8e8" stroke-width="5" stroke-linecap="round"/>
+  <path d="M37.8 34.8 L45 42" stroke="#9a9a9a" stroke-width="2" stroke-linecap="round"/>
 </svg>

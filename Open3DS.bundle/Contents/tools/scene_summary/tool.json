@@ -1,10 +1,10 @@
 {
   "id": "scene_summary",
-  "name": "Scene Summary",
+  "name": "Scene Inspector",
   "category": "Scene",
-  "description": "Shows counts of objects, geometry, lights, cameras and selection in the current scene.",
-  "entry": "scene_summary.py:run",
-  "keywords": ["info", "statistics", "count", "stats"],
+  "description": "Scene overview (file, last saved by, units, render engine, counts, heaviest objects), checks for problems with one-click fixes (malicious scripts, missing files and plugins, empty objects, CAD blocks, groups, empty layers, note tracks, animation layers, retimers, animation, renderer mismatches, displacement, normals) and every modifier in the scene.",
+  "entry": "scene_inspector.py:run",
+  "keywords": ["summary", "info", "statistics", "inspect", "check", "clean", "cleanup", "virus", "malware", "missing", "plugins", "modifiers", "displacement", "animation", "cad", "blocks", "layers", "normals"],
   "author": "Open3DS contributors",
   "license": "MIT"
 }

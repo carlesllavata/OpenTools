@@ -40,6 +40,14 @@ Max's Python: `C:\Program Files\Autodesk\3ds Max 2027\Python\python.exe` (always
   do not add a Normal flip.
 - An unsaved scene created from a template has `maxFileName == ""` but a non-empty `maxFilePath`;
   Asset Tracking then lists the template .max as its first file.
+- Inside MAXScript struct methods, a local used in a `where` clause of a `for` that is itself
+  an argument (`f (for n in objects where n.material == m collect n)`) fails with "Bad free thunk
+  local member index". Write those loops with an explicit `if`.
+- Live tests of scene-wide fixes (delete empty layers, ungroup all...) must only run when every
+  item found belongs to the test (names `O3DS_t*`): the user's open scene is real work, and
+  layer deletion is not undoable.
+- A .max file does not record who saved it (the summary's Author/Last Saved By are empty unless
+  typed in File Properties); the Windows file owner is the best proxy (empty on the NAS).
 - Tool windows: subclass `open3ds.ui.toolwindow.ToolWindow` (one instance, remembered position,
   options in settings `tool_options`) and wrap button actions with `self.guard(...)`, otherwise
   errors in Qt slots are lost. Heavy geometry loops go in a MAXScript `*_core.ms` next to the tool.
