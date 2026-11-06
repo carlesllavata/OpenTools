@@ -147,11 +147,6 @@ def set_visible(on):
         stop()
 
 
-def toggle():
-    set_visible(not is_running())
-    return is_running()
-
-
 def restore():
     """At startup: bring the HUD back if it was on."""
     settings = _settings()

@@ -653,16 +653,7 @@ def paste_materials(slot=1, route=None):
     return int(count)
 
 
-# ------------------------------------------------------- switches (macros)
-def toggle_mode():
-    cfg = config(_settings())
-    mode = "materials" if cfg.mode == "objects" else "objects"
-    _set("object_clipboard_mode", mode)
-    _prompt("clipboard mode: %s." % mode)
-    _refresh_hud()
-    return mode
-
-
+# --------------------------------------------------------- switch (macro)
 def cycle_target():
     route, remote = next_target(_settings())
     _set("object_clipboard_route", route)
