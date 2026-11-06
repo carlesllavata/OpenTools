@@ -33,3 +33,7 @@ Max's Python: `C:\Program Files\Autodesk\3ds Max 2027\Python\python.exe` (always
 - No SiNi/IgNite names, icons or text.
 - Git: `C:\Program Files\Git\cmd\git.exe` (may not be on PATH in older shells). Branch `main`.
   The repo is on a NAS, so it is listed in the global `safe.directory`.
+- Remote `origin` = https://github.com/carlesllavata/Open3DS (private until the user decides to publish).
+  Commits use hello@carlesllavata.com on purpose. Claude's shell is non-interactive, so if Git Credential
+  Manager needs to sign in again, push with `$env:GIT_TERMINAL_PROMPT='1'; $env:GCM_INTERACTIVE='always'`
+  so its sign-in window can appear for the user.
