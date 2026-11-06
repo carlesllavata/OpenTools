@@ -21,6 +21,9 @@ Max's Python: `C:\Program Files\Autodesk\3ds Max 2027\Python\python.exe` (always
 - Tests: `python -I dev\run_tests.py`
 - Live Max: `python -I dev\bridge.py ping | reload | -c "code" | file.py` (code gets `rt`, `pymxs`, `open3ds`;
   assign `_result` to return a value). After editing core code, run `reload`; tool code reloads on every run in dev mode.
+  From Windows PowerShell 5.1, `-c` mangles embedded double quotes: write anything non-trivial to a .py file
+  (scratchpad) and pass the file. Avoid code that opens modal dialogs (messageBox) – it blocks the bridge
+  until the user clicks.
 - `3dsmaxbatch.exe` is available for headless checks.
 
 ## Rules

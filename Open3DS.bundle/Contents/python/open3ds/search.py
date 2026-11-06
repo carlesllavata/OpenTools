@@ -1,16 +1,18 @@
 """Fuzzy search used by the hub filter and the command palette."""
 
+# (field, weight, allow subsequence matching). Fuzzy matching on long free text
+# such as descriptions matches almost anything, so those fields need a substring.
 _FIELD_WEIGHTS = (
-    ("name", 1.0),
-    ("id", 0.8),
-    ("keywords", 0.8),
-    ("category", 0.6),
-    ("description", 0.4),
+    ("name", 1.0, True),
+    ("id", 0.8, True),
+    ("keywords", 0.8, False),
+    ("category", 0.6, False),
+    ("description", 0.4, False),
 )
 _RECENT_BONUS = 30.0
 
 
-def score(query, text):
+def score(query, text, fuzzy=True):
     """Score one query word against one text. None means no match; higher is better."""
     q = query.lower().strip()
     t = text.lower()
@@ -26,6 +28,8 @@ def score(query, text):
         if len(q) == len(t):
             value += 50.0  # exact
         return value
+    if not fuzzy:
+        return None
     # Subsequence match ("selin" -> "SELect INstances"), penalising gaps.
     position = -1
     gaps = 0
@@ -61,8 +65,8 @@ def score_tool(query, tool):
     total = 0.0
     for word in words:
         best = None
-        for field_name, weight in _FIELD_WEIGHTS:
-            s = score(word, fields[field_name])
+        for field_name, weight, fuzzy in _FIELD_WEIGHTS:
+            s = score(word, fields[field_name], fuzzy=fuzzy)
             if s is not None:
                 s *= weight
                 if best is None or s > best:

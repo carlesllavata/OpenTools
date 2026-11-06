@@ -12,6 +12,8 @@ _log = log.get("settings")
 DEFAULTS = {
     "version": 1,
     "show_hub_on_startup": True,
+    # Where the hub was left: {"area", "floating", "geometry" | "size"}.
+    "hub_dock": {},
     "favorites": [],
     "recent": [],
     # Extra folders scanned for tools (e.g. private tools that are not in the public repo).

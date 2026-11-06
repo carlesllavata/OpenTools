@@ -209,23 +209,78 @@ def _remove_stale_docks(main_window):
             dock.deleteLater()
 
 
+_AREAS = {"left": QtCore.Qt.LeftDockWidgetArea, "right": QtCore.Qt.RightDockWidgetArea}
+
+
+def saved_state():
+    current = app_mod.current()
+    state = current.settings.get("hub_dock") if current else {}
+    return state if isinstance(state, dict) else {}
+
+
+def save_state():
+    """Remember where the hub is, so it comes back there next time."""
+    current = app_mod.current()
+    if current is None or not common.is_alive(_dock):
+        return
+    main_window = _dock.parentWidget()
+    area = "right"
+    if isinstance(main_window, QtWidgets.QMainWindow):
+        if main_window.dockWidgetArea(_dock) == QtCore.Qt.LeftDockWidgetArea:
+            area = "left"
+    state = {"area": area, "floating": _dock.isFloating()}
+    if _dock.isFloating():
+        g = _dock.geometry()
+        state["geometry"] = [g.x(), g.y(), g.width(), g.height()]
+    else:
+        state["size"] = [_dock.width(), _dock.height()]
+    if state != saved_state():
+        current.settings.set("hub_dock", state)
+
+
+def _schedule_save(*_args):
+    QtCore.QTimer.singleShot(0, save_state)
+
+
+def _restore(dock, main_window, state):
+    if state.get("floating"):
+        geometry = state.get("geometry")
+        dock.setFloating(True)
+        if isinstance(geometry, list) and len(geometry) == 4:
+            rect = QtCore.QRect(*[int(v) for v in geometry])
+            # Only restore if the window would still be on a connected screen.
+            if QtGui.QGuiApplication.screenAt(rect.center()) is not None:
+                dock.setGeometry(rect)
+        return
+    size = state.get("size")
+    if isinstance(size, list) and len(size) == 2:
+        main_window.resizeDocks([dock], [int(size[0])], QtCore.Qt.Horizontal)
+        main_window.resizeDocks([dock], [int(size[1])], QtCore.Qt.Vertical)
+
+
 def show():
     global _dock
     if common.is_alive(_dock):
         _dock.show()
         _dock.raise_()
+        _schedule_save()
         return _dock
 
     main_window = maxhost.main_window()
     _remove_stale_docks(main_window)
+    state = saved_state()
     dock = QtWidgets.QDockWidget("Open3DS", main_window)
     dock.setObjectName(DOCK_OBJECT_NAME)
     dock.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea)
     dock.setWidget(HubWidget(dock))
     dock.setMinimumWidth(200)
-    main_window.addDockWidget(QtCore.Qt.RightDockWidgetArea, dock)
+    main_window.addDockWidget(_AREAS.get(state.get("area"), QtCore.Qt.RightDockWidgetArea), dock)
     dock.show()
+    _restore(dock, main_window, state)
+    dock.topLevelChanged.connect(_schedule_save)
+    dock.dockLocationChanged.connect(_schedule_save)
     _dock = dock
+    _schedule_save()
     return dock
 
 
@@ -244,6 +299,7 @@ def refresh():
 def close():
     global _dock
     if common.is_alive(_dock):
+        save_state()
         main_window = _dock.parentWidget()
         if isinstance(main_window, QtWidgets.QMainWindow):
             main_window.removeDockWidget(_dock)

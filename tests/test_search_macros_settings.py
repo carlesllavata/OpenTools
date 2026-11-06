@@ -45,6 +45,10 @@ class SearchTests(unittest.TestCase):
         self.assertEqual(self.ids("clones"), ["select_instances"])
         self.assertIn("reset_xform", self.ids("transforms"))
 
+    def test_no_fuzzy_match_in_description(self):
+        # "inst" is a subsequence of "Resets transforms..." but must not match it.
+        self.assertEqual(self.ids("inst"), ["select_instances"])
+
     def test_all_words_must_match(self):
         self.assertEqual(self.ids("scene zzz"), [])
 

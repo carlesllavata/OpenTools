@@ -42,6 +42,8 @@ def start(dev_root=None):
         _log.info("Non-interactive session: hub and dev bridge not started.")
         return app
 
+    _step("register shutdown callback", _register_shutdown_callback)
+
     if app.settings.get("show_hub_on_startup"):
         from .ui import hub
 
@@ -67,6 +69,18 @@ def start(dev_root=None):
         )
     _log.info("Open3DS ready: %d tools.", len(app.registry.tools))
     return app
+
+
+def _register_shutdown_callback():
+    """Close the hub cleanly (saving its position) when 3ds Max exits."""
+    from . import macros, maxhost
+
+    code = macros.ms_string("import open3ds.bootstrap; open3ds.bootstrap.shutdown()")
+    maxhost.execute_maxscript(
+        "callbacks.removeScripts id:#Open3DS\n"
+        "callbacks.addScript #preSystemShutdown (\"python.Execute \" + %s) id:#Open3DS\n"
+        % macros.ms_string(code)
+    )
 
 
 def shutdown(keep_bridge=False):
