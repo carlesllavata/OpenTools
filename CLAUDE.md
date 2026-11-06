@@ -36,6 +36,8 @@ Max's Python: `C:\Program Files\Autodesk\3ds Max 2027\Python\python.exe` (always
 - Live tests: never create bitmaps pointing at fake image bytes - 3ds Max opens modal "error loading
   bitmap" dialogs and the bridge hangs. Write real images (QImage.save). Operations that may touch
   broken files run inside `maxhost.quiet()`.
+- `ResetXForm` on a mirrored (negative scale) object already keeps faces outwards in 2027;
+  do not add a Normal flip.
 - An unsaved scene created from a template has `maxFileName == ""` but a non-empty `maxFilePath`;
   Asset Tracking then lists the template .max as its first file.
 - Tool windows: subclass `open3ds.ui.toolwindow.ToolWindow` (one instance, remembered position,
