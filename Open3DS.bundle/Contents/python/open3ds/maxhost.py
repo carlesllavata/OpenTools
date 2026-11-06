@@ -41,6 +41,24 @@ def max_year():
         return None
 
 
+def is_interactive():
+    """False in 3dsmaxbatch, Backburner render nodes and other quiet sessions."""
+    if not in_max():
+        return False
+    runtime = rt()
+    try:
+        if runtime.maxOps.isInNonInteractiveMode():
+            return False
+    except Exception:  # noqa: BLE001 - older versions
+        pass
+    try:
+        if runtime.IsNetServer() or runtime.GetQuietMode():
+            return False
+    except Exception:  # noqa: BLE001
+        pass
+    return True
+
+
 def execute_maxscript(source):
     return rt().execute(source)
 

@@ -31,11 +31,16 @@ def start(dev_root=None):
     app = app_mod.App(dev_root=dev_root)
     app_mod.set_current(app)
 
-    from . import macros
+    from . import macros, maxhost
 
     _step("scan tools", app.scan)
     _step("register core macros", macros.register_core)
     _step("register tool macros", macros.register_all, app.registry)
+
+    if not maxhost.is_interactive():
+        # 3dsmaxbatch / render nodes: tools and macros only, no UI and no dev bridge.
+        _log.info("Non-interactive session: hub and dev bridge not started.")
+        return app
 
     if app.settings.get("show_hub_on_startup"):
         from .ui import hub

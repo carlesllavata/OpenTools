@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Installs a small "Open3DS-dev" bundle that loads Open3DS straight from this
     checkout and turns on the dev bridge. Restart 3ds Max afterwards.
@@ -41,9 +41,9 @@ $packageContents = @"
     ProductCode="{2A7F4E61-9C03-4B58-B1D2-7E60F8A34C9D}"
     UpgradeCode="{D93C1B07-6E4A-4F21-A8B5-3C9E072F61A4}">
     <CompanyDetails Name="Open3DS contributors" />
-    <RuntimeRequirements OS="Win64" Platform="3ds Max" SeriesMin="2025" />
+    <RuntimeRequirements OS="Win64" Platform="3ds Max" SeriesMin="2025" SeriesMax="2099" />
     <Components Description="post-start-up scripts parts">
-        <RuntimeRequirements OS="Win64" Platform="3ds Max" SeriesMin="2025" />
+        <RuntimeRequirements OS="Win64" Platform="3ds Max" SeriesMin="2025" SeriesMax="2099" />
         <ComponentEntry AppName="Open3DS-dev" Version="0.0.0" ModuleName="./Contents/scripts/open3ds_dev_startup.ms" />
     </Components>
 </ApplicationPackage>
