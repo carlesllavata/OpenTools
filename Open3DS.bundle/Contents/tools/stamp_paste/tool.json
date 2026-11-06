@@ -1,0 +1,10 @@
+{
+  "id": "stamp_paste",
+  "name": "Stamp Paste",
+  "category": "Clipboard",
+  "description": "Pastes a clipboard slot as a stamp: every left-click places an instance where you click (on surfaces, aligned if 'Align to surface' is on); drag up or down while clicking to scale; right-click or Esc to finish. Shift / Ctrl / Alt pick the slot.",
+  "entry": "stamp_paste.py:run",
+  "keywords": ["clipboard", "stamp", "scatter", "place", "paste", "instances", "props", "furniture"],
+  "author": "Open3DS contributors",
+  "license": "MIT"
+}

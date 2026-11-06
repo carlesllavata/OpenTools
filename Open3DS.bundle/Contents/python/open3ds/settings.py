@@ -33,9 +33,20 @@ DEFAULTS = {
     # Last position of each tool window: {tool_id: [x, y]}.
     "tool_windows": {},
     "devbridge_poll_ms": 500,
-    # Folder used by Copy/Paste Objects ("" = %LOCALAPPDATA%\Open3DS\clipboard).
-    # Point it at a shared folder to copy and paste between machines.
+    # Local folder of the object clipboard ("" = %LOCALAPPDATA%\Open3DS\clipboard).
     "object_clipboard_dir": "",
+    # "local" or "remote" (the active network target), the network targets, the
+    # active one, objects/materials mode, how Paste places objects (in_place, cursor,
+    # stamp), align to surface while placing, where textures of network pastes go
+    # ("" = the project's sceneassets\images) and the viewport HUD.
+    "object_clipboard_route": "local",
+    "object_clipboard_remotes": [],
+    "object_clipboard_remote": "",
+    "object_clipboard_mode": "objects",
+    "object_clipboard_paste": "in_place",
+    "object_clipboard_align": False,
+    "object_clipboard_maps_dir": "",
+    "object_clipboard_hud": False,
     # Save copies for an older 3ds Max (e.g. 2025); 0 = the running version.
     "object_clipboard_save_as": 0,
     # Clashing material names on paste: "rename" or "scene" (use the scene's material).

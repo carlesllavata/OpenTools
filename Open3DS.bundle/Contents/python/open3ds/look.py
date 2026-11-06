@@ -24,6 +24,7 @@ ICON_SIZES = {"small": 24, "medium": 32, "large": 48}
 
 # Fixed colors for the usual categories so they never clash; others are hashed.
 KNOWN_CATEGORY_COLORS = {
+    "clipboard": "#4fb0c6",
     "modeling": "#3f8fe0",
     "modelling": "#3f8fe0",
     "materials": "#e08a2c",

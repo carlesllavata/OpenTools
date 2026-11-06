@@ -49,6 +49,10 @@ def start(dev_root=None):
 
         _step("show hub", hub.show)
 
+    from . import clipboard_hud
+
+    _step("clipboard HUD", clipboard_hud.restore)
+
     if app.dev:
         from . import devbridge
 
@@ -90,6 +94,9 @@ def shutdown(keep_bridge=False):
         module = sys.modules.get(module_name)
         if module is not None:
             _step("close " + module_name, module.close)
+    hud = sys.modules.get("open3ds.clipboard_hud")
+    if hud is not None and hud.is_running():
+        _step("stop clipboard HUD", hud.stop)
     if not keep_bridge:
         bridge = sys.modules.get("open3ds.devbridge")
         if bridge is not None:

@@ -1,10 +1,10 @@
 {
   "id": "paste_objects",
-  "name": "Paste Objects",
-  "category": "Scene",
-  "description": "Pastes the objects last copied with Copy Objects (from any 3ds Max instance) into the current scene and selects them. Clashing object and material names are renamed automatically. Bind it to Ctrl+Shift+V.",
+  "name": "Paste",
+  "category": "Clipboard",
+  "description": "Pastes a clipboard slot (objects, or materials in material mode) into this scene. Objects are pasted in place, on the cursor or as a stamp, as set in the Object Clipboard window; network slots bring their textures with them. Hold keys to pick the slot: none 1, Shift 2, Ctrl 3, Alt 4, Shift+Ctrl 5, Shift+Alt 6, Ctrl+Alt 7, Shift+Ctrl+Alt 8.",
   "entry": "paste_objects.py:run",
-  "keywords": ["clipboard", "paste", "merge", "transfer", "between files", "instances"],
+  "keywords": ["clipboard", "paste", "merge", "transfer", "between files", "instances", "network", "slot"],
   "author": "Open3DS contributors",
   "license": "MIT"
 }

@@ -1,0 +1,10 @@
+{
+  "id": "clipboard_hud",
+  "name": "Clipboard HUD",
+  "category": "Clipboard",
+  "description": "Shows or hides the clipboard HUD in the viewport: every slot of the local and network targets (filled, size, locked) and the slot the held Shift / Ctrl / Alt keys pick.",
+  "entry": "clipboard_hud.py:run",
+  "keywords": ["clipboard", "hud", "overlay", "slots", "viewport"],
+  "author": "Open3DS contributors",
+  "license": "MIT"
+}

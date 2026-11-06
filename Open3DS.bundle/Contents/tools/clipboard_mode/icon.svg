@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <!-- Open3DS original icon: a box and a material sphere sharing one switch (Clipboard Objects/Materials). MIT. -->
+  <g stroke="#1f7a6f" stroke-width="1.4" stroke-linejoin="round">
+    <path d="M3 14 l10 -5 l10 5 l-10 5 Z" fill="#7fd6c7"/>
+    <path d="M3 14 v12 l10 5 v-12 Z" fill="#2fa395"/>
+    <path d="M13 19 v12 l10 -5 v-12 Z" fill="#23877b"/>
+  </g>
+  <defs><radialGradient id="m" cx="0.35" cy="0.3" r="0.8"><stop offset="0" stop-color="#ffd9a8"/><stop offset="0.5" stop-color="#e08a2c"/><stop offset="1" stop-color="#7a4210"/></radialGradient></defs>
+  <circle cx="34" cy="31" r="11" fill="url(#m)" stroke="#7a4210" stroke-width="1.2"/>
+  <path d="M22 40 h20" stroke="#bdbdbd" stroke-width="2" stroke-linecap="round"/>
+  <path d="M26 6 h12 M34 2.5 L38 6 L34 9.5" fill="none" stroke="#e0b12c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

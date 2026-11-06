@@ -54,6 +54,11 @@ Max's Python: `C:\Program Files\Autodesk\3ds Max 2027\Python\python.exe` (always
   as the default for new proxies (defaults: VRayProxy.display 3, CProxy.previzType 1). Do not
   probe parameters through the Modify panel without setting them back.
 - Objects inside an XRef scene cannot be selected; XRef object records can.
+- Live tests of the clipboard must point every clipboard folder setting at a temp dir first:
+  the default folder holds the user's real slots. Give every scratchpad probe a new file
+  name; Write refuses to overwrite an unread file and the old script would run instead.
+- Viewport HUDs: `registerRedrawViewsCallback` + `gw.wText` works in 2027 (and shows in
+  `gw.getViewportDib`); text drawn inside a `gw.wRect` is hidden, so highlight with color.
 - Tool windows: subclass `open3ds.ui.toolwindow.ToolWindow` (one instance, remembered position,
   options in settings `tool_options`) and wrap button actions with `self.guard(...)`, otherwise
   errors in Qt slots are lost. Heavy geometry loops go in a MAXScript `*_core.ms` next to the tool.
