@@ -65,6 +65,19 @@ def execute_maxscript(source):
 
 
 @contextlib.contextmanager
+def quiet():
+    """3ds Max quiet mode for the duration of the block: no modal error dialogs
+    (e.g. a corrupt bitmap while relinking) that would stop everything."""
+    runtime = rt()
+    before = bool(runtime.GetQuietMode())
+    runtime.SetQuietMode(True)
+    try:
+        yield
+    finally:
+        runtime.SetQuietMode(before)
+
+
+@contextlib.contextmanager
 def undo(label="", enabled=True):
     """Like `with pymxs.undo(enabled, label)`, but errors inside are NOT swallowed.
 

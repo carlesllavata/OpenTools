@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <!-- Open3DS original icon: a folder with an image and a link (Asset Manager). MIT. -->
+  <path d="M4 12 a3 3 0 0 1 3 -3 h11 l4 4 h19 a3 3 0 0 1 3 3 v22 a3 3 0 0 1 -3 3 h-34 a3 3 0 0 1 -3 -3 Z" fill="#a862d6" stroke="#7a3fa8" stroke-width="1.5"/>
+  <rect x="11" y="17" width="20" height="16" rx="2" fill="#f4f8fd"/>
+  <path d="M13 31 L19 24 L23 28 L26 25 L29 31 Z" fill="#5ba84f"/>
+  <circle cx="25.5" cy="21" r="2" fill="#e0a32c"/>
+  <g fill="none" stroke="#f4f8fd" stroke-width="2.4" stroke-linecap="round">
+    <path d="M34 26 a3.5 3.5 0 0 1 5 0 a3.5 3.5 0 0 1 0 5 l-2 2"/>
+    <path d="M37 35 a3.5 3.5 0 0 1 -5 0 a3.5 3.5 0 0 1 0 -5 l2 -2"/>
+  </g>
+</svg>

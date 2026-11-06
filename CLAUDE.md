@@ -33,6 +33,11 @@ Max's Python: `C:\Program Files\Autodesk\3ds Max 2027\Python\python.exe` (always
   (`centerPivot` vs `CenterPivot`) shadows it ("Call needs function or class, got: true").
 - Undo a viewport change with `actionMan.executeAction 0 "40104"` (Undo Viewport Operation);
   `max view undo` does not exist.
+- Live tests: never create bitmaps pointing at fake image bytes - 3ds Max opens modal "error loading
+  bitmap" dialogs and the bridge hangs. Write real images (QImage.save). Operations that may touch
+  broken files run inside `maxhost.quiet()`.
+- An unsaved scene created from a template has `maxFileName == ""` but a non-empty `maxFilePath`;
+  Asset Tracking then lists the template .max as its first file.
 - Tool windows: subclass `open3ds.ui.toolwindow.ToolWindow` (one instance, remembered position,
   options in settings `tool_options`) and wrap button actions with `self.guard(...)`, otherwise
   errors in Qt slots are lost. Heavy geometry loops go in a MAXScript `*_core.ms` next to the tool.
