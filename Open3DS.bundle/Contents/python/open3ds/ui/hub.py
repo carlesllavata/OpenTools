@@ -206,6 +206,9 @@ class HubWidget(QtWidgets.QWidget):
         layout.addWidget(self.scroll, 1)
         layout.addWidget(self.status)
 
+        # Fill the options menu now: Qt never opens an empty menu, so filling it only
+        # in aboutToShow would leave the button dead. aboutToShow refreshes the checks.
+        self._fill_menu(self.menu_button.menu())
         self.populate()
 
     # ------------------------------------------------------------------ menu
@@ -213,7 +216,7 @@ class HubWidget(QtWidgets.QWidget):
         menu.clear()
         settings = _settings()
         if settings is not None:
-            size_group = QtWidgets.QActionGroup(menu)
+            size_group = QtGui.QActionGroup(menu)
             current_size = settings.get("hub_icon_size")
             for key in ("small", "medium", "large"):
                 action = menu.addAction("%s icons" % key.capitalize())

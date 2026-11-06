@@ -59,6 +59,8 @@ Max's Python: `C:\Program Files\Autodesk\3ds Max 2027\Python\python.exe` (always
   name; Write refuses to overwrite an unread file and the old script would run instead.
 - Viewport HUDs: `registerRedrawViewsCallback` + `gw.wText` works in 2027 (and shows in
   `gw.getViewportDib`); text drawn inside a `gw.wRect` is hidden, so highlight with color.
+- PySide6: `QAction` / `QActionGroup` live in QtGui, not QtWidgets. Qt never opens an empty
+  QMenu, so a menu filled only in `aboutToShow` never appears: fill it once when created.
 - Tool windows: subclass `open3ds.ui.toolwindow.ToolWindow` (one instance, remembered position,
   options in settings `tool_options`) and wrap button actions with `self.guard(...)`, otherwise
   errors in Qt slots are lost. Heavy geometry loops go in a MAXScript `*_core.ms` next to the tool.

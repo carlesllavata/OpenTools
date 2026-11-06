@@ -330,7 +330,9 @@ class ClipboardWindow(QtWidgets.QDialog):
         menu_button.setPopupMode(QtWidgets.QToolButton.InstantPopup)
         menu = QtWidgets.QMenu(menu_button)
         menu.aboutToShow.connect(lambda: self._fill_menu(menu))
+        self._fill_menu(menu)  # Qt never opens an empty menu: fill it before the first click
         menu_button.setMenu(menu)
+        self.menu_button = menu_button
 
         row1 = QtWidgets.QHBoxLayout()
         row1.addWidget(QtWidgets.QLabel("Target:"))
@@ -453,7 +455,7 @@ class ClipboardWindow(QtWidgets.QDialog):
         menu.clear()
         cfg = oc.config(_settings())
         menu.addSection("Save copies for")
-        group = QtWidgets.QActionGroup(menu)
+        group = QtGui.QActionGroup(menu)
         for year in SAVE_AS_CHOICES:
             label = "This 3ds Max (%s)" % (maxhost.max_year() or "current") if not year else "3ds Max %d" % year
             action = menu.addAction(label)
@@ -462,7 +464,7 @@ class ClipboardWindow(QtWidgets.QDialog):
             action.setActionGroup(group)
             action.triggered.connect(lambda _=False, y=year: self._set_and_refresh("object_clipboard_save_as", y))
         menu.addSection("Materials with the same name on paste")
-        group2 = QtWidgets.QActionGroup(menu)
+        group2 = QtGui.QActionGroup(menu)
         for value, label in (("rename", "Keep both (rename the pasted one)"), ("scene", "Use the scene's material")):
             action = menu.addAction(label)
             action.setCheckable(True)
