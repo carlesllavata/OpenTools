@@ -208,6 +208,7 @@ def paste(slot=1):
     year = maxhost.max_year()
     if count == 0 and isinstance(saved_in, int) and year and saved_in > year:
         maxhost.warn(
+            "Object Clipboard",
             "Slot %d was saved for 3ds Max %d; 3ds Max %d cannot read it.\n"
             "In the Object Clipboard menu, set 'Save for 3ds Max' to %d or older and copy again."
             % (int(slot), saved_in, year, year)
@@ -227,16 +228,17 @@ def capture_thumbnail(target):
     Unselected objects are hidden and the view zoomed only for the capture; hidden
     state, selection and view are put back exactly afterwards. Nothing goes to undo.
     """
-    import pymxs
     from pymxs import runtime as rt
     from PySide6 import QtCore, QtGui
+
+    from . import maxhost
 
     target = Path(target)
     raw = target.with_name("thumb_raw_%d.png" % os.getpid())
     selection = list(rt.getCurrentSelection())
     hidden_now = []
     zoomed = False
-    with pymxs.undo(False):
+    with maxhost.undo(enabled=False):
         try:
             for node in rt.objects:
                 if not node.isHidden and not node.isSelected:

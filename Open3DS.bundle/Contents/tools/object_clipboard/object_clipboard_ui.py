@@ -7,6 +7,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 from open3ds import app as app_mod, maxhost, object_clipboard as oc
 from open3ds.ui import common
 from open3ds.ui.flow import FlowLayout
+from open3ds.ui.toolwindow import guarded
 
 WINDOW_NAME = "Open3DS_ObjectClipboard"
 GEOMETRY_KEY = "object_clipboard_window"
@@ -45,7 +46,7 @@ class SlotCard(QtWidgets.QFrame):
         self.copy_button = QtWidgets.QToolButton()
         self.copy_button.setText("Copy")
         self.copy_button.setToolTip("Store the selected objects in slot %d" % slot)
-        self.copy_button.clicked.connect(self.copy)
+        self.copy_button.clicked.connect(guarded("Object Clipboard", self.copy))
 
         header = QtWidgets.QHBoxLayout()
         header.setContentsMargins(0, 0, 0, 0)
@@ -60,7 +61,7 @@ class SlotCard(QtWidgets.QFrame):
         self.picture.setIconSize(QtCore.QSize(width, height))
         self.picture.setCursor(QtCore.Qt.PointingHandCursor)
         self.picture.setToolButtonStyle(QtCore.Qt.ToolButtonIconOnly)
-        self.picture.clicked.connect(self._picture_clicked)
+        self.picture.clicked.connect(guarded("Object Clipboard", self._picture_clicked))
         self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self._menu)
         self.picture.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
@@ -142,9 +143,9 @@ class SlotCard(QtWidgets.QFrame):
     def _menu(self, pos):
         filled = self.state["filled"]
         menu = QtWidgets.QMenu(self)
-        paste = menu.addAction("Paste", self.paste)
+        paste = menu.addAction("Paste", guarded("Object Clipboard", self.paste))
         paste.setEnabled(filled)
-        menu.addAction("Copy selection here", self.copy)
+        menu.addAction("Copy selection here", guarded("Object Clipboard", self.copy))
         menu.addSeparator()
         menu.addAction("Open slot folder", self.open_folder)
         clear = menu.addAction("Clear slot", self.clear)

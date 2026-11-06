@@ -26,6 +26,17 @@ Max's Python: `C:\Program Files\Autodesk\3ds Max 2027\Python\python.exe` (always
   until the user clicks.
 - `3dsmaxbatch.exe` is available for headless checks.
 
+## 3ds Max gotchas (verified in 2027)
+- `with pymxs.undo(...)` silently swallows every exception raised inside it. Always use
+  `open3ds.maxhost.undo(label, enabled=True)`, which closes the undo record and re-raises.
+- MAXScript is case-insensitive: a parameter or local named like a built-in function
+  (`centerPivot` vs `CenterPivot`) shadows it ("Call needs function or class, got: true").
+- Undo a viewport change with `actionMan.executeAction 0 "40104"` (Undo Viewport Operation);
+  `max view undo` does not exist.
+- Tool windows: subclass `open3ds.ui.toolwindow.ToolWindow` (one instance, remembered position,
+  options in settings `tool_options`) and wrap button actions with `self.guard(...)`, otherwise
+  errors in Qt slots are lost. Heavy geometry loops go in a MAXScript `*_core.ms` next to the tool.
+
 ## Rules
 - Before adding a script the user hands over, ask where it comes from and its license. Own or permissively
   licensed code goes in with attribution; proprietary/unlicensed scripts are reimplemented clean-room from a

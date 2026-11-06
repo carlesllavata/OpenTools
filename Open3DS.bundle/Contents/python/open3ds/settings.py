@@ -24,6 +24,10 @@ DEFAULTS = {
     "recent": [],
     # Extra folders scanned for tools (e.g. private tools that are not in the public repo).
     "extra_tool_dirs": [],
+    # Per-tool options remembered between runs: {tool_id: {option: value}}.
+    "tool_options": {},
+    # Last position of each tool window: {tool_id: [x, y]}.
+    "tool_windows": {},
     "devbridge_poll_ms": 500,
     # Folder used by Copy/Paste Objects ("" = %LOCALAPPDATA%\Open3DS\clipboard).
     # Point it at a shared folder to copy and paste between machines.
@@ -92,6 +96,23 @@ class Settings:
         recent = [t for t in self.get("recent") if t != tool_id]
         recent.insert(0, tool_id)
         self.set("recent", recent[:RECENT_LIMIT])
+
+    def tool_options(self, tool_id, defaults):
+        """Options of a tool: its saved values over `defaults`, ignoring unknown keys
+        and values whose type does not match the default."""
+        saved = self.get("tool_options").get(tool_id, {})
+        result = dict(defaults)
+        if isinstance(saved, dict):
+            for key, default in defaults.items():
+                value = saved.get(key)
+                if value is not None and type(value) is type(default):
+                    result[key] = value
+        return result
+
+    def set_tool_options(self, tool_id, values):
+        all_options = dict(self.get("tool_options"))
+        all_options[tool_id] = dict(values)
+        self.set("tool_options", all_options)
 
     def is_favorite(self, tool_id):
         return tool_id in self.get("favorites")

@@ -1,5 +1,6 @@
 """Thin layer over 3ds Max APIs, imported lazily so the core works outside Max."""
 
+import contextlib
 import sys
 
 from . import log
@@ -61,6 +62,27 @@ def is_interactive():
 
 def execute_maxscript(source):
     return rt().execute(source)
+
+
+@contextlib.contextmanager
+def undo(label="", enabled=True):
+    """Like `with pymxs.undo(enabled, label)`, but errors inside are NOT swallowed.
+
+    In 3ds Max 2027 pymxs.undo silently swallows every exception raised in its block
+    (Python and MAXScript alike). Here the exception is held, the undo record is closed
+    (so what already changed can still be undone) and the exception is raised again.
+    """
+    import pymxs
+
+    caught = []
+    context = pymxs.undo(enabled, label) if label else pymxs.undo(enabled)
+    with context:
+        try:
+            yield
+        except BaseException as exc:  # noqa: BLE001 - re-raised below
+            caught.append(exc)
+    if caught:
+        raise caught[0]
 
 
 def warn(title, text):

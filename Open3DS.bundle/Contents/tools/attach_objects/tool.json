@@ -1,0 +1,10 @@
+{
+  "id": "attach_objects",
+  "name": "Attach Objects",
+  "category": "Modeling",
+  "description": "Attaches many objects at once into one Editable Poly, Editable Mesh or Spline, or one object per material. Fast with thousands of objects (attaches in batches), shows progress and can be cancelled. Also resets or specifies the normals of the selection.",
+  "entry": "attach_objects.py:run",
+  "keywords": ["attach", "combine", "merge objects", "join", "collapse", "normals", "reset normals", "specify normals"],
+  "author": "Open3DS contributors",
+  "license": "MIT"
+}

@@ -101,6 +101,17 @@ class SettingsTests(unittest.TestCase):
         self.assertEqual(settings.get("recent"), [])
         self.assertTrue(self.path.with_suffix(".bad.json").exists())
 
+    def test_tool_options(self):
+        defaults = {"mode": "element", "pivot": True, "count": 3}
+        settings = Settings(self.path)
+        self.assertEqual(settings.tool_options("t", defaults), defaults)
+        settings.set_tool_options("t", {"mode": "material_id", "pivot": False, "count": 3})
+        reloaded = Settings(self.path)
+        self.assertEqual(reloaded.tool_options("t", defaults)["mode"], "material_id")
+        # Wrong types and unknown keys fall back to / are dropped in favour of the defaults.
+        reloaded.set_tool_options("t", {"mode": 5, "pivot": "yes", "count": True, "extra": 1})
+        self.assertEqual(reloaded.tool_options("t", defaults), defaults)
+
     def test_recent_and_favorites(self):
         settings = Settings(self.path)
         for i in range(RECENT_LIMIT + 5):
