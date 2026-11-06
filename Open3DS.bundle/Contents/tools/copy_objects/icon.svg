@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <!-- Open3DS original icon: two stacked cubes, the front one being copied (Copy Objects). MIT. -->
+  <g stroke="#1f7a6f" stroke-width="1.5" stroke-linejoin="round">
+    <path d="M6 16 L18 10 L30 16 L30 30 L18 36 L6 30 Z" fill="#2fa395" opacity="0.45"/>
+    <path d="M18 22 L30 16 L42 22 L42 36 L30 42 L18 36 Z" fill="#2fa395"/>
+    <path d="M18 22 L30 28 L42 22 M30 28 V42" fill="none" stroke="#e6f6f3"/>
+  </g>
+  <circle cx="38" cy="10" r="7.5" fill="#f4f8fd" stroke="#1f7a6f" stroke-width="1.5"/>
+  <path d="M38 6 V14 M34 10 H42" stroke="#1f7a6f" stroke-width="2.2" stroke-linecap="round"/>
+</svg>

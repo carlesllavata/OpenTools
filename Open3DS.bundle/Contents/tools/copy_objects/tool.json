@@ -1,0 +1,10 @@
+{
+  "id": "copy_objects",
+  "name": "Copy Objects",
+  "category": "Scene",
+  "description": "Copies the selected objects to the Open3DS object clipboard, so you can paste them into this or any other 3ds Max instance (even a different file). Bind it to Ctrl+Shift+C.",
+  "entry": "copy_objects.py:run",
+  "keywords": ["clipboard", "copy", "transfer", "between files", "instances", "save selected"],
+  "author": "Open3DS contributors",
+  "license": "MIT"
+}

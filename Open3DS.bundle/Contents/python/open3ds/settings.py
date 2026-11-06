@@ -25,6 +25,9 @@ DEFAULTS = {
     # Extra folders scanned for tools (e.g. private tools that are not in the public repo).
     "extra_tool_dirs": [],
     "devbridge_poll_ms": 500,
+    # Folder used by Copy/Paste Objects ("" = %LOCALAPPDATA%\Open3DS\clipboard).
+    # Point it at a shared folder to copy and paste between machines.
+    "object_clipboard_dir": "",
 }
 
 RECENT_LIMIT = 20

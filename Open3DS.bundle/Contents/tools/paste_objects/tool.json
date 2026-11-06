@@ -1,0 +1,10 @@
+{
+  "id": "paste_objects",
+  "name": "Paste Objects",
+  "category": "Scene",
+  "description": "Pastes the objects last copied with Copy Objects (from any 3ds Max instance) into the current scene and selects them. Clashing object and material names are renamed automatically. Bind it to Ctrl+Shift+V.",
+  "entry": "paste_objects.py:run",
+  "keywords": ["clipboard", "paste", "merge", "transfer", "between files", "instances"],
+  "author": "Open3DS contributors",
+  "license": "MIT"
+}
