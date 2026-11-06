@@ -48,6 +48,12 @@ Max's Python: `C:\Program Files\Autodesk\3ds Max 2027\Python\python.exe` (always
   layer deletion is not undoable.
 - A .max file does not record who saved it (the summary's Author/Last Saved By are empty unless
   typed in File Properties); the Windows file owner is the best proxy (empty on the NAS).
+- XRef-ing a file made with `saveNodes` opens a modal "obsolete format" warning that hangs the
+  bridge: add/update XRefs in live tests inside `maxhost.quiet()`.
+- V-Ray and Corona proxies remember the last display value set while their Modify panel is open
+  as the default for new proxies (defaults: VRayProxy.display 3, CProxy.previzType 1). Do not
+  probe parameters through the Modify panel without setting them back.
+- Objects inside an XRef scene cannot be selected; XRef object records can.
 - Tool windows: subclass `open3ds.ui.toolwindow.ToolWindow` (one instance, remembered position,
   options in settings `tool_options`) and wrap button actions with `self.guard(...)`, otherwise
   errors in Qt slots are lost. Heavy geometry loops go in a MAXScript `*_core.ms` next to the tool.

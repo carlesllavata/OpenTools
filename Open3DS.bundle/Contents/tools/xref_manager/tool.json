@@ -1,0 +1,10 @@
+{
+  "id": "xref_manager",
+  "name": "XRef Display Manager",
+  "category": "Scene",
+  "description": "XRef scenes and XRef objects of the scene in one window: show them as boxes, hide, disable, update, select, merge or remove them, and find missing XRef files.",
+  "entry": "xref_manager.py:run",
+  "keywords": ["xref", "xrefs", "reference", "external", "scene", "objects", "display", "box", "update", "merge"],
+  "author": "Open3DS contributors",
+  "license": "MIT"
+}
