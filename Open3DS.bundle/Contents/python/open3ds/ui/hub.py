@@ -1,24 +1,144 @@
-"""The dockable Open3DS panel: every tool grouped by category, with search and favorites."""
+"""The dockable Open3DS panel: a grid of tool icons grouped by category.
+
+Layout, top to bottom: search box, category filter chips, one section per category
+(favorites first) with a wrapping grid of clickable tool tiles, and a status line.
+"""
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
 import open3ds
 
-from .. import __version__, app as app_mod, log, maxhost, paths, search
+from .. import __version__, app as app_mod, log, look, maxhost, paths, search
 from . import common
+from .flow import FlowLayout
 
 _log = log.get("hub")
 
 DOCK_OBJECT_NAME = "Open3DS_HubDock"
 FAVORITES_LABEL = "★ Favorites"
+FAVORITES_FILTER = "__favorites__"
+FAVORITES_COLOR = "#e0b12c"
+
+# Tile width per icon size when labels are shown (icon-only tiles hug the icon).
+_TILE_WIDTH = {24: 64, 32: 76, 48: 92}
 
 _dock = None
+
+
+def _settings():
+    current = app_mod.current()
+    return current.settings if current is not None else None
+
+
+def _icon_px():
+    settings = _settings()
+    key = settings.get("hub_icon_size") if settings else "medium"
+    return look.ICON_SIZES.get(key, look.ICON_SIZES["medium"])
+
+
+def _tile_style(widget):
+    """Hover/press colors derived from the current (dark or light) 3ds Max palette."""
+    highlight = widget.palette().color(QtGui.QPalette.Highlight)
+    r, g, b = highlight.red(), highlight.green(), highlight.blue()
+    return (
+        "QToolButton#Open3DS_Tile { border: 1px solid transparent; border-radius: 5px;"
+        " padding: 3px; }"
+        "QToolButton#Open3DS_Tile:hover { background: rgba(%d,%d,%d,45);"
+        " border-color: rgba(%d,%d,%d,140); }"
+        "QToolButton#Open3DS_Tile:pressed { background: rgba(%d,%d,%d,90); }"
+        "QToolButton#Open3DS_Chip { border: 1px solid rgba(128,128,128,70); border-radius: 9px;"
+        " padding: 1px 7px; }"
+        "QToolButton#Open3DS_Chip:hover { border-color: rgba(%d,%d,%d,160); }"
+        "QToolButton#Open3DS_Chip:checked { background: rgba(%d,%d,%d,80);"
+        " border-color: rgba(%d,%d,%d,200); }"
+    ) % ((r, g, b) * 6)
+
+
+class ToolTile(QtWidgets.QToolButton):
+    """One clickable tool: icon, optional label underneath, rich tooltip."""
+
+    def __init__(self, tool, icon_px, show_label, parent=None):
+        super().__init__(parent)
+        self.tool_id = tool.id
+        self.setObjectName("Open3DS_Tile")
+        self.setAutoRaise(True)
+        self.setIcon(common.tool_icon(tool))
+        self.setIconSize(QtCore.QSize(icon_px, icon_px))
+        self.setToolTip(common.tool_tooltip(tool))
+        self.setCursor(QtCore.Qt.PointingHandCursor)
+        self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        if show_label:
+            width = _TILE_WIDTH.get(icon_px, icon_px * 2)
+            metrics = self.fontMetrics()
+            self.setText(look.wrap_label(tool.name, width - 8, metrics.horizontalAdvance))
+            self.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+            self.setFixedSize(width, icon_px + 2 * metrics.height() + 12)
+        else:
+            self.setToolButtonStyle(QtCore.Qt.ToolButtonIconOnly)
+            self.setFixedSize(icon_px + 12, icon_px + 12)
+
+
+class Section(QtWidgets.QWidget):
+    """A category header (click to fold) above a wrapping grid of tiles."""
+
+    toggled = QtCore.Signal(str, bool)
+
+    def __init__(self, label, color, count, expanded=True, collapsible=True, parent=None):
+        super().__init__(parent)
+        self.label = label
+        self._title = "%s  (%d)" % (label, count)
+        self._collapsible = collapsible
+        self.header = QtWidgets.QPushButton()
+        self.header.setFlat(True)
+        self.header.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        font = self.header.font()
+        font.setBold(True)
+        self.header.setFont(font)
+        self.header.setStyleSheet(
+            "QPushButton { border: none; border-left: 3px solid %s; padding: 2px 6px;"
+            " text-align: left; background: transparent; }" % (color or "gray")
+        )
+        self.header.setCheckable(collapsible)
+        self.header.setChecked(expanded)
+        if collapsible:
+            self.header.setCursor(QtCore.Qt.PointingHandCursor)
+            self.header.setToolTip("Click to fold or unfold")
+        self._update_title(expanded)
+        self.header.toggled.connect(self._on_toggled)
+
+        self.body = QtWidgets.QWidget()
+        self.grid = FlowLayout(self.body, spacing=2)
+        self.grid.setContentsMargins(4, 2, 0, 4)
+        self.body.setVisible(expanded)
+
+        layout = QtWidgets.QVBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+        layout.addWidget(self.header)
+        layout.addWidget(self.body)
+
+    def add(self, widget):
+        self.grid.addWidget(widget)
+
+    def _update_title(self, expanded):
+        arrow = ("▾  " if expanded else "▸  ") if self._collapsible else ""
+        self.header.setText(arrow + self._title)
+
+    def _on_toggled(self, expanded):
+        self._update_title(expanded)
+        self.body.setVisible(expanded)
+        self.toggled.emit(self.label, expanded)
 
 
 class HubWidget(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("Open3DS_Hub")
+        self.setStyleSheet(_tile_style(self))
+        self._first_tool_id = None
+        self._populate_timer = QtCore.QTimer(self)
+        self._populate_timer.setSingleShot(True)
+        self._populate_timer.timeout.connect(self.populate)
 
         self.search_edit = QtWidgets.QLineEdit()
         self.search_edit.setPlaceholderText("Search tools…")
@@ -32,26 +152,37 @@ class HubWidget(QtWidgets.QWidget):
         refresh_button.setAutoRaise(True)
         refresh_button.clicked.connect(self._rescan)
 
-        menu_button = QtWidgets.QToolButton()
-        menu_button.setText("⋯")
-        menu_button.setAutoRaise(True)
-        menu_button.setPopupMode(QtWidgets.QToolButton.InstantPopup)
-        menu_button.setMenu(self._build_menu())
+        self.menu_button = QtWidgets.QToolButton()
+        self.menu_button.setText("⋯")
+        self.menu_button.setToolTip("View options and folders")
+        self.menu_button.setAutoRaise(True)
+        self.menu_button.setPopupMode(QtWidgets.QToolButton.InstantPopup)
+        menu = QtWidgets.QMenu(self.menu_button)
+        menu.aboutToShow.connect(lambda: self._fill_menu(menu))
+        self.menu_button.setMenu(menu)
 
         top = QtWidgets.QHBoxLayout()
         top.setContentsMargins(0, 0, 0, 0)
         top.addWidget(self.search_edit, 1)
         top.addWidget(refresh_button)
-        top.addWidget(menu_button)
+        top.addWidget(self.menu_button)
 
-        self.tree = QtWidgets.QTreeWidget()
-        self.tree.setHeaderHidden(True)
-        self.tree.setRootIsDecorated(True)
-        self.tree.setIndentation(12)
-        self.tree.setUniformRowHeights(True)
-        self.tree.itemActivated.connect(self._on_activated)
-        self.tree.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.tree.customContextMenuRequested.connect(self._context_menu)
+        self.chips = QtWidgets.QWidget()
+        self.chips_layout = FlowLayout(self.chips, spacing=3)
+        self.chip_group = QtWidgets.QButtonGroup(self)
+        self.chip_group.setExclusive(True)
+
+        self.content = QtWidgets.QWidget()
+        self.content_layout = QtWidgets.QVBoxLayout(self.content)
+        self.content_layout.setContentsMargins(0, 0, 0, 0)
+        self.content_layout.setSpacing(4)
+        self.content_layout.addStretch(1)
+
+        self.scroll = QtWidgets.QScrollArea()
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setFrameShape(QtWidgets.QFrame.NoFrame)
+        self.scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.scroll.setWidget(self.content)
 
         self.status = QtWidgets.QLabel()
         self.status.setStyleSheet("color: gray;")
@@ -60,17 +191,34 @@ class HubWidget(QtWidgets.QWidget):
         layout.setContentsMargins(4, 4, 4, 4)
         layout.setSpacing(4)
         layout.addLayout(top)
-        layout.addWidget(self.tree, 1)
+        layout.addWidget(self.chips)
+        layout.addWidget(self.scroll, 1)
         layout.addWidget(self.status)
 
-        self._collapsed = set()
-        self.tree.itemCollapsed.connect(lambda item: self._collapsed.add(item.text(0)))
-        self.tree.itemExpanded.connect(lambda item: self._collapsed.discard(item.text(0)))
         self.populate()
 
-    # ----------------------------------------------------------------- building
-    def _build_menu(self):
-        menu = QtWidgets.QMenu(self)
+    # ------------------------------------------------------------------ menu
+    def _fill_menu(self, menu):
+        menu.clear()
+        settings = _settings()
+        if settings is not None:
+            size_group = QtWidgets.QActionGroup(menu)
+            current_size = settings.get("hub_icon_size")
+            for key in ("small", "medium", "large"):
+                action = menu.addAction("%s icons" % key.capitalize())
+                action.setCheckable(True)
+                action.setChecked(key == current_size)
+                action.setActionGroup(size_group)
+                action.triggered.connect(lambda _=False, k=key: self._set_option("hub_icon_size", k))
+            labels = menu.addAction("Show labels")
+            labels.setCheckable(True)
+            labels.setChecked(bool(settings.get("hub_show_labels")))
+            labels.toggled.connect(lambda on: self._set_option("hub_show_labels", on))
+            startup = menu.addAction("Show panel when 3ds Max starts")
+            startup.setCheckable(True)
+            startup.setChecked(bool(settings.get("show_hub_on_startup")))
+            startup.toggled.connect(lambda on: settings.set("show_hub_on_startup", on))
+            menu.addSeparator()
         menu.addAction("Command palette…", open3ds.show_palette)
         menu.addSeparator()
         menu.addAction("Open settings folder", lambda: common.open_in_explorer(paths.config_dir()))
@@ -83,58 +231,127 @@ class HubWidget(QtWidgets.QWidget):
         menu.addSeparator()
         about = menu.addAction("Open3DS %s" % __version__)
         about.setEnabled(False)
-        return menu
 
-    def _make_item(self, tool, parent):
-        item = QtWidgets.QTreeWidgetItem(parent, [tool.name])
-        item.setData(0, common.TOOL_ID_ROLE, tool.id)
-        item.setIcon(0, common.tool_icon(tool))
-        item.setToolTip(0, common.tool_tooltip(tool))
-        return item
+    def _set_option(self, key, value):
+        settings = _settings()
+        if settings is not None:
+            settings.set(key, value)
+            self.schedule_populate()
 
-    def _make_group(self, label):
-        item = QtWidgets.QTreeWidgetItem(self.tree, [label])
-        font = item.font(0)
-        font.setBold(True)
-        item.setFont(0, font)
-        item.setFlags(QtCore.Qt.ItemIsEnabled)
-        return item
+    # -------------------------------------------------------------- building
+    def schedule_populate(self):
+        """Rebuild on the next event loop turn (safe from inside a tile's own signal)."""
+        self._populate_timer.start(0)
+
+    def _clear(self):
+        while self.content_layout.count() > 1:  # keep the trailing stretch
+            widget = self.content_layout.takeAt(0).widget()
+            if widget is not None:
+                widget.hide()
+                widget.deleteLater()
+        for button in self.chip_group.buttons():
+            self.chip_group.removeButton(button)
+        self.chips_layout.clear()
+
+    def _add_chip(self, text, value, selected, color=None, tooltip=""):
+        chip = QtWidgets.QToolButton()
+        chip.setObjectName("Open3DS_Chip")
+        chip.setText(text)
+        chip.setCheckable(True)
+        chip.setChecked(value == selected)
+        chip.setAutoRaise(True)
+        chip.setToolTip(tooltip)
+        if color:
+            chip.setIcon(common.dot_icon(color))
+            chip.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
+        chip.clicked.connect(lambda _=False, v=value: self._set_option("hub_category", v))
+        self.chip_group.addButton(chip)
+        self.chips_layout.addWidget(chip)
 
     def populate(self, *_args):
         current = app_mod.current()
-        self.tree.clear()
-        if current is None:
-            self.status.setText("Open3DS is not running.")
-            return
+        self.setUpdatesEnabled(False)
+        try:
+            self._clear()
+            if current is None:
+                self.status.setText("Open3DS is not running.")
+                return
+            self._build(current)
+        finally:
+            self.setUpdatesEnabled(True)
+
+    def _build(self, current):
+        settings = current.settings
         registry = current.registry
         tools = registry.all()
-        query = self.search_edit.text()
+        categories = registry.categories()
+        favorites = sorted(
+            (t for t in tools if settings.is_favorite(t.id)), key=lambda t: t.name.lower()
+        )
+        selected = settings.get("hub_category")
+        if selected == FAVORITES_FILTER and not favorites:
+            selected = ""
+        if selected not in ("", FAVORITES_FILTER) and selected not in categories:
+            selected = ""
+        query = self.search_edit.text().strip()
 
-        if query.strip():
-            matches = search.rank(query, tools, recent=current.settings.get("recent"))
-            self.tree.setRootIsDecorated(False)
-            for tool in matches:
-                self._make_item(tool, self.tree)
-            first = self.tree.topLevelItem(0)
-            if first is not None:
-                self.tree.setCurrentItem(first)
-            self.status.setText("%d of %d tools" % (len(matches), len(tools)))
-            return
-
-        self.tree.setRootIsDecorated(True)
-        favorites = [t for t in tools if current.settings.is_favorite(t.id)]
-        groups = []
+        # Category chips (disabled while searching: search always covers every tool).
+        self._add_chip("All", "", selected, tooltip="Show every category")
         if favorites:
-            groups.append((FAVORITES_LABEL, sorted(favorites, key=lambda t: t.name.lower())))
-        for category in registry.categories():
-            groups.append((category, [t for t in tools if t.category == category]))
-        for label, members in groups:
-            group = self._make_group(label)
-            for tool in members:
-                self._make_item(tool, group)
-            group.setExpanded(label not in self._collapsed)
+            self._add_chip("★", FAVORITES_FILTER, selected, tooltip="Favorites only")
+        for category in categories:
+            count = sum(1 for t in tools if t.category == category)
+            self._add_chip(
+                category, category, selected, look.category_color(category),
+                "%s · %d tool%s" % (category, count, "" if count == 1 else "s"),
+            )
+        self.chips.setEnabled(not query)
 
-        text = "%d tools" % len(tools)
+        if query:
+            matches = search.rank(query, tools, recent=settings.get("recent"))
+            self._first_tool_id = matches[0].id if matches else None
+            sections = [("Results", None, matches)]
+        else:
+            self._first_tool_id = None
+            sections = []
+            if favorites and selected in ("", FAVORITES_FILTER):
+                sections.append((FAVORITES_LABEL, FAVORITES_COLOR, favorites))
+            for category in categories:
+                if selected in ("", category):
+                    members = [t for t in tools if t.category == category]
+                    sections.append((category, look.category_color(category), members))
+
+        icon_px = _icon_px()
+        show_labels = bool(settings.get("hub_show_labels"))
+        collapsed = set(settings.get("hub_collapsed"))
+        position = 0
+        for label, color, members in sections:
+            section = Section(
+                label,
+                color,
+                len(members),
+                expanded=bool(query) or label not in collapsed,
+                collapsible=not query,
+            )
+            section.toggled.connect(self._remember_collapsed)
+            for tool in members:
+                tile = ToolTile(tool, icon_px, show_labels)
+                tile.clicked.connect(lambda _=False, tid=tool.id: open3ds.run(tid))
+                tile.customContextMenuRequested.connect(
+                    lambda pos, t=tile: self._context_menu(t, pos)
+                )
+                section.add(tile)
+            self.content_layout.insertWidget(position, section)
+            position += 1
+        if query and not sections[0][2]:
+            empty = QtWidgets.QLabel("No tool matches “%s”." % query)
+            empty.setStyleSheet("color: gray; padding: 8px;")
+            self.content_layout.insertWidget(position, empty)
+
+        if query:
+            text = "%d of %d tools" % (len(sections[0][2]), len(tools))
+        else:
+            text = "%d tools" % len(tools)
         if registry.errors:
             text += " · %d failed to load" % len(registry.errors)
             self.status.setToolTip(
@@ -144,41 +361,38 @@ class HubWidget(QtWidgets.QWidget):
             self.status.setToolTip("")
         self.status.setText(text)
 
-    # ------------------------------------------------------------------ actions
-    @staticmethod
-    def _tool_id(item):
-        return item.data(0, common.TOOL_ID_ROLE) if item is not None else None
+    def _remember_collapsed(self, label, expanded):
+        settings = _settings()
+        if settings is None:
+            return
+        collapsed = [c for c in settings.get("hub_collapsed") if c != label]
+        if not expanded:
+            collapsed.append(label)
+        settings.set("hub_collapsed", collapsed)
 
-    def _on_activated(self, item, _column=0):
-        tool_id = self._tool_id(item)
-        if tool_id:
-            open3ds.run(tool_id)
-
+    # --------------------------------------------------------------- actions
     def _run_first_match(self):
-        item = self.tree.currentItem() or self.tree.topLevelItem(0)
-        self._on_activated(item)
+        if self._first_tool_id:
+            open3ds.run(self._first_tool_id)
 
     def _rescan(self):
         current = app_mod.current()
         if current is not None:
+            common.clear_icon_cache()
             current.rescan()
         self.populate()
 
-    def _context_menu(self, pos):
-        item = self.tree.itemAt(pos)
-        tool_id = self._tool_id(item)
+    def _context_menu(self, tile, pos):
         current = app_mod.current()
-        if not tool_id or current is None:
-            return
-        tool = current.registry.get(tool_id)
+        tool = current.registry.get(tile.tool_id) if current else None
         if tool is None:
             return
         menu = QtWidgets.QMenu(self)
-        menu.addAction("Run", lambda: open3ds.run(tool_id))
-        favorite = current.settings.is_favorite(tool_id)
+        menu.addAction("Run", lambda: open3ds.run(tool.id))
+        favorite = current.settings.is_favorite(tool.id)
         menu.addAction(
             "Remove from favorites" if favorite else "Add to favorites",
-            lambda: self._toggle_favorite(tool_id),
+            lambda: self._toggle_favorite(tool.id),
         )
         menu.addSeparator()
         menu.addAction(
@@ -191,13 +405,13 @@ class HubWidget(QtWidgets.QWidget):
                 "Open source page",
                 lambda: QtGui.QDesktopServices.openUrl(QtCore.QUrl(tool.source_url)),
             )
-        menu.exec(self.tree.viewport().mapToGlobal(pos))
+        menu.exec(tile.mapToGlobal(pos))
 
     def _toggle_favorite(self, tool_id):
-        current = app_mod.current()
-        if current is not None:
-            current.settings.toggle_favorite(tool_id)
-            self.populate()
+        settings = _settings()
+        if settings is not None:
+            settings.toggle_favorite(tool_id)
+            self.schedule_populate()
 
 
 # ---------------------------------------------------------------------- dock
@@ -273,7 +487,7 @@ def show():
     dock.setObjectName(DOCK_OBJECT_NAME)
     dock.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea)
     dock.setWidget(HubWidget(dock))
-    dock.setMinimumWidth(200)
+    dock.setMinimumWidth(160)
     main_window.addDockWidget(_AREAS.get(state.get("area"), QtCore.Qt.RightDockWidgetArea), dock)
     dock.show()
     _restore(dock, main_window, state)

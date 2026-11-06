@@ -17,7 +17,9 @@ macros you can bind to hotkeys.
 
 1. Copy the `Open3DS.bundle` folder to `%APPDATA%\Autodesk\ApplicationPlugins\`
    (create the folder if it does not exist).
-2. Start 3ds Max. The Open3DS panel docks on the right.
+2. Start 3ds Max. The Open3DS panel docks on the right: a grid of tool icons grouped
+   by category, with category filters and a search box on top. Click an icon to run
+   the tool; right-click it to add it to favorites. Icon size and labels are in the `⋯` menu.
 3. Optional: in *Customize > Hotkey Editor*, category **Open3DS**, bind
    `Open3DS Command Palette` (for example to `Ctrl+Space`) and any tool you use often.
 
@@ -60,7 +62,7 @@ Create `Open3DS.bundle/Contents/tools/<tool_id>/tool.json`:
 | `entry` | yes | `file.ms` (MAXScript, run with `fileIn`) or `file.py:function` (Python) |
 | `category` | no | groups tools in the hub (default `General`) |
 | `description`, `keywords` | no | used by search and tooltips |
-| `icon` | no | image file inside the tool folder |
+| `icon` | no | image file inside the tool folder (SVG or PNG). Without it, an `icon.svg` / `icon.png` next to `tool.json` is used; otherwise the hub draws a badge with the tool's initials in its category color |
 | `min_max`, `max_max` | no | supported 3ds Max years, e.g. `2025` |
 | `author`, `license`, `source_url` | no | credit and licensing of the tool |
 

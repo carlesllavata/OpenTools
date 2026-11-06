@@ -14,6 +14,12 @@ DEFAULTS = {
     "show_hub_on_startup": True,
     # Where the hub was left: {"area", "floating", "geometry" | "size"}.
     "hub_dock": {},
+    # Hub look: icon size key from look.ICON_SIZES, labels under icons, selected
+    # category filter ("" = all) and the sections the user collapsed.
+    "hub_icon_size": "medium",
+    "hub_show_labels": True,
+    "hub_category": "",
+    "hub_collapsed": [],
     "favorites": [],
     "recent": [],
     # Extra folders scanned for tools (e.g. private tools that are not in the public repo).

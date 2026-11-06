@@ -17,6 +17,8 @@ MANIFEST_NAME = "tool.json"
 ID_PATTERN = re.compile(r"^[a-z][a-z0-9_]{1,47}$")
 MACRO_PREFIX = "Open3DS_"
 DEFAULT_CATEGORY = "General"
+# Picked up automatically when the manifest has no "icon".
+DEFAULT_ICON_NAMES = ("icon.svg", "icon.png")
 
 
 class ManifestError(ValueError):
@@ -135,6 +137,8 @@ def load_manifest(folder):
         if not icon.is_file():
             _log.warning("%s: icon not found: %s", tool_id, icon_rel)
             icon = None
+    else:
+        icon = next((folder / n for n in DEFAULT_ICON_NAMES if (folder / n).is_file()), None)
 
     keywords = data.get("keywords", [])
     if not isinstance(keywords, list) or not all(isinstance(k, str) for k in keywords):

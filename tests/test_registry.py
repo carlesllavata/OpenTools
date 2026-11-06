@@ -96,6 +96,10 @@ class LoadManifestTests(unittest.TestCase):
         folder = make_tool(self.root, "a", {"id": "ab", "name": "AB", "entry": "t.ms", "icon": "nope.png"}, {"t.ms": ""})
         self.assertIsNone(load_manifest(folder).icon)
 
+    def test_icon_file_is_picked_up_without_manifest_entry(self):
+        folder = make_tool(self.root, "b", {"id": "bc", "name": "BC", "entry": "t.ms"}, {"t.ms": "", "icon.svg": "<svg/>"})
+        self.assertEqual(load_manifest(folder).icon, folder / "icon.svg")
+
 
 class RegistryTests(unittest.TestCase):
     def setUp(self):

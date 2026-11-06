@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <!-- Open3DS original icon: clipboard with a bar chart (Scene Summary). MIT. -->
+  <rect x="8" y="6" width="32" height="38" rx="5" fill="#3f8fe0" stroke="#2a6bb0" stroke-width="1.5"/>
+  <rect x="17" y="3" width="14" height="7" rx="2.5" fill="#d7e6f7" stroke="#2a6bb0" stroke-width="1.5"/>
+  <rect x="13" y="14" width="22" height="25" rx="2" fill="#f4f8fd"/>
+  <rect x="16" y="28" width="4" height="8" rx="1" fill="#2fa395"/>
+  <rect x="22" y="22" width="4" height="14" rx="1" fill="#e08a2c"/>
+  <rect x="28" y="18" width="4" height="18" rx="1" fill="#3f8fe0"/>
+</svg>

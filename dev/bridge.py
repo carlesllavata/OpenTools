@@ -82,7 +82,11 @@ def send(code, timeout):
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    # Windows consoles default to cp1252; never crash on characters such as "▾" or "…".
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
+    parser =argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("target", nargs="?", help="'ping', 'reload' or a .py file to run")
     parser.add_argument("-c", dest="code", help="code to run")
     parser.add_argument("--timeout", type=float, default=60.0, help="seconds to wait (default 60)")
