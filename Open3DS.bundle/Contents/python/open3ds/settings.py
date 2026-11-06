@@ -28,6 +28,10 @@ DEFAULTS = {
     # Folder used by Copy/Paste Objects ("" = %LOCALAPPDATA%\Open3DS\clipboard).
     # Point it at a shared folder to copy and paste between machines.
     "object_clipboard_dir": "",
+    # Save copies for an older 3ds Max (e.g. 2025); 0 = the running version.
+    "object_clipboard_save_as": 0,
+    # Clashing material names on paste: "rename" or "scene" (use the scene's material).
+    "object_clipboard_materials": "rename",
 }
 
 RECENT_LIMIT = 20

@@ -1,0 +1,10 @@
+{
+  "id": "object_clipboard",
+  "name": "Object Clipboard",
+  "category": "Scene",
+  "description": "Six object clipboard slots with viewport thumbnails. Copy the selection into a slot, click its picture to paste it into this or any other 3ds Max instance. Slots can live on a shared folder, be saved for an older 3ds Max, and reuse scene materials on paste. Slot 1 is the one used by Copy Objects / Paste Objects.",
+  "entry": "object_clipboard_ui.py:run",
+  "keywords": ["clipboard", "slots", "copy", "paste", "transfer", "between files", "thumbnails", "merge"],
+  "author": "Open3DS contributors",
+  "license": "MIT"
+}
