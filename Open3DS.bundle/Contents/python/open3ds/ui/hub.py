@@ -1,6 +1,7 @@
 """The dockable Open3DS panel: a grid of tool icons grouped by category.
 
-Layout, top to bottom: search box, category filter chips, one section per category
+Layout, top to bottom: the material bar (ui/material_bar.py, can be hidden), search
+box, category filter chips, one section per category
 (favorites first) with a wrapping grid of clickable tool tiles, and a status line.
 """
 
@@ -167,6 +168,11 @@ class HubWidget(QtWidgets.QWidget):
         top.addWidget(refresh_button)
         top.addWidget(self.menu_button)
 
+        self.material_bar = None
+        settings = _settings()
+        if maxhost.in_max() and (settings is None or settings.get("material_bar")):
+            self._create_material_bar()
+
         self.chips = QtWidgets.QWidget()
         self.chips_layout = FlowLayout(self.chips, spacing=3)
         self.chip_group = QtWidgets.QButtonGroup(self)
@@ -190,6 +196,11 @@ class HubWidget(QtWidgets.QWidget):
         layout = QtWidgets.QVBoxLayout(self)
         layout.setContentsMargins(4, 4, 4, 4)
         layout.setSpacing(4)
+        self.bar_slot = QtWidgets.QVBoxLayout()
+        self.bar_slot.setContentsMargins(0, 0, 0, 2)
+        if self.material_bar is not None:
+            self.bar_slot.addWidget(self.material_bar)
+        layout.addLayout(self.bar_slot)
         layout.addLayout(top)
         layout.addWidget(self.chips)
         layout.addWidget(self.scroll, 1)
@@ -214,6 +225,11 @@ class HubWidget(QtWidgets.QWidget):
             labels.setCheckable(True)
             labels.setChecked(bool(settings.get("hub_show_labels")))
             labels.toggled.connect(lambda on: self._set_option("hub_show_labels", on))
+            bar = menu.addAction("Show material bar")
+            bar.setCheckable(True)
+            bar.setChecked(self.material_bar is not None)
+            bar.setEnabled(maxhost.in_max())
+            bar.toggled.connect(self._show_material_bar)
             startup = menu.addAction("Show panel when 3ds Max starts")
             startup.setCheckable(True)
             startup.setChecked(bool(settings.get("show_hub_on_startup")))
@@ -231,6 +247,28 @@ class HubWidget(QtWidgets.QWidget):
         menu.addSeparator()
         about = menu.addAction("Open3DS %s" % __version__)
         about.setEnabled(False)
+
+    def _create_material_bar(self):
+        from .material_bar import MaterialBar
+
+        try:
+            self.material_bar = MaterialBar(self)
+        except Exception:  # noqa: BLE001 - the tool grid must load even if the bar fails
+            _log.exception("Could not create the material bar")
+            self.material_bar = None
+
+    def _show_material_bar(self, on):
+        settings = _settings()
+        if settings is not None:
+            settings.set("material_bar", bool(on))
+        if on and self.material_bar is None:
+            self._create_material_bar()
+            if self.material_bar is not None:
+                self.bar_slot.addWidget(self.material_bar)
+        elif not on and self.material_bar is not None:
+            self.material_bar.hide()
+            self.material_bar.deleteLater()
+            self.material_bar = None
 
     def _set_option(self, key, value):
         settings = _settings()

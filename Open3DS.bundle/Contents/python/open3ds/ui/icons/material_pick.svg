@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <!-- Open3DS original icon: eyedropper (pick a material from an object). MIT. -->
+  <g transform="rotate(45 12 12)">
+    <rect x="9.6" y="0.8" width="4.8" height="6" rx="2.2" fill="#e08a2c"/>
+    <rect x="8" y="6.4" width="8" height="2.4" rx="1.1" fill="#d4d4d4"/>
+    <path d="M10.2 8.8 V17.6 L12 21.4 L13.8 17.6 V8.8" fill="none" stroke="#d4d4d4" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M11 13.4 V17.4 L12 19.6 L13 17.4 V13.4 Z" fill="#e08a2c"/>
+  </g>
+</svg>

@@ -20,6 +20,10 @@ DEFAULTS = {
     "hub_show_labels": True,
     "hub_category": "",
     "hub_collapsed": [],
+    # Material bar at the top of the hub, and whether choosing a material from its
+    # list also applies it to the selection (like the AutoCAD layer drop-down).
+    "material_bar": True,
+    "material_bar_apply_on_choose": False,
     "favorites": [],
     "recent": [],
     # Extra folders scanned for tools (e.g. private tools that are not in the public repo).

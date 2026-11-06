@@ -20,7 +20,12 @@ macros you can bind to hotkeys.
 2. Start 3ds Max. The Open3DS panel docks on the right: a grid of tool icons grouped
    by category, with category filters and a search box on top. Click an icon to run
    the tool; right-click it to add it to favorites. Icon size and labels are in the `⋯` menu.
-3. Optional: in *Customize > Hotkey Editor*, category **Open3DS**, bind
+3. At the top of the panel sits the **material bar**, a layer-style drop-down of the
+   scene's materials (like the AutoCAD layer list): choose a material or pick it from an
+   object with the eyedropper, then apply it to the selection or select every object
+   that uses it (Shift+click adds). Type in the drop-down to filter; right-click it for the
+   Material Editor and the "apply when chosen" option. Hide it from the `⋯` menu.
+4. Optional: in *Customize > Hotkey Editor*, category **Open3DS**, bind
    `Open3DS Command Palette` (for example to `Ctrl+Space`) and any tool you use often.
 
 To uninstall, delete that folder.
