@@ -1,0 +1,10 @@
+{
+  "id": "select_instances",
+  "name": "Select Instances",
+  "category": "Selection",
+  "description": "Selects every instance of the selected object.",
+  "entry": "select_instances.ms",
+  "keywords": ["instance", "select", "clones"],
+  "author": "Open3DS contributors",
+  "license": "MIT"
+}

@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Dev bridge traffic between Claude/CLI and a running 3ds Max
+.devbridge/
+
+# Logs and OS noise
+*.log
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Editors
+.vs/
+.vscode/
+.idea/
+
+# Local Claude Code settings
+.claude/settings.local.json

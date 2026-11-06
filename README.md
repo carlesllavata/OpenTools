@@ -1,0 +1,96 @@
+# Open3DS
+
+An open-source hub for 3ds Max that bundles everyday tools into **one install**.
+When a new 3ds Max version comes out, you reinstall a single package and every
+tool is back: in a dockable panel, in a searchable command palette, and as
+macros you can bind to hotkeys.
+
+- 3ds Max 2025 and later (Python 3 / PySide6 + MAXScript, no compiled plugins)
+- Every tool is a folder with a small `tool.json` manifest; the hub builds itself from them
+- Tools load lazily and run isolated: one broken tool never takes the others down
+- Settings live in `%APPDATA%\Open3DS`, so they survive 3ds Max upgrades
+
+> Status: early scaffold (v0.1.0). The hub, palette, macros and two sample tools work;
+> the real tool collection is being added.
+
+## Install
+
+1. Copy the `Open3DS.bundle` folder to `%APPDATA%\Autodesk\ApplicationPlugins\`
+   (create the folder if it does not exist).
+2. Start 3ds Max. The Open3DS panel docks on the right.
+3. Optional: in *Customize > Hotkey Editor*, category **Open3DS**, bind
+   `Open3DS Command Palette` (for example to `Ctrl+Space`) and any tool you use often.
+
+To uninstall, delete that folder.
+
+## Layout
+
+```
+Open3DS.bundle/                Autodesk ApplicationPlugins package (what users install)
+  PackageContents.xml
+  Contents/
+    scripts/open3ds_startup.ms Boots the Python side after 3ds Max starts
+    python/open3ds/            Core: registry, runner, macros, settings, UI, dev bridge
+    tools/<tool_id>/           One folder per tool: tool.json + code
+dev/                           Developer scripts (dev install, bridge client, test runner)
+tests/                         Offline tests that run without 3ds Max
+```
+
+## Adding a tool
+
+Create `Open3DS.bundle/Contents/tools/<tool_id>/tool.json`:
+
+```json
+{
+  "id": "select_instances",
+  "name": "Select Instances",
+  "category": "Selection",
+  "description": "Selects every instance of the selected object.",
+  "entry": "select_instances.ms",
+  "keywords": ["instance", "select"],
+  "author": "Your Name",
+  "license": "MIT"
+}
+```
+
+| Field | Required | Notes |
+|---|---|---|
+| `id` | yes | lowercase letters, digits and `_`; must be unique. The macro is named `Open3DS_<id>` |
+| `name` | yes | shown in the hub, palette and Hotkey Editor |
+| `entry` | yes | `file.ms` (MAXScript, run with `fileIn`) or `file.py:function` (Python) |
+| `category` | no | groups tools in the hub (default `General`) |
+| `description`, `keywords` | no | used by search and tooltips |
+| `icon` | no | image file inside the tool folder |
+| `min_max`, `max_max` | no | supported 3ds Max years, e.g. `2025` |
+| `author`, `license`, `source_url` | no | credit and licensing of the tool |
+
+Python tools are loaded as a package, so a tool can split its code into several
+files and use relative imports (`from . import helpers`).
+
+Only add code you wrote yourself or code whose license allows redistribution
+under this repository's license, and credit it in `author`/`license`/`source_url`.
+
+## Development
+
+Requirements: 3ds Max 2025+ on Windows. The Python bundled with 3ds Max is enough.
+
+```powershell
+# Load Open3DS straight from this checkout (instead of a copied bundle) and enable the dev bridge
+powershell -ExecutionPolicy Bypass -File dev\install_dev.ps1
+
+# Run the offline tests
+& "C:\Program Files\Autodesk\3ds Max 2027\Python\python.exe" -I dev\run_tests.py
+
+# Talk to the running 3ds Max (needs the dev install)
+& "C:\Program Files\Autodesk\3ds Max 2027\Python\python.exe" -I dev\bridge.py ping
+& "C:\Program Files\Autodesk\3ds Max 2027\Python\python.exe" -I dev\bridge.py -c "print(rt.objects.count)"
+& "C:\Program Files\Autodesk\3ds Max 2027\Python\python.exe" -I dev\bridge.py reload
+```
+
+The dev bridge watches `.devbridge/inbox` in this checkout, runs each `.py` file
+dropped there inside 3ds Max and writes the result to `.devbridge/outbox`. It only
+runs when Open3DS was loaded through `dev/install_dev.ps1`.
+
+## License
+
+MIT, see [LICENSE](LICENSE).

@@ -1,0 +1,10 @@
+{
+  "id": "scene_summary",
+  "name": "Scene Summary",
+  "category": "Scene",
+  "description": "Shows counts of objects, geometry, lights, cameras and selection in the current scene.",
+  "entry": "scene_summary.py:run",
+  "keywords": ["info", "statistics", "count", "stats"],
+  "author": "Open3DS contributors",
+  "license": "MIT"
+}

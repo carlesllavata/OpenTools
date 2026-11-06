@@ -1,0 +1,9 @@
+* text=auto
+
+# Windows-only scripts keep CRLF in the working tree
+*.ps1 text eol=crlf
+*.ms  text eol=crlf
+*.mcr text eol=crlf
+
+*.png binary
+*.ico binary
