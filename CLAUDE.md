@@ -7,6 +7,8 @@ Python 3.13 (bundled with Max), PySide6, Corona. The repo lives on a NAS share (
 ## Layout
 - `Open3DS.bundle/` – the ApplicationPlugins package users install. Version lives in
   `PackageContents.xml` (AppVersion + ComponentEntry Version) **and** `open3ds/__init__.py`; keep them equal.
+  Max 2027 silently ignores a package whose RuntimeRequirements lack `SeriesMax` (we use `2099` = no cap).
+- In non-interactive sessions (3dsmaxbatch, render nodes) only tools and macros load; no hub, no bridge.
 - `Open3DS.bundle/Contents/python/open3ds/` – core. Modules without Qt/pymxs imports at top level
   (`registry`, `search`, `macros.macro_source`, `settings`, `runner`) must stay importable outside Max:
   the offline tests rely on it. Anything touching 3ds Max goes through `maxhost.py`.
