@@ -23,9 +23,7 @@ COLORS = {"objects": "#2fa395", "materials": "#e08a2c", "modifiers": "#6f6fdb", 
           "locked": "#d9534f"}
 
 
-def _settings():
-    current = app_mod.current()
-    return current.settings if current is not None else None
+_settings = app_mod.current_settings
 
 
 def _set(key, value):

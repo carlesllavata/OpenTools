@@ -32,12 +32,6 @@ def toggle_hub():
     hub.toggle()
 
 
-def show_hub():
-    from .ui import hub
-
-    hub.show()
-
-
 def show_palette():
     from .ui import palette
 

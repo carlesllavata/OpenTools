@@ -31,9 +31,7 @@ SWATCH_ROLE = QtCore.Qt.UserRole + 12
 CHECK_MS = 2000  # how often the current material's name and existence are re-read
 
 
-def _settings():
-    current = app_mod.current()
-    return current.settings if current is not None else None
+_settings = app_mod.current_settings
 
 
 def _icon(name):

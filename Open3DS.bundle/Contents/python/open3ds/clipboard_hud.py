@@ -19,10 +19,9 @@ _state = {"timers": None, "keys": None, "rows": None}
 
 
 def _settings():
-    from . import app as app_mod
+    from . import app
 
-    current = app_mod.current()
-    return current.settings if current is not None else None
+    return app.current_settings()
 
 
 def rows(settings=None):

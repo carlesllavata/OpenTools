@@ -25,9 +25,6 @@ import zipfile
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from . import log
-
-_log = log.get("assets")
 
 SCENE_OWNER = "(scene)"  # files used by the environment, render settings, etc.
 

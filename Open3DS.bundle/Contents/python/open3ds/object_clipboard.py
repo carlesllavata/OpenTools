@@ -121,11 +121,6 @@ class Config:
     def remote_active(self):
         return self.route == "remote" and bool(self.remote)
 
-    def target_label(self, route=None):
-        route = route or self.route
-        if route == "remote" and self.remote:
-            return "Remote: " + self.remote
-        return "Local"
 
 
 def config(settings=None):
@@ -366,10 +361,9 @@ def _prompt(text):
 
 
 def _settings():
-    from . import app as app_mod
+    from . import app
 
-    current = app_mod.current()
-    return current.settings if current is not None else None
+    return app.current_settings()
 
 
 def _set(key, value):

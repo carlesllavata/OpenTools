@@ -2,16 +2,20 @@
 
 from pathlib import Path
 
-from . import log, macros, maxhost, paths, runner
+from . import macros, maxhost, paths, runner
 from .registry import Registry
 from .settings import Settings
 
-_log = log.get("app")
 _current = None
 
 
 def current():
     return _current
+
+
+def current_settings():
+    """Settings of the running Open3DS, or None before it starts."""
+    return _current.settings if _current is not None else None
 
 
 def set_current(app):

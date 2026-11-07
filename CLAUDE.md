@@ -68,8 +68,9 @@ Max's Python: `C:\Program Files\Autodesk\3ds Max 2027\Python\python.exe` (always
 - PySide6: `QAction` / `QActionGroup` live in QtGui, not QtWidgets. Qt never opens an empty
   QMenu, so a menu filled only in `aboutToShow` never appears: fill it once when created.
 - Tool windows: subclass `open3ds.ui.toolwindow.ToolWindow` (one instance, remembered position,
-  options in settings `tool_options`) and wrap button actions with `self.guard(...)`, otherwise
-  errors in Qt slots are lost. Heavy geometry loops go in a MAXScript `*_core.ms` next to the tool.
+  options in settings `tool_options`; a `"size"` in DEFAULTS is restored and saved by the base,
+  `self.confirm(title, text)` asks Yes/Cancel) and wrap button actions with `self.guard(...)`, otherwise
+  errors in Qt slots are lost. Settings of the running app: `open3ds.app.current_settings()`. Heavy geometry loops go in a MAXScript `*_core.ms` next to the tool.
 
 ## Rules
 - Before adding a script the user hands over, ask where it comes from and its license. Own or permissively

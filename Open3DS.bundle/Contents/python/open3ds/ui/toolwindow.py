@@ -1,5 +1,5 @@
-"""Base for small floating tool windows: one instance at a time, remembered position,
-and options stored in settings ("tool_options")."""
+"""Base for small floating tool windows: one instance at a time, remembered position
+(and size, when "size" is in DEFAULTS), and options stored in settings ("tool_options")."""
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
@@ -7,15 +7,13 @@ from .. import app as app_mod, log, maxhost, paths
 from . import common
 
 
-def settings():
-    current = app_mod.current()
-    return current.settings if current is not None else None
+settings = app_mod.current_settings
 
 
 class ToolWindow(QtWidgets.QDialog):
     TOOL_ID = ""          # used for the object name and the stored options
     TITLE = ""
-    DEFAULTS = {}         # option name -> default value (bool, int, float or str)
+    DEFAULTS = {}         # option name -> default value (bool, int, float, str; "size": [w, h])
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -25,10 +23,21 @@ class ToolWindow(QtWidgets.QDialog):
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         s = settings()
         self.options = s.tool_options(self.TOOL_ID, self.DEFAULTS) if s else dict(self.DEFAULTS)
+        if "size" in self.DEFAULTS:
+            size = self.options["size"]
+            self.resize(int(size[0]), int(size[1]))
 
     # actions -----------------------------------------------------------------
     def guard(self, func):
         return guarded(self.TITLE, func)
+
+    def confirm(self, title, text):
+        """Yes / Cancel question (live tests replace it on the instance)."""
+        answer = QtWidgets.QMessageBox.question(
+            self, "%s - %s" % (self.TITLE, title), text,
+            QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.Cancel, QtWidgets.QMessageBox.Cancel,
+        )
+        return answer == QtWidgets.QMessageBox.Yes
 
     # options -----------------------------------------------------------------
     def set_option(self, key, value):
@@ -79,6 +88,8 @@ class ToolWindow(QtWidgets.QDialog):
             self.move(center.x() - self.width() // 2, center.y() - self.height() // 2)
 
     def closeEvent(self, event):
+        if "size" in self.DEFAULTS:
+            self.set_option("size", [self.width(), self.height()])
         s = settings()
         if s is not None:
             windows = dict(s.get("tool_windows") or {})

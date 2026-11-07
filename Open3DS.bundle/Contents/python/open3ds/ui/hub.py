@@ -26,9 +26,7 @@ _TILE_WIDTH = {24: 64, 32: 76, 48: 92}
 _dock = None
 
 
-def _settings():
-    current = app_mod.current()
-    return current.settings if current is not None else None
+_settings = app_mod.current_settings
 
 
 def _icon_px():

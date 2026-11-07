@@ -296,9 +296,6 @@ _ENGINE_RULES = (
     ("FStorm", lambda raw, n: n.startswith("fstorm")),
 )
 
-ENGINES = tuple(name for name, _rule in _ENGINE_RULES)
-
-
 def engine_of(class_name):
     """Render engine a 3ds Max class belongs to ("V-Ray", "Corona"...), or None."""
     raw = (class_name or "").lower().lstrip("_")

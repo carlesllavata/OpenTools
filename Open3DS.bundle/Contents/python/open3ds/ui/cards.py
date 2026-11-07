@@ -9,7 +9,6 @@ The design is provisional (the hub keeps its own look for now).
 from PySide6 import QtCore, QtGui, QtWidgets
 
 ACCENT = "#f0932b"
-ACCENT_DARK = "#c46f15"
 BG = "#1d1e21"
 PANEL = "#26272b"
 ROW = "#2d2e33"

@@ -35,7 +35,6 @@ class XRefManagerWindow(toolwindow.ToolWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowFlags(QtCore.Qt.Tool | QtCore.Qt.WindowCloseButtonHint | QtCore.Qt.WindowMaximizeButtonHint)
-        self.confirm = self._ask  # replaced in tests
 
         refresh = QtWidgets.QPushButton("Refresh")
         refresh.setIcon(common.standard_icon("SP_BrowserReload"))
@@ -54,20 +53,7 @@ class XRefManagerWindow(toolwindow.ToolWindow):
         layout = QtWidgets.QVBoxLayout(self)
         layout.addLayout(top)
         layout.addWidget(self.tabs, 1)
-        size = self.options["size"]
-        self.resize(int(size[0]), int(size[1]))
         QtCore.QTimer.singleShot(0, self.guard(self.refresh))
-
-    def closeEvent(self, event):
-        self.set_option("size", [self.width(), self.height()])
-        super().closeEvent(event)
-
-    def _ask(self, title, text):
-        answer = QtWidgets.QMessageBox.question(
-            self, "%s - %s" % (self.TITLE, title), text,
-            QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.Cancel, QtWidgets.QMessageBox.Cancel,
-        )
-        return answer == QtWidgets.QMessageBox.Yes
 
     # ================================================================ scenes
     def _scenes_tab(self):

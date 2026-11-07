@@ -48,7 +48,6 @@ class ForensicWindow(toolwindow.ToolWindow):
         self.results = {}
         self.rows = {}
         self.info = None
-        self.confirm = self._ask  # replaced in tests
 
         _holder, layout = cards.root(self)
 
@@ -95,24 +94,11 @@ class ForensicWindow(toolwindow.ToolWindow):
         tab = int(self.options["tab"]) if 0 <= int(self.options["tab"]) < 3 else 0
         self.tabs.set_current(tab)
         self.pages.setCurrentIndex(tab)
-        size = self.options["size"]
-        self.resize(int(size[0]), int(size[1]))
         QtCore.QTimer.singleShot(0, self.guard(self.scan))
 
     def _show_tab(self, index):
         self.pages.setCurrentIndex(index)
         self.set_option("tab", index)
-
-    def closeEvent(self, event):
-        self.set_option("size", [self.width(), self.height()])
-        super().closeEvent(event)
-
-    def _ask(self, title, text):
-        answer = QtWidgets.QMessageBox.question(
-            self, "%s - %s" % (self.TITLE, title), text,
-            QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.Cancel, QtWidgets.QMessageBox.Cancel,
-        )
-        return answer == QtWidgets.QMessageBox.Yes
 
     def set_status(self, text):
         self.status.setText(text)

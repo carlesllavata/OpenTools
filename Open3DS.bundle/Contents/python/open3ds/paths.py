@@ -6,7 +6,6 @@ from pathlib import Path
 # abspath (not resolve) so a mapped network drive stays "Z:\..." instead of a UNC path.
 PACKAGE_DIR = Path(os.path.abspath(__file__)).parent  # .../Contents/python/open3ds
 CONTENTS_DIR = PACKAGE_DIR.parent.parent  # .../Contents
-BUNDLE_DIR = CONTENTS_DIR.parent  # .../Open3DS.bundle
 BUILTIN_TOOLS_DIR = CONTENTS_DIR / "tools"
 
 

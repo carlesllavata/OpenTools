@@ -7,10 +7,9 @@ from PySide6 import QtCore, QtWidgets
 
 import open3ds
 
-from .. import app as app_mod, log, maxhost, search
+from .. import app as app_mod, maxhost, search
 from . import common
 
-_log = log.get("palette")
 
 _palette = None
 

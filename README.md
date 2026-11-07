@@ -10,8 +10,9 @@ macros you can bind to hotkeys.
 - Tools load lazily and run isolated: one broken tool never takes the others down
 - Settings live in `%APPDATA%\Open3DS`, so they survive 3ds Max upgrades
 
-> Status: early scaffold (v0.1.0). The hub, palette, macros and two sample tools work;
-> the real tool collection is being added.
+> Status: early (v0.2.0). The hub, palette and macros work, with 16 tools: scene
+> checks and repairs (Forensic), asset, proxy and XRef managers, modeling helpers and
+> an object clipboard with network targets (Ignite). The interface and icons are provisional.
 
 ## Install
 

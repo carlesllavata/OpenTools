@@ -155,13 +155,7 @@ class ProxyManagerWindow(toolwindow.ToolWindow):
         layout.addLayout(info)
         layout.addLayout(display_row)
         layout.addLayout(node_row)
-        size = self.options["size"]
-        self.resize(int(size[0]), int(size[1]))
         QtCore.QTimer.singleShot(0, self.guard(self.refresh))
-
-    def closeEvent(self, event):
-        self.set_option("size", [self.width(), self.height()])
-        super().closeEvent(event)
 
     # ----------------------------------------------------------------- list
     def refresh(self):

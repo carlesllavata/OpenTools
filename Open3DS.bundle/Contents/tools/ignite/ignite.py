@@ -89,8 +89,6 @@ class IgniteWindow(toolwindow.ToolWindow):
         self.status = cards.dim("")
         layout.addWidget(self.status)
 
-        size = self.options["size"]
-        self.resize(int(size[0]), int(size[1]))
         self.timer = QtCore.QTimer(self)
         self.timer.timeout.connect(self.refresh)
         self.timer.start(POLL_MS)
@@ -98,7 +96,6 @@ class IgniteWindow(toolwindow.ToolWindow):
 
     def closeEvent(self, event):
         self.timer.stop()
-        self.set_option("size", [self.width(), self.height()])
         super().closeEvent(event)
 
     def set_status(self, text):

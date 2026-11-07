@@ -156,8 +156,6 @@ class AssetManagerWindow(toolwindow.ToolWindow):
 
         layout = QtWidgets.QVBoxLayout(self)
         layout.addWidget(splitter)
-        size = self.options["size"]
-        self.resize(int(size[0]), int(size[1]))
         QtCore.QTimer.singleShot(0, self.guard(self.refresh))
 
     # ================================================================ tabs
@@ -486,10 +484,6 @@ class AssetManagerWindow(toolwindow.ToolWindow):
     def _report(self, message):
         self.summary.setText(message)
         rt.displayTempPrompt("Open3DS: " + message, 6000)
-
-    def closeEvent(self, event):
-        self.set_option("size", [self.width(), self.height()])
-        super().closeEvent(event)
 
 
 def run():
