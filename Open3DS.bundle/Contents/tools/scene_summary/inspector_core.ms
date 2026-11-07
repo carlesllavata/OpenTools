@@ -1,5 +1,5 @@
 /*
-    Open3DS - Scene Inspector core (MIT, Open3DS contributors).
+    Open3DS - Forensic core (MIT, Open3DS contributors).
 
     Every check returns #(count, items) where items is an array of #(label, node)
     (node may be undefined). Fixes return how many things they changed. Loops that
@@ -288,7 +288,10 @@ struct O3DS_InspectorStruct
     fn c_empty_geometry =
     (
         local nodes = #()
-        for n in objects do if isGeo n and not generatesMesh n and faceCount n == 0 do append nodes n
+        -- objects emptied by their modifiers are a separate check (their base has faces)
+        for n in objects do
+            if isGeo n and not generatesMesh n and faceCount n == 0 and \
+               (n.modifiers.count == 0 or (try (n.baseObject.mesh.numFaces) catch 0) == 0) do append nodes n
         #(nodes.count, nodeItems nodes)
     ),
     fn f_empty_geometry =
@@ -370,21 +373,71 @@ struct O3DS_InspectorStruct
         pool.count
     ),
 
-    -- ----------------------------------------------------------- cleanup
-    fn isCadBlock n =
-    (
-        local c = className n.baseObject
-        c == "LinkComposite" or c == "LinkBlockInstance" or c == "LinkLeaf" or c == "LinkOriginPtHelper"
-    ),
-    fn c_cad_blocks =
+    -- -------------------------------------------------------- references
+    blockClasses = #("LinkBlockInstance", "LinkComposite"),
+    linkClasses = #("LinkLeaf", "LinkOriginPtHelper"),
+
+    fn classItems names =
     (
         local items = #()
-        for n in objects do if isCadBlock n do append items #(n.name + "  (" + className n.baseObject + ")", n)
+        for n in objects do if findItem names (className n.baseObject) > 0 do
+            append items #(n.name + "  (" + className n.baseObject + ")", n)
         #(items.count, items)
     ),
-    fn f_cad_blocks =
+    fn c_cad_blocks = (classItems blockClasses),
+    fn c_linked_files = (classItems linkClasses),
+
+    fn c_xref_scenes =
     (
-        local nodes = for item in (c_cad_blocks())[2] collect item[2]
+        local items = #()
+        for i = 1 to (try (xrefs.getXRefFileCount()) catch 0) do
+        (
+            local x = xrefs.getXRefFile i
+            if x != undefined do append items #(x.filename, undefined)
+        )
+        #(items.count, items)
+    ),
+    fn f_xref_scenes =
+    (
+        local n = try (xrefs.getXRefFileCount()) catch 0
+        for i = n to 1 by -1 do try (delete (xrefs.getXRefFile i)) catch ()
+        n - (try (xrefs.getXRefFileCount()) catch 0)
+    ),
+
+    fn c_xref_objects =
+    (
+        local nodes = #()
+        for n in objects do if classOf n.baseObject == XRefObject do append nodes n
+        #(nodes.count, nodeItems nodes)
+    ),
+    fn f_xref_objects =
+    (
+        local nodes = for item in (c_xref_objects())[2] collect item[2]
+        undo "Delete XRef Objects" on (delete nodes)
+        nodes.count
+    ),
+
+    -- materials of a class pattern: count of materials, items = the objects using them
+    fn materialUsers pattern =
+    (
+        local found = #(), items = #()
+        for n in objects do if n.material != undefined do
+        (
+            local hit = false
+            for m in (walkMaterial n.material #()) do
+                if superClassOf m == material and matchPattern (className m) pattern:pattern do
+                    (appendIfUnique found m ; hit = true)
+            if hit do append items #(n.name + "  (" + n.material.name + ")", n)
+        )
+        #(found.count, items)
+    ),
+    fn c_xref_materials = (materialUsers "XRef_Material"),
+    fn c_autodesk_materials = (materialUsers "Autodesk*"),
+    fn c_standard_materials = (materialUsers "Standardmaterial"),
+
+    -- ----------------------------------------------------------- cleanup
+    fn removeBlocks nodes =
+    (
         local done = 0
         undo "Remove CAD Blocks" on
         (
@@ -403,6 +456,29 @@ struct O3DS_InspectorStruct
             )
         )
         done
+    ),
+    fn f_cad_blocks = (removeBlocks (for item in (c_cad_blocks())[2] collect item[2])),
+    fn f_linked_files = (removeBlocks (for item in (c_linked_files())[2] collect item[2])),
+
+    -- dummies and points that hold nothing and that no constraint, wire or rig uses
+    fn isUnusedHelper n =
+    (
+        local c = classOf n.baseObject
+        (c == Dummy or c == Point) and not isGroupHead n and n.children.count == 0 and \
+            (try (custAttributes.count n.baseObject) catch 0) == 0 and \
+            (try ((refs.dependentNodes n).count) catch 1) == 0
+    ),
+    fn c_unused_helpers =
+    (
+        local nodes = #()
+        for n in objects do if superClassOf n == Helper and (try (isUnusedHelper n) catch false) do append nodes n
+        #(nodes.count, nodeItems nodes)
+    ),
+    fn f_unused_helpers =
+    (
+        local nodes = for item in (c_unused_helpers())[2] collect item[2]
+        undo "Delete Unused Helpers" on (delete nodes)
+        nodes.count
     ),
 
     fn c_groups =
@@ -584,11 +660,243 @@ struct O3DS_InspectorStruct
     ),
 
     -- ------------------------------------------------------------ render
-    -- foreign: class names (from classNames) that Python found to belong to another engine
-    fn c_renderer_mismatch foreign =
+    fn c_render_elements =
+    (
+        local mgr = maxOps.GetCurRenderElementMgr()
+        local items = #()
+        for i = 0 to (mgr.NumRenderElements()) - 1 do
+        (
+            local e = mgr.GetRenderElement i
+            if e != undefined do append items #(e.elementName + "  (" + className e + ")", undefined)
+        )
+        #(items.count, items)
+    ),
+    fn c_render_effects =
+    (
+        local items = for i = 1 to numEffects collect #((getEffect i).name, undefined)
+        #(items.count, items)
+    ),
+    fn c_environment_effects =
+    (
+        local items = for i = 1 to numAtmospherics collect #((getAtmospheric i).name, undefined)
+        #(items.count, items)
+    ),
+
+    -- ----------------------------------------------------- object states
+    fn isGeoOrShape n = (isGeo n or superClassOf n == Shape),
+    fn nodesWhere test =
+    (
+        local nodes = #()
+        for n in objects do if (try (test n) catch false) do append nodes n
+        #(nodes.count, nodeItems nodes)
+    ),
+    fn listedNodes check = (for item in check[2] where isValidNode item[2] collect item[2]),
+
+    fn isUncollapsed n = (isGeoOrShape n and n.modifiers.count > 0),
+    fn c_uncollapsed = (nodesWhere isUncollapsed),
+    fn f_uncollapsed =
+    (
+        local nodes = listedNodes (c_uncollapsed())
+        undo "Collapse Stacks" on for n in nodes do maxOps.CollapseNode n true
+        nodes.count
+    ),
+
+    fn isHiddenNode n = n.isHidden,
+    fn c_hidden = (nodesWhere isHiddenNode),
+    fn f_hidden =
+    (
+        local nodes = listedNodes (c_hidden())
+        undo "Unhide" on unhide nodes
+        nodes.count
+    ),
+
+    fn isNotRenderable n = (isGeoOrShape n and not n.renderable),
+    fn c_not_renderable = (nodesWhere isNotRenderable),
+    fn f_not_renderable =
+    (
+        local nodes = listedNodes (c_not_renderable())
+        undo "Make Renderable" on for n in nodes do n.renderable = true
+        nodes.count
+    ),
+
+    fn hasShadowsOff n = (isGeoOrShape n and (not n.castShadows or not n.receiveShadows)),
+    fn c_shadows_off = (nodesWhere hasShadowsOff),
+    fn f_shadows_off =
+    (
+        local nodes = listedNodes (c_shadows_off())
+        undo "Turn Shadows On" on for n in nodes do (n.castShadows = true ; n.receiveShadows = true)
+        nodes.count
+    ),
+
+    fn isCameraInvisible n = (isGeo n and not n.primaryVisibility),
+    fn c_camera_invisible = (nodesWhere isCameraInvisible),
+    fn f_camera_invisible =
+    (
+        local nodes = listedNodes (c_camera_invisible())
+        undo "Make Visible to Camera" on for n in nodes do n.primaryVisibility = true
+        nodes.count
+    ),
+
+    -- a visibility track exists and is at 0 (or below) at the start or end of the range
+    fn hasZeroVisibility n =
+    (
+        if n[1].controller == undefined then false else
+        (
+            local a = at time animationRange.start n[1].value
+            local b = at time animationRange.end n[1].value
+            a <= 0.0 or b <= 0.0
+        )
+    ),
+    fn c_visibility_zero = (nodesWhere hasZeroVisibility),
+    fn f_visibility_zero =
+    (
+        local nodes = listedNodes (c_visibility_zero())
+        undo "Repair Visibility" on
+            for n in nodes do
+            (
+                local c = bezier_float()
+                c.value = 1.0
+                n.visibility = c
+            )
+        nodes.count
+    ),
+
+    -- ------------------------------------------------------ scene totals
+    fn isAnyNode n = true,
+    fn isShapeNode n = (superClassOf n == Shape),
+    fn isLightNode n = (superClassOf n == Light),
+    fn isCameraNode n = (superClassOf n == Camera),
+    fn isHelperNode n = (superClassOf n == Helper and not isGroupHead n),
+    fn isWarpNode n = (superClassOf n == SpaceWarpObject),
+    fn c_nodes = (nodesWhere isAnyNode),
+    fn c_geometry = (nodesWhere isGeo),
+    fn c_shapes = (nodesWhere isShapeNode),
+    fn c_lights = (nodesWhere isLightNode),
+    fn c_cameras = (nodesWhere isCameraNode),
+    fn c_helpers = (nodesWhere isHelperNode),
+    fn c_spacewarps = (nodesWhere isWarpNode),
+
+    -- ---------------------------------------------------- plugin objects
+    fn classMatches n patterns =
+    (
+        local c = toLower (className n.baseObject)
+        local hit = false
+        for p in patterns while not hit do if matchPattern c pattern:p do hit = true
+        hit
+    ),
+    fn patternItems patterns =
+    (
+        local items = #()
+        for n in objects do if classMatches n patterns do append items #(n.name + "  (" + className n.baseObject + ")", n)
+        #(items.count, items)
+    ),
+    fn c_proxies = (patternItems #("*proxy*", "*standin*")),
+    fn c_xmesh = (patternItems #("*xmesh*")),
+    fn c_itoo = (patternItems #("forest_*", "railclone*")),
+    fn c_scatters = (patternItems #("*scatter*")),
+
+    -- ---------------------------------------------------- more geometry
+    fn baseFaces n =
+    (
+        local obj = n.baseObject
+        case classOf obj of
+        (
+            Editable_Poly: polyop.getNumFaces obj
+            Editable_mesh: obj.numFaces
+            default: (try (obj.mesh.numFaces) catch -1)
+        )
+    ),
+    fn isEmptiedByModifiers n =
+        (isGeo n and n.modifiers.count > 0 and not generatesMesh n and faceCount n == 0 and baseFaces n > 0),
+    fn c_emptied_by_modifiers = (nodesWhere isEmptiedByModifiers),
+
+    -- mirroring (negative scale) is fine; different absolute scale per axis is not
+    fn isIrregularScale n =
+    (
+        if not (isGeoOrShape n or superClassOf n == Light or superClassOf n == Camera) then false else
+        (
+            local s = n.transform.scale
+            fn r v = (floor ((abs v) * 1000.0 + 0.5)) / 1000.0
+            r s.x != r s.y or r s.x != r s.z
+        )
+    ),
+    fn c_irregular_scale = (nodesWhere isIrregularScale),
+
+    -- ---------------------------------------------------- more animation
+    fn c_motion_clips =
+    (
+        local n = try (theMixer.numMaxMixers()) catch 0
+        local items = for i = 1 to n collect #("Mixer " + i as string, undefined)
+        #(items.count, items)
+    ),
+
+    -- ------------------------------------------------------- modifiers
+    fn enabledOf n cls =
+    (
+        local found = #()
+        for m in n.modifiers do if m.enabled and classOf m == cls do append found m
+        found
+    ),
+
+    fn c_double_shell =
     (
         local items = #()
         for n in objects do
+        (
+            local k = (enabledOf n Shell).count
+            if k > 1 do append items #(n.name + "  (" + k as string + " Shells)", n)
+        )
+        #(items.count, items)
+    ),
+    fn f_double_shell =
+    (
+        local count = 0
+        undo "Repair Stacked Shell" on
+            for item in (c_double_shell())[2] do
+            (
+                local shells = enabledOf item[2] Shell
+                -- modifiers[1] is the top of the stack: keep the last one (the lowest)
+                for i = 1 to shells.count - 1 do (shells[i].enabled = false ; count += 1)
+            )
+        count
+    ),
+
+    fn c_double_uvw =
+    (
+        local items = #()
+        for n in objects do
+        (
+            local seen = #()
+            local repeated = false
+            for m in (enabledOf n Uvwmap) do
+            (
+                -- channel 0 = map channel, 1 = vertex color channel
+                local key = (m.channel as string) + ":" + (m.mapChannel as string)
+                if findItem seen key > 0 then repeated = true else append seen key
+            )
+            if repeated do append items #(n.name, n)
+        )
+        #(items.count, items)
+    ),
+
+    fn noMaterial n = (isGeo n and n.material == undefined),
+    fn c_no_material = (nodesWhere noMaterial),
+
+    -- ------------------------------------------------------------ render
+    -- foreign: class names (from classNames) that Python found to belong to another engine
+    fn c_foreign_lights foreign =
+    (
+        local items = #()
+        for n in objects do
+            if superClassOf n == Light and findItem foreign (className n.baseObject) > 0 do
+                append items #(n.name + "  (" + className n.baseObject + ")", n)
+        #(items.count, items)
+    ),
+
+    fn c_foreign_objects foreign =
+    (
+        local items = #()
+        for n in objects where superClassOf n != Light do
         (
             local what = #()
             if findItem foreign (className n.baseObject) > 0 do append what (className n.baseObject)
@@ -621,6 +929,18 @@ struct O3DS_InspectorStruct
     dispProps = #(#displacementTexmap, #texmapDisplace, #displacement_map, #texmap_displacement, #displacementMap),
     dispMods = #("Displace", "VRayDisplacementMod", "CoronaDisplacementMod", "Displace_Mesh", "Displace_NURBS"),
 
+    -- a map slot counts unless its on/off switch (<slot>_on or <slot>On) is off
+    fn slotIsOn m p =
+    (
+        local active = true
+        for s in #((p as string) + "_on", (p as string) + "On") do
+        (
+            local v = propOf m (s as name)
+            if classOf v == BooleanClass and not v do active = false
+        )
+        active
+    ),
+
     fn displacementUses =
     (
         local slots = #()   -- #(material, property)
@@ -635,29 +955,41 @@ struct O3DS_InspectorStruct
             for p in dispProps do
             (
                 local v = propOf m p
-                if v != undefined and findItem seen v == 0 do (append seen v ; append slots #(m, p))
+                if v != undefined and findItem seen v == 0 and slotIsOn m p do (append seen v ; append slots #(m, p))
             )
         )
-        for n in objects do for m in n.modifiers do if findItem dispMods (className m) > 0 do append mods #(n, m)
+        for n in objects do for m in n.modifiers do
+            if m.enabled and findItem dispMods (className m) > 0 do append mods #(n, m)
         #(slots, mods)
     ),
-    fn c_displacement =
+    fn c_displacement_maps =
     (
-        local uses = displacementUses()
+        local mats = for s in (displacementUses())[1] collect s[1]
         local items = #()
-        for s in uses[1] do append items #("Material " + s[1].name + "  (" + s[2] as string + ")", undefined)
-        for u in uses[2] do append items #(u[1].name + "  (" + className u[2] + " modifier)", u[1])
+        for n in objects do if n.material != undefined do
+        (
+            local hit = undefined
+            for x in (walkMaterial n.material #()) while hit == undefined do if findItem mats x > 0 do hit = x
+            if hit != undefined do append items #(n.name + "  (" + hit.name + ")", n)
+        )
         #(items.count, items)
     ),
-    fn f_displacement =
+    fn f_displacement_maps =
     (
-        local uses = displacementUses()
-        undo "Remove Displacement" on
-        (
-            for s in uses[1] do setProperty s[1] s[2] undefined
-            for u in uses[2] do deleteModifier u[1] u[2]
-        )
-        uses[1].count + uses[2].count
+        local slots = (displacementUses())[1]
+        undo "Remove Displacement Maps" on for s in slots do setProperty s[1] s[2] undefined
+        slots.count
+    ),
+    fn c_displace_mods =
+    (
+        local items = for u in (displacementUses())[2] collect #(u[1].name + "  (" + className u[2] + ")", u[1])
+        #(items.count, items)
+    ),
+    fn f_displace_mods =
+    (
+        local mods = (displacementUses())[2]
+        undo "Remove Displace Modifiers" on for u in mods do deleteModifier u[1] u[2]
+        mods.count
     ),
 
     -- --------------------------------------------------------- modifiers
@@ -696,9 +1028,29 @@ struct O3DS_InspectorStruct
             #delete: undo "Delete Modifiers" on
                 for n in users do for i = n.modifiers.count to 1 by -1 do
                     if className n.modifiers[i] == cls do (deleteModifier n i ; count += 1)
+            #collapse: undo "Collapse Stacks" on
+                for n in users do (maxOps.CollapseNode n true ; count += 1)
             default: undo "Toggle Modifiers" on
                 for n in users do for m in n.modifiers do
                     if className m == cls do (m.enabled = (action == #enable) ; count += 1)
+        )
+        count
+    ),
+
+    -- the whole stack of every selected object: #enable, #disable, #delete or #collapse
+    fn selectionAction action =
+    (
+        local count = 0
+        local nodes = #()
+        for n in selection do if n.modifiers.count > 0 do append nodes n
+        case action of
+        (
+            #delete: undo "Remove All Modifiers" on
+                for n in nodes do for i = n.modifiers.count to 1 by -1 do (deleteModifier n i ; count += 1)
+            #collapse: undo "Collapse Stacks" on
+                for n in nodes do (maxOps.CollapseNode n true ; count += 1)
+            default: undo "Toggle All Modifiers" on
+                for n in nodes do for m in n.modifiers do (m.enabled = (action == #enable) ; count += 1)
         )
         count
     )

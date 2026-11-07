@@ -1,4 +1,4 @@
-"""3ds Max side of the Scene Inspector: runs the checks of inspector_core.ms."""
+"""3ds Max side of Forensic: runs the checks of inspector_core.ms."""
 
 import os
 from dataclasses import dataclass, field
@@ -81,15 +81,17 @@ def _year(version):
 
 
 # ---------------------------------------------------------------- checks
-def run_check(check_id, core=None):
+def run_check(check_id, core=None, foreign=None):
     core = core or api()
     check = inspector.CHECKS_BY_ID[check_id]
     try:
         if check_id == "malware":
             items = security_scan(core)
             return Result(check, len(items), [(i.label + "  — " + i.reason, None) for i in items])
-        if check_id == "renderer_mismatch":
-            raw = core.c_renderer_mismatch(rt.Array(*foreign_classes(core)))
+        if check_id in ("foreign_objects", "foreign_lights"):
+            if foreign is None:
+                foreign = foreign_classes(core)
+            raw = getattr(core, "c_" + check_id)(rt.Array(*foreign))
         else:
             raw = getattr(core, "c_" + check_id)()
         items = [(str(row[0]), row[1] if row[1] is not None else None) for row in raw[1]]
@@ -99,12 +101,15 @@ def run_check(check_id, core=None):
 
 
 def run_all(progress=None):
+    """Run every check; progress(index, check) is called before each one and may
+    return False to stop (the checks run so far are returned)."""
     core = api()
+    foreign = foreign_classes(core)
     results = []
     for index, check in enumerate(inspector.CHECKS):
         if progress is not None and progress(index, check) is False:
             break
-        results.append(run_check(check.id, core))
+        results.append(run_check(check.id, core, foreign))
     return results
 
 
@@ -169,8 +174,15 @@ def modifier_stats(core=None):
 
 
 def modifier_action(class_name, action, core=None):
+    """select / enable / disable / delete / collapse for every object with that modifier."""
     core = core or api()
     return int(core.modifierAction(class_name, rt.Name(action)))
+
+
+def selection_action(action, core=None):
+    """enable / disable / delete / collapse the whole stack of the selected objects."""
+    core = core or api()
+    return int(core.selectionAction(rt.Name(action)))
 
 
 # ------------------------------------------------------------- selection

@@ -1,6 +1,6 @@
 """Object Clipboard window: the dashboard of the 8 clipboard slots.
 
-Target (Local or a network folder), mode (objects / materials), how Paste places
+Target (Local or a network folder), mode (objects / materials / modifiers / keys), how Paste places
 objects, the viewport HUD, and one card per slot with its thumbnail and metadata.
 Logic in open3ds.object_clipboard.
 """
@@ -19,7 +19,8 @@ GEOMETRY_KEY = "object_clipboard_window_8"  # new key: the 8-slot window wants a
 SAVE_AS_CHOICES = (0, 2025, 2026)  # 0 = the running version
 POLL_MS = 1500
 TITLE = "Object Clipboard"
-COLORS = {"objects": "#2fa395", "materials": "#e08a2c", "locked": "#d9534f"}
+COLORS = {"objects": "#2fa395", "materials": "#e08a2c", "modifiers": "#6f6fdb", "animation": "#d35f9e",
+          "locked": "#d9534f"}
 
 
 def _settings():
@@ -147,20 +148,23 @@ class SlotCard(QtWidgets.QFrame):
         self.lock_button.setToolTip("Locked by %s (%s) · click to unlock" % (locked.get("user"), locked.get("at", ""))
                                     if locked else "Lock the slot so nobody overwrites or clears it")
         self.copy_button.setEnabled(not locked)
-        what = "materials" if mode == "materials" else "objects"
+        what = {"materials": "materials", "modifiers": "an object with modifiers",
+                "animation": "an animated object"}.get(mode, "objects")
         self.copy_button.setToolTip("Store the selected %s in slot %d" % (what, self.slot))
         if not state["filled"]:
             self.caption.setText("Empty")
             self.picture.setIcon(QtGui.QIcon())
-            self.picture.setText("Select %s\nand press Copy" % what)
+            self.picture.setText("Select %s\nand press Copy" % what.replace(" with", "\nwith"))
             self.picture.setToolButtonStyle(QtCore.Qt.ToolButtonTextOnly)
             self.picture.setToolTip("Slot %d is empty." % self.slot)
             self.details.setText("")
             return
         count = int(info.get("count") or 0)
-        self.caption.setText(oc.plural(count, "material" if mode == "materials" else "object"))
+        self.caption.setText(oc.mode_word(mode, count))
         self.picture.setToolButtonStyle(QtCore.Qt.ToolButtonIconOnly)
-        if mode == "materials":
+        if mode in ("modifiers", "animation"):
+            self.picture.setIcon(common.badge_icon(str(count), COLORS[mode]))
+        elif mode == "materials":
             self.picture.setIcon(_swatches(info.get("colors"), info.get("names") or [], oc.THUMB_SIZE))
         elif state["thumb"] is not None:
             self.picture.setIcon(QtGui.QIcon(QtGui.QPixmap(str(state["thumb"]))))
@@ -176,8 +180,9 @@ class SlotCard(QtWidgets.QFrame):
 
     def _tooltip(self, info, state):
         names = info.get("names") or []
-        word = "material" if state["mode"] == "materials" else "object"
-        lines = ["<b>Slot %d · %s</b>" % (self.slot, oc.plural(int(info.get("count") or 0), word))]
+        lines = ["<b>Slot %d · %s</b>" % (self.slot, oc.mode_word(state["mode"], int(info.get("count") or 0)))]
+        if info.get("source_object"):
+            lines.append("From object %s" % html.escape(str(info["source_object"])))
         if names:
             listed = ", ".join(html.escape(n) for n in names)
             extra = int(info.get("count") or 0) - len(names)
@@ -304,7 +309,12 @@ class ClipboardWindow(QtWidgets.QDialog):
         self.mode_objects.setText("Objects")
         self.mode_materials = QtWidgets.QToolButton()
         self.mode_materials.setText("Materials")
-        for button, mode in ((self.mode_objects, "objects"), (self.mode_materials, "materials")):
+        self.mode_modifiers = QtWidgets.QToolButton()
+        self.mode_modifiers.setText("Modifiers")
+        self.mode_keys = QtWidgets.QToolButton()
+        self.mode_keys.setText("Keys")
+        for button, mode in ((self.mode_objects, "objects"), (self.mode_materials, "materials"),
+                             (self.mode_modifiers, "modifiers"), (self.mode_keys, "animation")):
             button.setCheckable(True)
             button.setAutoExclusive(True)
             button.clicked.connect(_g(lambda _=False, m=mode: self._set_and_refresh("object_clipboard_mode", m)))
@@ -342,6 +352,8 @@ class ClipboardWindow(QtWidgets.QDialog):
         row1.addSpacing(10)
         row1.addWidget(self.mode_objects)
         row1.addWidget(self.mode_materials)
+        row1.addWidget(self.mode_modifiers)
+        row1.addWidget(self.mode_keys)
         row1.addWidget(menu_button)
         row2 = QtWidgets.QHBoxLayout()
         row2.addWidget(self.paste_mode)
@@ -395,6 +407,8 @@ class ClipboardWindow(QtWidgets.QDialog):
             self.remove.setEnabled(cfg.remote_active)
             self.mode_objects.setChecked(cfg.mode == "objects")
             self.mode_materials.setChecked(cfg.mode == "materials")
+            self.mode_modifiers.setChecked(cfg.mode == "modifiers")
+            self.mode_keys.setChecked(cfg.mode == "animation")
             self.paste_mode.setCurrentIndex(max(0, self.paste_mode.findData(cfg.paste)))
             self.paste_mode.setEnabled(cfg.mode == "objects")
             self.align.setChecked(cfg.align)

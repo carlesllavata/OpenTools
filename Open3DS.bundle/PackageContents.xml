@@ -1,17 +1,17 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <ApplicationPackage
     SchemaVersion="1.0"
     AutodeskProduct="3ds Max"
     ProductType="Application"
     Name="Open3DS"
     Description="Open-source hub that bundles everyday 3ds Max tools in a single install."
-    AppVersion="0.1.0"
+    AppVersion="0.2.0"
     ProductCode="{6E1B9C4A-3F27-4D8E-9A51-0C7D2B84F913}"
     UpgradeCode="{B4D27E90-58A1-4C3F-8E66-1F9A0D3C7B25}">
     <CompanyDetails Name="Open3DS contributors" />
     <RuntimeRequirements OS="Win64" Platform="3ds Max" SeriesMin="2025" SeriesMax="2099" />
     <Components Description="post-start-up scripts parts">
         <RuntimeRequirements OS="Win64" Platform="3ds Max" SeriesMin="2025" SeriesMax="2099" />
-        <ComponentEntry AppName="Open3DS" Version="0.1.0" ModuleName="./Contents/scripts/open3ds_startup.ms" />
+        <ComponentEntry AppName="Open3DS" Version="0.2.0" ModuleName="./Contents/scripts/open3ds_startup.ms" />
     </Components>
 </ApplicationPackage>

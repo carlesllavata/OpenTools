@@ -1,10 +1,10 @@
 {
   "id": "scene_summary",
-  "name": "Scene Inspector",
+  "name": "Forensic",
   "category": "Scene",
-  "description": "Scene overview (file, last saved by, units, render engine, counts, heaviest objects), checks for problems with one-click fixes (malicious scripts, missing files and plugins, empty objects, CAD blocks, groups, empty layers, note tracks, animation layers, retimers, animation, renderer mismatches, displacement, normals) and every modifier in the scene.",
-  "entry": "scene_inspector.py:run",
-  "keywords": ["summary", "info", "statistics", "inspect", "check", "clean", "cleanup", "virus", "malware", "missing", "plugins", "modifiers", "displacement", "animation", "cad", "blocks", "layers", "normals"],
+  "description": "The whole scene in cards: render setup, object states (hidden, not renderable, shadows off, invisible to camera, zero visibility, uncollapsed), totals, plugin objects, empty or broken geometry, animation layers and retimers, stacked Shell / repeated UVW Map, displacement, materials, CAD blocks and XRefs, unused helpers, empty layers, other-engine objects, missing files and plugins, and malicious scripts, each with Select and a one-click repair. Plus every modifier in the scene and the file's details.",
+  "entry": "forensic.py:run",
+  "keywords": ["forensic", "inspector", "summary", "info", "statistics", "inspect", "check", "clean", "cleanup", "repair", "virus", "malware", "missing", "plugins", "modifiers", "collapse", "shadows", "visibility", "displacement", "animation", "cad", "blocks", "xref", "helpers", "layers", "normals"],
   "author": "Open3DS contributors",
   "license": "MIT"
 }

@@ -177,6 +177,174 @@ struct O3DS_ClipStruct
                 )
             )
         )
+    ),
+
+    -- -------------------------------------------- carriers (modifiers, keys)
+    -- Modifiers and keys travel on a temporary carrier node saved to the slot's .max;
+    -- paste merges it, takes what it carries and deletes it. Neither the carrier nor
+    -- the merge end up in the undo history: only the change to the targets does.
+    fn saveNodesTo nodes path saveAs =
+    (
+        if saveAs > 0 then saveNodes nodes path quiet:true saveAsVersion:saveAs
+        else saveNodes nodes path quiet:true
+    ),
+
+    -- merge a carrier file and give the selection back; returns the merged nodes
+    fn mergeCarrier path =
+    (
+        local keep = selection as array
+        mergeMAXFile path #select #autoRenameDups #neverReparent #useSceneMtlDups quiet:true
+        local merged = selection as array
+        if keep.count > 0 then select keep else clearSelection()
+        merged
+    ),
+
+    fn dropCarrier merged = (with undo off (delete (for n in merged where isValidNode n collect n))),
+
+    -- #(source name, #(modifier names, top first)) or undefined
+    fn saveModifiers path saveAs =
+    (
+        local src = undefined
+        for n in selection do if src == undefined and n.modifiers.count > 0 do src = n
+        if src == undefined then undefined else
+        (
+            local names = for m in src.modifiers collect m.name
+            with undo off
+            (
+                local carrier = copy src
+                carrier.name = "O3DS_ModifierCarrier"
+                carrier.parent = undefined
+                carrier.material = undefined
+                saveNodesTo #(carrier) path saveAs
+                delete carrier
+            )
+            #(src.name, names)
+        )
+    ),
+
+    -- adds the carried stack on top of each target's stack, in the same order
+    -- #(targets, modifiers carried, placements that did not fit)
+    fn pasteModifiers path instance =
+    (
+        local targets = for n in selection where canTake n collect n
+        local carried = 0, skipped = 0
+        if targets.count > 0 do
+        (
+            local merged = #()
+            with undo off (merged = mergeCarrier path)
+            local carrier = undefined
+            for n in merged do if carrier == undefined and n.modifiers.count > 0 do carrier = n
+            if carrier != undefined do
+            (
+                carried = carrier.modifiers.count
+                undo "Paste Modifiers" on
+                    for i = carried to 1 by -1 do
+                    (
+                        local m = carrier.modifiers[i]
+                        local shared = copy m
+                        for t in targets do
+                            if validModifier t m then addModifier t (if instance then shared else copy m)
+                            else skipped += 1
+                    )
+            )
+            dropCarrier merged
+        )
+        #(targets.count, carried, skipped)
+    ),
+
+    -- every key time below a controller
+    fn keyTimes ctrl acc depth:0 =
+    (
+        if ctrl != undefined and depth < 8 do
+        (
+            local ks = try (ctrl.keys) catch undefined
+            if ks != undefined do for k in ks do appendIfUnique acc k.time
+            for i = 1 to (try (ctrl.numSubs) catch 0) do
+            (
+                local s = try (ctrl[i]) catch undefined
+                if s != undefined do keyTimes s.controller acc depth:(depth + 1)
+            )
+        )
+        acc
+    ),
+
+    -- #(source name, keyframes, first frame, last frame) or undefined
+    fn saveKeys path saveAs =
+    (
+        local src = undefined
+        local times = #()
+        for n in selection do
+            if src == undefined do
+            (
+                times = keyTimes n.controller #()
+                if times.count > 0 do src = n
+            )
+        if src == undefined then undefined else
+        (
+            sort times
+            with undo off
+            (
+                local carrier = Point name:"O3DS_KeyCarrier"
+                carrier.controller = copy src.controller
+                saveNodesTo #(carrier) path saveAs
+                delete carrier
+            )
+            #(src.name, times.count, (times[1].frame as integer), (times[times.count].frame as integer))
+        )
+    ),
+
+    -- add d to a controller's keys (or to its value when it has none)
+    fn shiftValue ctrl d =
+    (
+        local ks = try (ctrl.keys) catch undefined
+        if ks == undefined then false
+        else if ks.count == 0 then (ctrl.value += d ; true)
+        else (for k in ks do k.value += d ; true)
+    ),
+
+    fn offsetPosition t d =
+    (
+        local c = try (t.position.controller) catch undefined
+        if c == undefined then false
+        else if classOf c == Position_XYZ then
+        (
+            local done = true
+            for i = 1 to 3 do if not (shiftValue c[i].controller d[i]) do done = false
+            done
+        )
+        else shiftValue c d
+    ),
+
+    -- gives every selected object the carried transform animation, shifted by `offset`
+    -- frames; relative: each object stays where it is now at frame refFrame (+ offset)
+    -- #(targets, targets whose position could not be offset)
+    fn pasteKeys path relative refFrame offset =
+    (
+        local targets = for n in selection where isValidNode n collect n
+        local notMoved = 0
+        if targets.count > 0 do
+        (
+            local merged = #()
+            with undo off (merged = mergeCarrier path)
+            local carrier = undefined
+            for n in merged do if carrier == undefined and matchPattern n.name pattern:"O3DS_KeyCarrier*" do carrier = n
+            if carrier != undefined do
+                undo "Paste Keys" on
+                    for t in targets do
+                    (
+                        local before = try (t.position.controller.value) catch undefined
+                        t.controller = copy carrier.controller
+                        if offset != 0 do moveKeys t.controller offset
+                        if relative do
+                        (
+                            local after = try (at time (refFrame + offset) t.position.controller.value) catch undefined
+                            if before == undefined or after == undefined or not (offsetPosition t (before - after)) do
+                                notMoved += 1
+                        )
+                    )
+            dropCarrier merged
+        )
+        #(targets.count, notMoved)
     )
 )
 global O3DS_Clip = O3DS_ClipStruct()

@@ -80,8 +80,29 @@ class CheckTableTests(unittest.TestCase):
         for check in inspector.CHECKS:
             self.assertIn(check.group, inspector.GROUPS)
             self.assertIn(check.severity, (inspector.INFO, inspector.WARNING, inspector.CRITICAL))
+            self.assertIn(check.kind, (inspector.CHECK, inspector.STAT))
             if check.confirm:
                 self.assertTrue(check.fix, check.id)
+            if check.kind == inspector.STAT:
+                self.assertFalse(check.fix, check.id)
+        for check_id in inspector.OPENS_ASSET_MANAGER:
+            self.assertTrue(inspector.CHECKS_BY_ID[check_id].fix)
+        # every card has something in it
+        self.assertEqual({c.group for c in inspector.CHECKS}, set(inspector.GROUPS))
+
+    def test_core_has_every_check(self):
+        """Each check has a c_<id> in the MAXScript core and each fix an f_<id>."""
+        import os
+        core = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "Open3DS.bundle", "Contents",
+                            "tools", "scene_summary", "inspector_core.ms")
+        with open(core, encoding="utf-8") as handle:
+            source = handle.read().lower()
+        for check in inspector.CHECKS:
+            if check.id == "malware":
+                continue  # Python side (security_scan / remove_malware)
+            self.assertIn("fn c_%s " % check.id, source, check.id)
+            if check.fix and check.id not in inspector.OPENS_ASSET_MANAGER:
+                self.assertIn("fn f_%s " % check.id, source, check.id)
 
     def test_status(self):
         check = inspector.CHECKS_BY_ID["malware"]

@@ -2,7 +2,7 @@
   "id": "object_clipboard",
   "name": "Object Clipboard",
   "category": "Clipboard",
-  "description": "The clipboard dashboard: 8 slots of objects or materials with thumbnails, polycount, size, author and 3ds Max version, on this machine or on network targets. Paste in place, on the cursor or as a stamp, lock slots, send them to another target, replace selected objects, and show the viewport HUD.",
+  "description": "The clipboard dashboard: 8 slots of objects, materials, modifier stacks or transform keys, with thumbnails, polycount, size, author and 3ds Max version, on this machine or on network targets. Paste in place, on the cursor or as a stamp, lock slots, send them to another target, replace selected objects, and show the viewport HUD.",
   "entry": "object_clipboard_ui.py:run",
   "keywords": ["clipboard", "slots", "copy", "paste", "transfer", "between files", "thumbnails", "merge", "network", "materials", "stamp", "lock"],
   "author": "Open3DS contributors",

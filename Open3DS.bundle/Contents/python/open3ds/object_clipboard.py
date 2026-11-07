@@ -1,4 +1,4 @@
-"""Object clipboard: 8 slots of objects or materials, local or on network targets.
+"""Object clipboard: 8 slots of objects, materials, modifiers or keys, local or on network targets.
 
 - Copy saves the selection (or materials) of a slot to a folder; Paste merges it back.
   Holding Shift / Ctrl / Alt while clicking Copy or Paste picks the slot:
@@ -7,8 +7,12 @@
   target: a shared folder; several can be listed and cycled). Remote copies carry
   their textures: they are collected next to the .max (name clashes resolved) and,
   on paste, copied into the local maps folder and relinked.
-- Mode: "objects" or "materials" (slots for materials; taken from the Material
-  Editor when it is open, otherwise from the selected objects).
+- Mode: "objects", "materials" (taken from the Material Editor when it is open,
+  otherwise from the selected objects), "modifiers" (the stack of the first selected
+  object, pasted on top of every selected object's stack, instanced or copied) or
+  "animation" (the transform keys of the first selected object, pasted so each
+  object keeps its position at a reference frame, optionally shifted in time). Each
+  mode has its own 8 slots; modifiers and keys travel on a temporary carrier node.
 - Paste: in place, on the cursor (click to place, drag to scale, optional align to
   surface) or as a stamp (every click leaves an instance).
 - Slots can be locked (nobody overwrites them), sent to another target, or used to
@@ -44,8 +48,18 @@ MAPS_DIR = "maps"
 MATERIALS_DIR = "materials"
 MAX_LISTED_NAMES = 20
 THUMB_SIZE = (200, 150)
+MODIFIER_FILE = "modifiers.max"
+ANIMATION_FILE = "animation.max"
 MATERIAL_MODES = ("rename", "scene")  # clashing material names on paste
-MODES = ("objects", "materials")
+MODES = ("objects", "materials", "modifiers", "animation")
+# Every mode but objects keeps its slots in a sub-folder of the target.
+MODE_DIRS = {"materials": MATERIALS_DIR, "modifiers": "modifiers", "animation": "animation"}
+MODE_FILES = {"objects": FILE_NAME, "materials": MATERIAL_FILE, "modifiers": MODIFIER_FILE,
+              "animation": ANIMATION_FILE}
+# (singular, plural) of what a slot of each mode holds
+MODE_WORDS = {"objects": ("object", "objects"), "materials": ("material", "materials"),
+              "modifiers": ("modifier", "modifiers"), "animation": ("key", "keys")}
+MODE_LABELS = {"objects": "Objects", "materials": "Materials", "modifiers": "Modifiers", "animation": "Keys"}
 ROUTES = ("local", "remote")
 PASTE_MODES = ("in_place", "cursor", "stamp")
 PASTE_LABELS = {"in_place": "In place", "cursor": "On cursor", "stamp": "Stamp"}
@@ -92,6 +106,10 @@ class Config:
     paste: str = "in_place"
     align: bool = False
     maps_dir: str = ""
+    mod_instance: bool = True
+    keys_relative: bool = True
+    keys_frame: int = 0
+    keys_offset: int = 0
 
     def root(self, route=None):
         route = route or self.route
@@ -139,7 +157,20 @@ def config(settings=None):
         paste=paste if paste in PASTE_MODES else "in_place",
         align=bool(_get(settings, "object_clipboard_align", False)),
         maps_dir=maps_dir if isinstance(maps_dir, str) else "",
+        mod_instance=bool(_get(settings, "object_clipboard_mod_instance", True)),
+        keys_relative=bool(_get(settings, "object_clipboard_keys_relative", True)),
+        keys_frame=_int(_get(settings, "object_clipboard_keys_frame", 0)),
+        keys_offset=_int(_get(settings, "object_clipboard_keys_offset", 0)),
     )
+
+
+def _int(value, default=0):
+    if isinstance(value, bool):
+        return default
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
 
 
 def folder(settings=None):
@@ -158,8 +189,9 @@ def slot_dir(slot, settings=None, mode=None, route=None, root=None):
         raise ValueError("slot must be 1-%d" % SLOT_COUNT)
     cfg = config(settings)
     base = Path(root) if root is not None else cfg.root(route)
-    if (mode or cfg.mode) == "materials":
-        base = base / MATERIALS_DIR
+    sub = MODE_DIRS.get(mode or cfg.mode)
+    if sub:
+        base = base / sub
     return base / ("slot_%d" % int(slot))
 
 
@@ -250,7 +282,13 @@ def folder_size(directory):
 
 
 def content_file(mode):
-    return MATERIAL_FILE if mode == "materials" else FILE_NAME
+    return MODE_FILES.get(mode, FILE_NAME)
+
+
+def mode_word(mode, count):
+    """'1 modifier', '3 keys'..."""
+    one, many = MODE_WORDS.get(mode, MODE_WORDS["objects"])
+    return "%d %s" % (count, one if count == 1 else many)
 
 
 def slot_state(slot, settings=None, mode=None, route=None, root=None):
@@ -369,18 +407,28 @@ def maps_folder(cfg=None):
     return paths.data_dir() / "clipboard_maps"
 
 
-def copy(slot=None, route=None):
-    """Copy (objects or materials, per the current mode) into a slot."""
+def copy(slot=None, route=None, mode=None):
+    """Copy into a slot what the mode (default: the current one) holds."""
     slot = slot or current_slot()
-    if config(_settings()).mode == "materials":
+    mode = mode or config(_settings()).mode
+    if mode == "materials":
         return copy_materials(slot, route=route)
+    if mode == "modifiers":
+        return copy_modifiers(slot, route=route)
+    if mode == "animation":
+        return copy_keys(slot, route=route)
     return copy_selection(slot, route=route)
 
 
-def paste(slot=None, how=None, route=None):
+def paste(slot=None, how=None, route=None, mode=None):
     slot = slot or current_slot()
-    if config(_settings()).mode == "materials":
+    mode = mode or config(_settings()).mode
+    if mode == "materials":
         return paste_materials(slot, route=route)
+    if mode == "modifiers":
+        return paste_modifiers(slot, route=route)
+    if mode == "animation":
+        return paste_keys(slot, route=route)
     return paste_objects(slot, how=how, route=route)
 
 
@@ -651,6 +699,116 @@ def paste_materials(slot=1, route=None):
         _prompt("open the Material Editor or select objects to paste material slot %d." % int(slot))
     rt.redrawViews()
     return int(count)
+
+
+# ------------------------------------------------------------- modifiers
+def _save_kwargs(cfg):
+    from . import maxhost
+
+    year = maxhost.max_year()
+    save_as = cfg.save_as if not (cfg.save_as and year and cfg.save_as >= year) else 0
+    return year, save_as
+
+
+def copy_modifiers(slot=1, route=None):
+    """Store the modifier stack of the first selected object that has one."""
+    rt = _rt()
+    settings = _settings()
+    cfg = config(settings)
+    directory = slot_dir(slot, settings, mode="modifiers", route=route)
+    if not _check_writable(directory, slot):
+        return 0
+    directory.mkdir(parents=True, exist_ok=True)
+    year, save_as = _save_kwargs(cfg)
+    tmp = directory / ("modifiers_tmp_%d.max" % os.getpid())
+    found = _ms().saveModifiers(str(tmp), save_as)
+    if found is None:
+        _prompt("select an object with modifiers first.")
+        return 0
+    source, names = str(found[0]), [str(n) for n in found[1]]
+    os.replace(tmp, directory / MODIFIER_FILE)
+    scene = os.path.join(str(rt.maxFilePath), str(rt.maxFileName)) if rt.maxFileName else ""
+    info = describe(names, scene, year, save_as, kind="modifiers")
+    info["source_object"] = source
+    write_info(directory / INFO_NAME, info)
+    _prompt("copied %s of %s to modifier slot %d (%s)." % (mode_word("modifiers", len(names)), source, int(slot),
+                                                          summary(names)))
+    return len(names)
+
+
+def paste_modifiers(slot=1, route=None, instance=None):
+    """Add a slot's modifiers on top of every selected object's stack, same order.
+    instance: one shared copy for all targets (default: the setting)."""
+    rt = _rt()
+    cfg = config(_settings())
+    directory = slot_dir(slot, _settings(), mode="modifiers", route=route)
+    if not (directory / MODIFIER_FILE).is_file():
+        _prompt("modifier slot %d is empty." % int(slot))
+        return 0
+    if not list(rt.getCurrentSelection()):
+        _prompt("select the objects to paste the modifiers onto first.")
+        return 0
+    instance = cfg.mod_instance if instance is None else instance
+    result = _ms().pasteModifiers(str(directory / MODIFIER_FILE), bool(instance))
+    targets, added, skipped = int(result[0]), int(result[1]), int(result[2])
+    extra = (" (%d did not fit)" % skipped) if skipped else ""
+    _prompt("pasted %s onto %s%s." % (mode_word("modifiers", added), plural(targets), extra))
+    rt.redrawViews()
+    return targets
+
+
+# ------------------------------------------------------------- animation
+def copy_keys(slot=1, route=None):
+    """Store the transform animation of the first selected object."""
+    rt = _rt()
+    settings = _settings()
+    cfg = config(settings)
+    directory = slot_dir(slot, settings, mode="animation", route=route)
+    if not _check_writable(directory, slot):
+        return 0
+    directory.mkdir(parents=True, exist_ok=True)
+    year, save_as = _save_kwargs(cfg)
+    tmp = directory / ("animation_tmp_%d.max" % os.getpid())
+    found = _ms().saveKeys(str(tmp), save_as)
+    if found is None:
+        _prompt("select an animated object first.")
+        return 0
+    source, keys, first, last = str(found[0]), int(found[1]), int(found[2]), int(found[3])
+    os.replace(tmp, directory / ANIMATION_FILE)
+    scene = os.path.join(str(rt.maxFilePath), str(rt.maxFileName)) if rt.maxFileName else ""
+    info = describe([source], scene, year, save_as, kind="animation")
+    info.update({"count": keys, "source_object": source, "first_frame": first, "last_frame": last})
+    write_info(directory / INFO_NAME, info)
+    _prompt("copied %s of %s (frames %d-%d) to key slot %d." % (mode_word("animation", keys), source, first, last,
+                                                               int(slot)))
+    return keys
+
+
+def paste_keys(slot=1, route=None, relative=None, frame=None, offset=None):
+    """Give every selected object the slot's transform animation.
+
+    relative: move the motion so each object stays where it is at `frame` (the
+    reference frame, before the offset); offset: shift the keys in time (frames).
+    Defaults come from the settings."""
+    rt = _rt()
+    cfg = config(_settings())
+    directory = slot_dir(slot, _settings(), mode="animation", route=route)
+    if not (directory / ANIMATION_FILE).is_file():
+        _prompt("key slot %d is empty." % int(slot))
+        return 0
+    if not list(rt.getCurrentSelection()):
+        _prompt("select the objects to paste the keys onto first.")
+        return 0
+    relative = cfg.keys_relative if relative is None else relative
+    frame = cfg.keys_frame if frame is None else int(frame)
+    offset = cfg.keys_offset if offset is None else int(offset)
+    result = _ms().pasteKeys(str(directory / ANIMATION_FILE), bool(relative), frame, offset)
+    targets, not_moved = int(result[0]), int(result[1])
+    extra = (" (%d kept the copied positions: their position controller cannot be offset)" % not_moved
+             if not_moved else "")
+    _prompt("pasted keys from slot %d onto %s%s." % (int(slot), plural(targets), extra))
+    rt.redrawViews()
+    return targets
 
 
 # --------------------------------------------------------- switch (macro)

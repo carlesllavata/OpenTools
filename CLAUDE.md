@@ -13,6 +13,10 @@ Python 3.13 (bundled with Max), PySide6, Corona. The repo lives on a NAS share (
   (`registry`, `search`, `macros.macro_source`, `settings`, `runner`) must stay importable outside Max:
   the offline tests rely on it. Anything touching 3ds Max goes through `maxhost.py`.
 - `Open3DS.bundle/Contents/tools/<id>/tool.json` – one folder per tool; schema in README.
+- Forensic lives in `tools/scene_summary` (id kept from Scene Inspector so users' macros and toolbars keep
+  working); Ignite in `tools/ignite`, built on the Object Clipboard (modes objects / materials / modifiers /
+  animation). "Forensic" and "Ignite" are provisional names the user will change; the card look
+  (`open3ds/ui/cards.py`) is provisional too.
 - `dev/` – `install_dev.ps1` (dev shim bundle in `%APPDATA%\Autodesk\ApplicationPlugins\Open3DS-dev.bundle`
   that loads this checkout and enables the bridge), `bridge.py` (client), `run_tests.py`.
 
@@ -57,6 +61,8 @@ Max's Python: `C:\Program Files\Autodesk\3ds Max 2027\Python\python.exe` (always
 - Live tests of the clipboard must point every clipboard folder setting at a temp dir first:
   the default folder holds the user's real slots. Give every scratchpad probe a new file
   name; Write refuses to overwrite an unread file and the old script would run instead.
+- `on` is a reserved word in MAXScript (`local on = ...` is a syntax error). Inside a struct, a member
+  function must be defined above the members that call it.
 - Viewport HUDs: `registerRedrawViewsCallback` + `gw.wText` works in 2027 (and shows in
   `gw.getViewportDib`); text drawn inside a `gw.wRect` is hidden, so highlight with color.
 - PySide6: `QAction` / `QActionGroup` live in QtGui, not QtWidgets. Qt never opens an empty

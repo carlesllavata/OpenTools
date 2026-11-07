@@ -133,6 +133,29 @@ class ObjectClipboardTests(unittest.TestCase):
             self.assertTrue(oc.slot_state(1, settings)["filled"])
             self.assertFalse(oc.slot_state(1, settings, mode="objects")["filled"])
 
+    def test_modifier_and_key_slots_are_separate(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            for mode, name in (("modifiers", oc.MODIFIER_FILE), ("animation", oc.ANIMATION_FILE)):
+                settings = FakeSettings(tmp, mode=mode)
+                directory = oc.slot_dir(4, settings)
+                self.assertEqual(directory.parent.name, oc.MODE_DIRS[mode])
+                directory.mkdir(parents=True)
+                (directory / name).write_bytes(b"max")
+                self.assertTrue(oc.slot_state(4, settings)["filled"], mode)
+            self.assertFalse(oc.slot_state(4, FakeSettings(tmp))["filled"])
+            self.assertFalse(oc.slot_state(4, FakeSettings(tmp), mode="materials")["filled"])
+
+    def test_mode_words_and_options(self):
+        self.assertEqual(oc.mode_word("animation", 1), "1 key")
+        self.assertEqual(oc.mode_word("modifiers", 3), "3 modifiers")
+        self.assertEqual(oc.mode_word("weird", 2), "2 objects")
+        cfg = oc.config(FakeSettings(mode="animation", mod_instance=False, keys_relative=0, keys_frame="12",
+                                     keys_offset=True))
+        self.assertEqual((cfg.mode, cfg.mod_instance, cfg.keys_relative, cfg.keys_frame, cfg.keys_offset),
+                         ("animation", False, False, 12, 0))
+        defaults = oc.config(None)
+        self.assertEqual((defaults.mod_instance, defaults.keys_relative, defaults.keys_frame), (True, True, 0))
+
     def test_is_inside(self):
         self.assertTrue(oc.is_inside(r"\\nas\clip\slot_1\maps\wood.jpg", "//nas/clip/slot_1/maps"))
         self.assertFalse(oc.is_inside(r"C:\maps2\wood.jpg", r"C:\maps"))

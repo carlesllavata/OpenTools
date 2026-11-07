@@ -36,7 +36,7 @@ DEFAULTS = {
     # Local folder of the object clipboard ("" = %LOCALAPPDATA%\Open3DS\clipboard).
     "object_clipboard_dir": "",
     # "local" or "remote" (the active network target), the network targets, the
-    # active one, objects/materials mode, how Paste places objects (in_place, cursor,
+    # active one, mode (objects, materials, modifiers, animation), how Paste places objects (in_place, cursor,
     # stamp), align to surface while placing, where textures of network pastes go
     # ("" = the project's sceneassets\images) and the viewport HUD.
     "object_clipboard_route": "local",
@@ -51,6 +51,13 @@ DEFAULTS = {
     "object_clipboard_save_as": 0,
     # Clashing material names on paste: "rename" or "scene" (use the scene's material).
     "object_clipboard_materials": "rename",
+    # Pasted modifiers: one shared (instanced) copy for every target, or a copy each.
+    "object_clipboard_mod_instance": True,
+    # Pasted keys: move the motion so each target keeps its position at the reference
+    # frame, and shift the keys in time by an offset (frames).
+    "object_clipboard_keys_relative": True,
+    "object_clipboard_keys_frame": 0,
+    "object_clipboard_keys_offset": 0,
 }
 
 RECENT_LIMIT = 20
