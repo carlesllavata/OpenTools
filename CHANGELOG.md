@@ -20,6 +20,12 @@ Lo que va añadiendo cada versión de Open3DS, de la más reciente a la más ant
   mayúsculas), igual que los botones de arriba.
 - **Corregido el parpadeo.** Al mostrar u ocultar categorías ya no aparece un instante
   una ventana vacía.
+- **Nueva herramienta: Random Select** (categoría Selection). Eliges un porcentaje y deja
+  seleccionada esa parte de la selección actual, al azar: de 10 objetos al 30 % quedan 3.
+  Si vuelves a pulsar, sortea de nuevo entre los 10 originales, sin tener que volver a
+  seleccionarlos. Los grupos cerrados cuentan como un solo objeto (entran o salen
+  enteros), siempre queda al menos uno y se deshace con un solo Ctrl+Z. El porcentaje se
+  recuerda entre sesiones.
 
 ## 0.3.0 — 8 de noviembre de 2026
 
