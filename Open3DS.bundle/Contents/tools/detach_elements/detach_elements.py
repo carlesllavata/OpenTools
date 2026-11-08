@@ -59,7 +59,7 @@ class DetachWindow(toolwindow.ToolWindow):
         button.clicked.connect(self.guard(self.detach))
         self.status = QtWidgets.QLabel("Select Editable Poly or Editable Mesh objects.")
         self.status.setWordWrap(True)
-        self.status.setStyleSheet("color: gray;")
+        self.status.setObjectName("O3DS_Dim")
 
         layout = QtWidgets.QVBoxLayout(self)
         layout.addWidget(mode)

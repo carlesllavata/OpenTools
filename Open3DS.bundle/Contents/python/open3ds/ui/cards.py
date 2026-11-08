@@ -1,68 +1,33 @@
-"""Card look shared by the Forensic and Ignite windows: dark panels with an orange
-accent, a header with a title bar, pills for status, segmented tabs and cards whose
-rows hold a label, a value and small buttons. A masonry area lays cards out in as
-many columns as the window width allows.
-
-The design is provisional (the hub keeps its own look for now).
+"""Card widgets shared by the Forensic and Ignite windows: a header with a title bar,
+pills for status, segmented tabs and cards whose rows hold a label, a value and small
+buttons. A masonry area lays cards out in as many columns as the window width allows.
+Colors and styles come from ui.theme, so they follow the 3ds Max palette.
 """
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
-ACCENT = "#f0932b"
-BG = "#1d1e21"
-PANEL = "#26272b"
-ROW = "#2d2e33"
-LINE = "#3a3b40"
-TEXT = "#dedede"
-DIM = "#8d8f94"
-GOOD = "#5bbf6a"
-WARN = "#f0b43c"
-BAD = "#e5534b"
-INFO = "#6aa8ec"
+from . import theme
 
-STYLE = """
-QWidget#O3DS_CardRoot {{ background: {bg}; color: {text}; }}
-QLabel {{ color: {text}; background: transparent; }}
-QScrollArea, QScrollArea > QWidget > QWidget {{ background: {bg}; border: none; }}
-QFrame#O3DS_Header {{ background: {panel}; border-radius: 6px; border-left: 4px solid {accent}; }}
-QLabel#O3DS_Title {{ font-size: 15pt; font-weight: 600; }}
-QLabel#O3DS_Subtitle, QLabel#O3DS_Dim {{ color: {dim}; }}
-QFrame#O3DS_Card {{ background: {panel}; border-radius: 6px; }}
-QLabel#O3DS_CardTitle {{ color: {accent}; font-size: 10.5pt; font-weight: 600; padding-bottom: 4px;
-                         border-bottom: 1px solid {line}; }}
-QFrame#O3DS_Row {{ background: {row}; border-radius: 3px; }}
-QFrame#O3DS_Row[alt="true"] {{ background: transparent; }}
-QPushButton {{ background: {row}; color: {text}; border: 1px solid {line}; border-radius: 4px; padding: 4px 12px; }}
-QPushButton:hover {{ background: #393a40; }}
-QPushButton:pressed {{ background: #44464d; }}
-QPushButton:disabled {{ color: #5d5f64; border-color: #303136; }}
-QPushButton[accent="true"] {{ background: {accent}; color: #1d1e21; border: none; font-weight: 600; }}
-QPushButton[accent="true"]:hover {{ background: #f5a64f; }}
-QPushButton[accent="true"]:disabled {{ background: #6b4a26; color: #3a3b40; }}
-QPushButton[mini="true"] {{ padding: 1px 8px; font-size: 8pt; border-radius: 3px; }}
-QPushButton[tab="true"] {{ padding: 3px 14px; min-width: 70px; }}
-QPushButton[tab="true"]:checked {{ background: {accent}; color: #1d1e21; border: 1px solid {accent}; }}
-QLabel[pill="true"] {{ background: {row}; border-radius: 10px; padding: 2px 10px; }}
-QFrame#O3DS_StatusBar {{ border-top: 1px solid {line}; }}
-QTreeWidget, QListWidget, QTableWidget {{ background: {panel}; alternate-background-color: {row}; color: {text};
-                                          border: none; border-radius: 4px; }}
-QHeaderView::section {{ background: {row}; color: {dim}; border: none; padding: 4px; }}
-QSpinBox, QComboBox, QLineEdit {{ background: {row}; color: {text}; border: 1px solid {line}; border-radius: 3px;
-                                  padding: 2px 4px; }}
-QCheckBox {{ color: {text}; }}
-QMenu {{ background: {panel}; color: {text}; border: 1px solid {line}; }}
-QMenu::item:selected {{ background: {accent}; color: #1d1e21; }}
-QToolTip {{ background: {panel}; color: {text}; border: 1px solid {line}; }}
-""".format(bg=BG, panel=PANEL, row=ROW, line=LINE, text=TEXT, dim=DIM, accent=ACCENT)
+ACCENT = theme.ACCENT
+GOOD = theme.GOOD
+WARN = theme.WARN
+BAD = theme.BAD
+INFO = theme.INFO
+
+
+def __getattr__(name):
+    """TEXT and DIM depend on the current 3ds Max palette, so they are read on access."""
+    if name in ("TEXT", "DIM"):
+        return getattr(theme.tokens(), name.lower())
+    raise AttributeError(name)
 
 
 def root(window):
-    """Fill `window` with a styled holder; returns (holder, its layout). The stylesheet
-    only targets O3DS_CardRoot, so nothing leaks into 3ds Max."""
+    """Fill `window` with a themed holder; returns (holder, its layout)."""
     holder = QtWidgets.QWidget()
     holder.setObjectName("O3DS_CardRoot")
-    holder.setAttribute(QtCore.Qt.WA_StyledBackground, True)
-    holder.setStyleSheet(STYLE)
+    if not window.property(theme.ROOT_PROPERTY):
+        theme.apply(window)
     layout = QtWidgets.QVBoxLayout(holder)
     layout.setContentsMargins(10, 10, 10, 6)
     layout.setSpacing(8)
@@ -87,9 +52,7 @@ def button(text, slot=None, accent=False, mini=False, tooltip=""):
 
 
 def dim(text=""):
-    label = QtWidgets.QLabel(text)
-    label.setObjectName("O3DS_Dim")
-    return label
+    return theme.dim_label(text)
 
 
 class Header(QtWidgets.QFrame):
@@ -115,14 +78,14 @@ class Header(QtWidgets.QFrame):
 class Pill(QtWidgets.QLabel):
     """Rounded status label with a colored dot."""
 
-    def __init__(self, text="", color=DIM):
+    def __init__(self, text="", color=None):
         super().__init__()
         self.setProperty("pill", True)
         self.setTextFormat(QtCore.Qt.RichText)
         self.set(text, color)
 
-    def set(self, text, color=DIM):
-        self.setText("<span style='color:%s'>●</span>&nbsp; %s" % (color, text))
+    def set(self, text, color=None):
+        self.setText("<span style='color:%s'>●</span>&nbsp; %s" % (color or theme.tokens().dim, text))
 
 
 class Tabs(QtWidgets.QWidget):
@@ -232,9 +195,10 @@ class Row(QtWidgets.QFrame):
         layout.setStretch(0, 0)
         layout.setStretch(1, 1)
 
-    def set_value(self, text, color=TEXT, bold=False, link=False):
+    def set_value(self, text, color=None, bold=False, link=False):
         self.value.setText(str(text))
-        self.value.setStyleSheet("color: %s;%s" % (color, " font-weight: 600;" if bold else ""))
+        style = ("color: %s;" % color if color else "") + (" font-weight: 600;" if bold else "")
+        self.value.setStyleSheet(style)
         self.value.setCursor(QtCore.Qt.PointingHandCursor if link else QtCore.Qt.ArrowCursor)
 
     def eventFilter(self, obj, event):

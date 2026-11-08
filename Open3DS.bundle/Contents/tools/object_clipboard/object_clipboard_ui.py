@@ -10,7 +10,7 @@ import html
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from open3ds import app as app_mod, clipboard_hud, maxhost, object_clipboard as oc
-from open3ds.ui import common
+from open3ds.ui import common, theme
 from open3ds.ui.flow import FlowLayout
 from open3ds.ui.toolwindow import guarded
 
@@ -76,14 +76,14 @@ class SlotCard(QtWidgets.QFrame):
         self.stamp = None
         self.state = {"filled": False, "locked": None, "info": {}}
         self.setObjectName("Open3DS_SlotCard")
-        self.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.setAttribute(QtCore.Qt.WA_StyledBackground, True)
 
         self.number = QtWidgets.QLabel(str(slot))
         self.number.setFixedSize(20, 20)
         self.number.setAlignment(QtCore.Qt.AlignCenter)
         keys = oc.MODIFIER_LABELS[slot]
         self.keys = QtWidgets.QLabel(keys or "click")
-        self.keys.setStyleSheet("color: gray; font-size: 8pt;")
+        self.keys.setStyleSheet("color: %s; font-size: 8pt;" % theme.tokens().dim)
         self.keys.setToolTip("Hold %s while clicking Copy or Paste to use slot %d" % (keys or "no key", slot))
         self.caption = QtWidgets.QLabel()
         self.lock_button = QtWidgets.QToolButton()
@@ -92,8 +92,8 @@ class SlotCard(QtWidgets.QFrame):
         self.lock_button.setText("🔓")
         self.lock_button.setToolTip("Lock the slot so nobody overwrites or clears it")
         self.lock_button.clicked.connect(_g(self.toggle_lock))
-        self.copy_button = QtWidgets.QToolButton()
-        self.copy_button.setText("Copy")
+        self.copy_button = QtWidgets.QPushButton("Copy")
+        self.copy_button.setProperty("mini", True)
         self.copy_button.clicked.connect(_g(self.copy))
 
         header = QtWidgets.QHBoxLayout()
@@ -107,6 +107,7 @@ class SlotCard(QtWidgets.QFrame):
 
         width, height = oc.THUMB_SIZE
         self.picture = QtWidgets.QToolButton()
+        self.picture.setObjectName("O3DS_Thumb")
         self.picture.setFixedSize(width + 6, height + 6)
         self.picture.setIconSize(QtCore.QSize(width, height))
         self.picture.setCursor(QtCore.Qt.PointingHandCursor)
@@ -116,7 +117,7 @@ class SlotCard(QtWidgets.QFrame):
         self.picture.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.picture.customContextMenuRequested.connect(lambda pos: self._menu(self.picture.mapTo(self, pos)))
         self.details = QtWidgets.QLabel()
-        self.details.setStyleSheet("color: gray; font-size: 8pt;")
+        self.details.setStyleSheet("color: %s; font-size: 8pt;" % theme.tokens().dim)
 
         layout = QtWidgets.QVBoxLayout(self)
         layout.setContentsMargins(6, 6, 6, 6)
@@ -286,6 +287,8 @@ class ClipboardWindow(QtWidgets.QDialog):
         self.setWindowTitle(TITLE)
         self.setWindowFlags(QtCore.Qt.Tool | QtCore.Qt.WindowCloseButtonHint)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        theme.apply(self, extra="QFrame#Open3DS_SlotCard {{ background: {panel}; border-radius: 6px; }}"
+                    "QToolButton#O3DS_Thumb {{ background: {field}; color: {dim}; }}")
         self._updating = False
 
         # ---- target
@@ -303,14 +306,14 @@ class ClipboardWindow(QtWidgets.QDialog):
         self.remove.clicked.connect(_g(self._remove_remote))
 
         # ---- mode
-        self.mode_objects = QtWidgets.QToolButton()
-        self.mode_objects.setText("Objects")
-        self.mode_materials = QtWidgets.QToolButton()
-        self.mode_materials.setText("Materials")
-        self.mode_modifiers = QtWidgets.QToolButton()
-        self.mode_modifiers.setText("Modifiers")
-        self.mode_keys = QtWidgets.QToolButton()
-        self.mode_keys.setText("Keys")
+        self.mode_objects = QtWidgets.QPushButton("Objects")
+        self.mode_objects.setProperty("chip", True)
+        self.mode_materials = QtWidgets.QPushButton("Materials")
+        self.mode_materials.setProperty("chip", True)
+        self.mode_modifiers = QtWidgets.QPushButton("Modifiers")
+        self.mode_modifiers.setProperty("chip", True)
+        self.mode_keys = QtWidgets.QPushButton("Keys")
+        self.mode_keys.setProperty("chip", True)
         for button, mode in ((self.mode_objects, "objects"), (self.mode_materials, "materials"),
                              (self.mode_modifiers, "modifiers"), (self.mode_keys, "animation")):
             button.setCheckable(True)
@@ -370,8 +373,7 @@ class ClipboardWindow(QtWidgets.QDialog):
         scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         scroll.setWidget(body)
 
-        self.footer = QtWidgets.QLabel()
-        self.footer.setStyleSheet("color: gray;")
+        self.footer = theme.dim_label()
         self.footer.setWordWrap(True)
 
         layout = QtWidgets.QVBoxLayout(self)

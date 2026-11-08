@@ -8,7 +8,7 @@ from PySide6 import QtCore, QtWidgets
 import open3ds
 
 from .. import app as app_mod, maxhost, search
-from . import common
+from . import common, theme
 
 
 _palette = None
@@ -35,9 +35,7 @@ class Palette(QtWidgets.QDialog):
         layout.setSpacing(4)
         layout.addWidget(self.edit)
         layout.addWidget(self.list, 1)
-        self.setStyleSheet(
-            "QDialog#Open3DS_Palette { border: 1px solid palette(highlight); }"
-        )
+        theme.apply(self, extra="QDialog#Open3DS_Palette {{ border: 1px solid {accent}; }}")
 
     # Keep the cursor in the search field while arrows move the selection.
     def eventFilter(self, obj, event):

@@ -23,7 +23,6 @@ from .toolwindow import guarded
 _log = log.get("material_bar")
 
 TITLE = "Material Bar"
-ACCENT = "#e08a2c"
 ICON_DIR = Path(__file__).resolve().parent / "icons"
 HANDLE_ROLE = QtCore.Qt.UserRole + 10
 EXTRA_ROLE = QtCore.Qt.UserRole + 11
@@ -171,10 +170,6 @@ class MaterialBar(QtWidgets.QFrame):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("Open3DS_MaterialBar")
-        self.setStyleSheet(
-            "QFrame#Open3DS_MaterialBar { border: none; border-left: 3px solid %s; }"
-            "QToolButton { padding: 1px; }" % ACCENT
-        )
         self.current = None  # material handle (materials.NONE = no material) or None
         self._current_name = ""
         self._entries = {}
@@ -211,7 +206,7 @@ class MaterialBar(QtWidgets.QFrame):
         )
 
         layout = QtWidgets.QHBoxLayout(self)
-        layout.setContentsMargins(5, 0, 0, 0)
+        layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(2)
         layout.addWidget(self.combo, 1)
         layout.addWidget(self.pick_button)

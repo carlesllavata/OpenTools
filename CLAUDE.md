@@ -70,7 +70,11 @@ Max's Python: `C:\Program Files\Autodesk\3ds Max 2027\Python\python.exe` (always
 - Tool windows: subclass `open3ds.ui.toolwindow.ToolWindow` (one instance, remembered position,
   options in settings `tool_options`; a `"size"` in DEFAULTS is restored and saved by the base,
   `self.confirm(title, text)` asks Yes/Cancel) and wrap button actions with `self.guard(...)`, otherwise
-  errors in Qt slots are lost. Settings of the running app: `open3ds.app.current_settings()`. Heavy geometry loops go in a MAXScript `*_core.ms` next to the tool.
+  errors in Qt slots are lost. Settings of the running app: `open3ds.app.current_settings()`.
+- Look: every Open3DS window gets `ui/theme.py` (`theme.apply(root)`; ToolWindow does it). Colors come
+  from the 3ds Max palette (`theme.tokens()`); only the orange accent and status colors are fixed.
+  No hard-coded greys or `color: gray` in tools: use `theme.dim_label()` / objectName `O3DS_Dim`.
+  Buttons follow Forensic's style; the user wants Forensic's layout left as it is. Heavy geometry loops go in a MAXScript `*_core.ms` next to the tool.
 
 ## Rules
 - Before adding a script the user hands over, ask where it comes from and its license. Own or permissively

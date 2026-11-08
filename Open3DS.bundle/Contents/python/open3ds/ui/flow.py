@@ -1,13 +1,17 @@
-"""A layout that places widgets left to right and wraps them onto new rows."""
+"""A layout that places widgets left to right and wraps them onto new rows.
+
+With min_item_width, it is a grid instead: as many equal columns as fit (each at
+least that wide), and every widget stretched to the column width."""
 
 from PySide6 import QtCore, QtWidgets
 
 
 class FlowLayout(QtWidgets.QLayout):
-    def __init__(self, parent=None, spacing=4):
+    def __init__(self, parent=None, spacing=4, min_item_width=None):
         super().__init__(parent)
         self._items = []
         self._spacing = spacing
+        self._min_item_width = min_item_width
         self.setContentsMargins(0, 0, 0, 0)
 
     # QLayout interface ------------------------------------------------------
@@ -43,10 +47,16 @@ class FlowLayout(QtWidgets.QLayout):
         size = QtCore.QSize()
         for item in self._items:
             size = size.expandedTo(item.minimumSize())
+        if self._min_item_width and self._items:
+            size.setWidth(min(size.width(), self._min_item_width))
         margins = self.contentsMargins()
         return size + QtCore.QSize(margins.left() + margins.right(), margins.top() + margins.bottom())
 
     # ------------------------------------------------------------------------
+    def set_min_item_width(self, width):
+        self._min_item_width = width
+        self.invalidate()
+
     def clear(self):
         """Remove and delete every widget in the layout."""
         while self._items:
@@ -60,6 +70,8 @@ class FlowLayout(QtWidgets.QLayout):
         margins = self.contentsMargins()
         area = rect.adjusted(margins.left(), margins.top(), -margins.right(), -margins.bottom())
         x, y = area.x(), area.y()
+        if self._min_item_width:
+            return self._arrange_grid(rect, area, apply)
         row_height = 0
         for item in self._items:
             if item.widget() is not None and item.widget().isHidden():
@@ -74,3 +86,20 @@ class FlowLayout(QtWidgets.QLayout):
             x += hint.width() + self._spacing
             row_height = max(row_height, hint.height())
         return y + row_height - rect.y() + margins.bottom()
+
+    def _arrange_grid(self, rect, area, apply):
+        items = [i for i in self._items if not (i.widget() is not None and i.widget().isHidden())]
+        if not items:
+            return 0
+        spacing = self._spacing
+        columns = max(1, (area.width() + spacing) // (self._min_item_width + spacing))
+        width = max(1, (area.width() - spacing * (columns - 1)) // columns)
+        height = max(item.sizeHint().height() for item in items)
+        for index, item in enumerate(items):
+            row, column = divmod(index, columns)
+            if apply:
+                item.setGeometry(QtCore.QRect(area.x() + column * (width + spacing),
+                                              area.y() + row * (height + spacing), width, height))
+        rows = (len(items) + columns - 1) // columns
+        margins = self.contentsMargins()
+        return area.y() - rect.y() + rows * height + (rows - 1) * spacing + margins.bottom()

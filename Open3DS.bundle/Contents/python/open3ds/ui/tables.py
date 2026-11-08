@@ -68,7 +68,7 @@ def button_row(*specs):
             row.addStretch(1)
         elif isinstance(spec, str):
             label = QtWidgets.QLabel(spec)
-            label.setStyleSheet("color: gray;")
+            label.setObjectName("O3DS_Dim")
             row.addWidget(label)
         else:
             text, tooltip, slot = spec

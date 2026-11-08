@@ -122,7 +122,7 @@ class ProxyManagerWindow(toolwindow.ToolWindow):
         self.tree.itemSelectionChanged.connect(self._update_scope)
         self.summary = QtWidgets.QLabel()
         self.scope = QtWidgets.QLabel()
-        self.scope.setStyleSheet("color: gray;")
+        self.scope.setObjectName("O3DS_Dim")
         self.scope.setMinimumWidth(180)
         self.scope.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
 

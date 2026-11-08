@@ -18,10 +18,11 @@ macros you can bind to hotkeys.
 
 1. Copy the `Open3DS.bundle` folder to `%APPDATA%\Autodesk\ApplicationPlugins\`
    (create the folder if it does not exist).
-2. Start 3ds Max. The Open3DS panel docks on the right: a grid of tool icons grouped
-   by category, with category filters and a search box on top. Click an icon to run
-   the tool; right-click it to add it to favorites. Icon size and labels are in the `⋯` menu.
-3. At the top of the panel sits the **material bar**, a layer-style drop-down of the
+2. Start 3ds Max. The Open3DS panel docks on the right: tool buttons (icon and name)
+   in foldable sections by category, with category filters and a search box on top. Click
+   a button to run the tool; right-click it to add it to favorites. Icon size and names are
+   in the `⋯` menu. The panel and the tool windows take their colors from the 3ds Max theme.
+3. Below the Clipboard section sits the **Materials** section, a layer-style drop-down of the
    scene's materials (like the AutoCAD layer list): choose a material or pick it from an
    object with the eyedropper, then apply it to the selection or select every object
    that uses it (Shift+click adds). Type in the drop-down to filter; right-click it for the

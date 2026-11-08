@@ -4,7 +4,7 @@
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from .. import app as app_mod, log, maxhost, paths
-from . import common
+from . import common, theme
 
 
 settings = app_mod.current_settings
@@ -21,6 +21,7 @@ class ToolWindow(QtWidgets.QDialog):
         self.setWindowTitle(self.TITLE)
         self.setWindowFlags(QtCore.Qt.Tool | QtCore.Qt.WindowCloseButtonHint)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        theme.apply(self)
         s = settings()
         self.options = s.tool_options(self.TOOL_ID, self.DEFAULTS) if s else dict(self.DEFAULTS)
         if "size" in self.DEFAULTS:

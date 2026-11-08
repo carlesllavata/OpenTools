@@ -76,7 +76,7 @@ class AttachWindow(toolwindow.ToolWindow):
 
         self.status = QtWidgets.QLabel("Select the objects to attach.")
         self.status.setWordWrap(True)
-        self.status.setStyleSheet("color: gray;")
+        self.status.setObjectName("O3DS_Dim")
 
         layout = QtWidgets.QVBoxLayout(self)
         layout.addWidget(kind_box)

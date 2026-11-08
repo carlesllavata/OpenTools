@@ -20,7 +20,7 @@ PALETTE = (
     "#7d8b96",  # slate
 )
 
-ICON_SIZES = {"small": 24, "medium": 32, "large": 48}
+ICON_SIZES = {"small": 16, "medium": 20, "large": 24}
 
 # Fixed colors for the usual categories so they never clash; others are hashed.
 KNOWN_CATEGORY_COLORS = {

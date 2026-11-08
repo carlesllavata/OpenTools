@@ -1,8 +1,10 @@
-"""The dockable Open3DS panel: a grid of tool icons grouped by category.
+"""The dockable Open3DS panel: tool buttons grouped by category.
 
-Layout, top to bottom: the material bar (ui/material_bar.py, can be hidden), search
-box, category filter chips, one section per category
-(favorites first) with a wrapping grid of clickable tool tiles, and a status line.
+Layout, top to bottom: search box with rescan and options buttons, category filter
+chips, then one foldable section per category (favorites first) holding a grid of
+buttons (small icon and name), the Materials section (the material bar of
+ui/material_bar.py, can be hidden) after the Clipboard section, and a status line.
+Colors come from ui.theme, so the panel follows the 3ds Max palette.
 """
 
 from PySide6 import QtCore, QtGui, QtWidgets
@@ -10,7 +12,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 import open3ds
 
 from .. import __version__, app as app_mod, log, look, maxhost, paths, search
-from . import common
+from . import common, theme
 from .flow import FlowLayout
 
 _log = log.get("hub")
@@ -19,9 +21,10 @@ DOCK_OBJECT_NAME = "Open3DS_HubDock"
 FAVORITES_LABEL = "★ Favorites"
 FAVORITES_FILTER = "__favorites__"
 FAVORITES_COLOR = "#e0b12c"
+MATERIALS_LABEL = "Materials"
+MATERIALS_AFTER = "Clipboard"  # the Materials section follows this category
 
-# Tile width per icon size when labels are shown (icon-only tiles hug the icon).
-_TILE_WIDTH = {24: 64, 32: 76, 48: 92}
+BUTTON_MIN_WIDTH = 132  # grid columns: as many as fit at least this wide
 
 _dock = None
 
@@ -35,79 +38,104 @@ def _icon_px():
     return look.ICON_SIZES.get(key, look.ICON_SIZES["medium"])
 
 
-def _tile_style(widget):
-    """Hover/press colors derived from the current (dark or light) 3ds Max palette."""
-    highlight = widget.palette().color(QtGui.QPalette.Highlight)
-    r, g, b = highlight.red(), highlight.green(), highlight.blue()
-    return (
-        "QToolButton#Open3DS_Tile { border: 1px solid transparent; border-radius: 5px;"
-        " padding: 3px; }"
-        "QToolButton#Open3DS_Tile:hover { background: rgba(%d,%d,%d,45);"
-        " border-color: rgba(%d,%d,%d,140); }"
-        "QToolButton#Open3DS_Tile:pressed { background: rgba(%d,%d,%d,90); }"
-        "QToolButton#Open3DS_Chip { border: 1px solid rgba(128,128,128,70); border-radius: 9px;"
-        " padding: 1px 7px; }"
-        "QToolButton#Open3DS_Chip:hover { border-color: rgba(%d,%d,%d,160); }"
-        "QToolButton#Open3DS_Chip:checked { background: rgba(%d,%d,%d,80);"
-        " border-color: rgba(%d,%d,%d,200); }"
-    ) % ((r, g, b) * 6)
-
-
-class ToolTile(QtWidgets.QToolButton):
-    """One clickable tool: icon, optional label underneath, rich tooltip."""
+class ToolButton(QtWidgets.QPushButton):
+    """One tool: small icon and name (elided to the button width), rich tooltip."""
 
     def __init__(self, tool, icon_px, show_label, parent=None):
         super().__init__(parent)
         self.tool_id = tool.id
-        self.setObjectName("Open3DS_Tile")
-        self.setAutoRaise(True)
+        self._name = tool.name if show_label else ""
+        self.setObjectName("O3DS_Tool")
         self.setIcon(common.tool_icon(tool))
         self.setIconSize(QtCore.QSize(icon_px, icon_px))
         self.setToolTip(common.tool_tooltip(tool))
         self.setCursor(QtCore.Qt.PointingHandCursor)
         self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         if show_label:
-            width = _TILE_WIDTH.get(icon_px, icon_px * 2)
-            metrics = self.fontMetrics()
-            self.setText(look.wrap_label(tool.name, width - 8, metrics.horizontalAdvance))
-            self.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
-            self.setFixedSize(width, icon_px + 2 * metrics.height() + 12)
+            self.setText(self._name)
         else:
-            self.setToolButtonStyle(QtCore.Qt.ToolButtonIconOnly)
+            self.setProperty("iconOnly", True)
             self.setFixedSize(icon_px + 12, icon_px + 12)
+
+    def sizeHint(self):
+        hint = super().sizeHint()
+        if self._name:
+            hint.setHeight(max(hint.height(), self.iconSize().height() + 10))
+        return hint
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        if self._name:
+            room = self.width() - self.iconSize().width() - 26
+            text = self.fontMetrics().elidedText(self._name, QtCore.Qt.ElideRight, max(room, 10))
+            if text != self.text():
+                self.setText(text)
+
+
+class SectionHeader(QtWidgets.QFrame):
+    """Color bar, fold arrow, upper-case title and a dim count; click to fold."""
+
+    clicked = QtCore.Signal()
+
+    def __init__(self, label, color, count=None, collapsible=True, parent=None):
+        super().__init__(parent)
+        self.setObjectName("O3DS_SectionHeader")
+        self.setAttribute(QtCore.Qt.WA_StyledBackground, True)
+        self.setStyleSheet(
+            "QFrame#O3DS_SectionHeader { border: none; border-left: 3px solid %s; }" % (color or "gray")
+        )
+        self.collapsible = collapsible
+        self.arrow = QtWidgets.QLabel()
+        self.arrow.setFixedWidth(12)
+        self.title = QtWidgets.QLabel()
+        self.title.setTextFormat(QtCore.Qt.RichText)
+        font = self.title.font()
+        font.setBold(True)
+        font.setLetterSpacing(QtGui.QFont.PercentageSpacing, 106)
+        self.title.setFont(font)
+        text = label.upper().replace("<", "&lt;")
+        if count is not None:
+            text += "&nbsp;&nbsp;<span style='color:%s; font-weight:normal'>(%d)</span>" % (
+                theme.tokens().dim, count)
+        self.title.setText(text)
+        layout = QtWidgets.QHBoxLayout(self)
+        layout.setContentsMargins(6, 3, 4, 3)
+        layout.setSpacing(4)
+        if collapsible:
+            layout.addWidget(self.arrow)
+            self.setCursor(QtCore.Qt.PointingHandCursor)
+            self.setToolTip("Click to fold or unfold")
+        layout.addWidget(self.title, 1)
+
+    def set_expanded(self, expanded):
+        self.arrow.setText("▾" if expanded else "▸")
+
+    def mouseReleaseEvent(self, event):
+        if self.collapsible and event.button() == QtCore.Qt.LeftButton:
+            self.clicked.emit()
+        super().mouseReleaseEvent(event)
 
 
 class Section(QtWidgets.QWidget):
-    """A category header (click to fold) above a wrapping grid of tiles."""
+    """A section header above a body: a grid of tool buttons, or any widget."""
 
     toggled = QtCore.Signal(str, bool)
 
-    def __init__(self, label, color, count, expanded=True, collapsible=True, parent=None):
+    def __init__(self, label, color, count=None, expanded=True, collapsible=True, grid=True,
+                 parent=None):
         super().__init__(parent)
         self.label = label
-        self._title = "%s  (%d)" % (label, count)
-        self._collapsible = collapsible
-        self.header = QtWidgets.QPushButton()
-        self.header.setFlat(True)
-        self.header.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
-        font = self.header.font()
-        font.setBold(True)
-        self.header.setFont(font)
-        self.header.setStyleSheet(
-            "QPushButton { border: none; border-left: 3px solid %s; padding: 2px 6px;"
-            " text-align: left; background: transparent; }" % (color or "gray")
-        )
-        self.header.setCheckable(collapsible)
-        self.header.setChecked(expanded)
-        if collapsible:
-            self.header.setCursor(QtCore.Qt.PointingHandCursor)
-            self.header.setToolTip("Click to fold or unfold")
-        self._update_title(expanded)
-        self.header.toggled.connect(self._on_toggled)
+        self.expanded = expanded
+        self.header = SectionHeader(label, color, count, collapsible)
+        self.header.set_expanded(expanded)
+        self.header.clicked.connect(lambda: self.set_expanded(not self.expanded))
 
         self.body = QtWidgets.QWidget()
-        self.grid = FlowLayout(self.body, spacing=2)
-        self.grid.setContentsMargins(4, 2, 0, 4)
+        if grid:
+            self.grid = FlowLayout(self.body, spacing=4, min_item_width=BUTTON_MIN_WIDTH)
+        else:
+            self.grid = QtWidgets.QVBoxLayout(self.body)
+        self.grid.setContentsMargins(9, 4, 2, 4)
         self.body.setVisible(expanded)
 
         layout = QtWidgets.QVBoxLayout(self)
@@ -119,12 +147,15 @@ class Section(QtWidgets.QWidget):
     def add(self, widget):
         self.grid.addWidget(widget)
 
-    def _update_title(self, expanded):
-        arrow = ("▾  " if expanded else "▸  ") if self._collapsible else ""
-        self.header.setText(arrow + self._title)
+    def use_flow(self):
+        """Icon-only buttons: natural sizes, wrapped (no grid columns)."""
+        self.grid.set_min_item_width(None)
 
-    def _on_toggled(self, expanded):
-        self._update_title(expanded)
+    def set_expanded(self, expanded):
+        if expanded == self.expanded:
+            return
+        self.expanded = expanded
+        self.header.set_expanded(expanded)
         self.body.setVisible(expanded)
         self.toggled.emit(self.label, expanded)
 
@@ -133,7 +164,7 @@ class HubWidget(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("Open3DS_Hub")
-        self.setStyleSheet(_tile_style(self))
+        theme.apply(self)
         self._first_tool_id = None
         self._populate_timer = QtCore.QTimer(self)
         self._populate_timer.setSingleShot(True)
@@ -148,13 +179,13 @@ class HubWidget(QtWidgets.QWidget):
         refresh_button = QtWidgets.QToolButton()
         refresh_button.setIcon(common.standard_icon("SP_BrowserReload"))
         refresh_button.setToolTip("Rescan tool folders")
-        refresh_button.setAutoRaise(True)
+        refresh_button.setFixedSize(26, 26)
         refresh_button.clicked.connect(self._rescan)
 
         self.menu_button = QtWidgets.QToolButton()
         self.menu_button.setText("⋯")
         self.menu_button.setToolTip("View options and folders")
-        self.menu_button.setAutoRaise(True)
+        self.menu_button.setFixedSize(26, 26)
         self.menu_button.setPopupMode(QtWidgets.QToolButton.InstantPopup)
         menu = QtWidgets.QMenu(self.menu_button)
         menu.aboutToShow.connect(lambda: self._fill_menu(menu))
@@ -162,24 +193,26 @@ class HubWidget(QtWidgets.QWidget):
 
         top = QtWidgets.QHBoxLayout()
         top.setContentsMargins(0, 0, 0, 0)
+        top.setSpacing(3)
         top.addWidget(self.search_edit, 1)
         top.addWidget(refresh_button)
         top.addWidget(self.menu_button)
 
         self.material_bar = None
+        self.materials_section = None
         settings = _settings()
         if maxhost.in_max() and (settings is None or settings.get("material_bar")):
             self._create_material_bar()
 
         self.chips = QtWidgets.QWidget()
-        self.chips_layout = FlowLayout(self.chips, spacing=3)
+        self.chips_layout = FlowLayout(self.chips, spacing=4)
         self.chip_group = QtWidgets.QButtonGroup(self)
         self.chip_group.setExclusive(True)
 
         self.content = QtWidgets.QWidget()
         self.content_layout = QtWidgets.QVBoxLayout(self.content)
         self.content_layout.setContentsMargins(0, 0, 0, 0)
-        self.content_layout.setSpacing(4)
+        self.content_layout.setSpacing(8)
         self.content_layout.addStretch(1)
 
         self.scroll = QtWidgets.QScrollArea()
@@ -188,17 +221,11 @@ class HubWidget(QtWidgets.QWidget):
         self.scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.scroll.setWidget(self.content)
 
-        self.status = QtWidgets.QLabel()
-        self.status.setStyleSheet("color: gray;")
+        self.status = theme.dim_label()
 
         layout = QtWidgets.QVBoxLayout(self)
-        layout.setContentsMargins(4, 4, 4, 4)
-        layout.setSpacing(4)
-        self.bar_slot = QtWidgets.QVBoxLayout()
-        self.bar_slot.setContentsMargins(0, 0, 0, 2)
-        if self.material_bar is not None:
-            self.bar_slot.addWidget(self.material_bar)
-        layout.addLayout(self.bar_slot)
+        layout.setContentsMargins(6, 6, 6, 4)
+        layout.setSpacing(8)
         layout.addLayout(top)
         layout.addWidget(self.chips)
         layout.addWidget(self.scroll, 1)
@@ -222,11 +249,11 @@ class HubWidget(QtWidgets.QWidget):
                 action.setChecked(key == current_size)
                 action.setActionGroup(size_group)
                 action.triggered.connect(lambda _=False, k=key: self._set_option("hub_icon_size", k))
-            labels = menu.addAction("Show labels")
+            labels = menu.addAction("Show names")
             labels.setCheckable(True)
             labels.setChecked(bool(settings.get("hub_show_labels")))
             labels.toggled.connect(lambda on: self._set_option("hub_show_labels", on))
-            bar = menu.addAction("Show material bar")
+            bar = menu.addAction("Show Materials section")
             bar.setCheckable(True)
             bar.setChecked(self.material_bar is not None)
             bar.setEnabled(maxhost.in_max())
@@ -257,6 +284,15 @@ class HubWidget(QtWidgets.QWidget):
         except Exception:  # noqa: BLE001 - the tool grid must load even if the bar fails
             _log.exception("Could not create the material bar")
             self.material_bar = None
+            return
+        settings = _settings()
+        collapsed = set(settings.get("hub_collapsed")) if settings else set()
+        section = Section(MATERIALS_LABEL, look.category_color("materials"),
+                          expanded=MATERIALS_LABEL not in collapsed, grid=False)
+        section.add(self.material_bar)
+        section.toggled.connect(self._remember_collapsed)
+        section.hide()
+        self.materials_section = section
 
     def _show_material_bar(self, on):
         settings = _settings()
@@ -264,12 +300,13 @@ class HubWidget(QtWidgets.QWidget):
             settings.set("material_bar", bool(on))
         if on and self.material_bar is None:
             self._create_material_bar()
-            if self.material_bar is not None:
-                self.bar_slot.addWidget(self.material_bar)
-        elif not on and self.material_bar is not None:
-            self.material_bar.hide()
-            self.material_bar.deleteLater()
+        elif not on and self.materials_section is not None:
+            self.content_layout.removeWidget(self.materials_section)
+            self.materials_section.hide()
+            self.materials_section.deleteLater()
+            self.materials_section = None
             self.material_bar = None
+        self.schedule_populate()
 
     def _set_option(self, key, value):
         settings = _settings()
@@ -279,30 +316,31 @@ class HubWidget(QtWidgets.QWidget):
 
     # -------------------------------------------------------------- building
     def schedule_populate(self):
-        """Rebuild on the next event loop turn (safe from inside a tile's own signal)."""
+        """Rebuild on the next event loop turn (safe from inside a button's own signal)."""
         self._populate_timer.start(0)
 
     def _clear(self):
         while self.content_layout.count() > 1:  # keep the trailing stretch
             widget = self.content_layout.takeAt(0).widget()
-            if widget is not None:
-                widget.hide()
+            if widget is None:
+                continue
+            widget.hide()
+            if widget is not self.materials_section:  # the material bar lives with the panel
                 widget.deleteLater()
         for button in self.chip_group.buttons():
             self.chip_group.removeButton(button)
         self.chips_layout.clear()
 
     def _add_chip(self, text, value, selected, color=None, tooltip=""):
-        chip = QtWidgets.QToolButton()
-        chip.setObjectName("Open3DS_Chip")
-        chip.setText(text)
+        chip = QtWidgets.QPushButton(text)
+        chip.setProperty("chip", True)
         chip.setCheckable(True)
         chip.setChecked(value == selected)
-        chip.setAutoRaise(True)
+        chip.setCursor(QtCore.Qt.PointingHandCursor)
         chip.setToolTip(tooltip)
         if color:
-            chip.setIcon(common.dot_icon(color))
-            chip.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
+            chip.setIcon(common.dot_icon(color, 8))
+            chip.setIconSize(QtCore.QSize(8, 8))
         chip.clicked.connect(lambda _=False, v=value: self._set_option("hub_category", v))
         self.chip_group.addButton(chip)
         self.chips_layout.addWidget(chip)
@@ -363,6 +401,7 @@ class HubWidget(QtWidgets.QWidget):
         icon_px = _icon_px()
         show_labels = bool(settings.get("hub_show_labels"))
         collapsed = set(settings.get("hub_collapsed"))
+        with_materials = self.materials_section is not None and not query and selected == ""
         position = 0
         for label, color, members in sections:
             section = Section(
@@ -372,19 +411,30 @@ class HubWidget(QtWidgets.QWidget):
                 expanded=bool(query) or label not in collapsed,
                 collapsible=not query,
             )
+            if not show_labels:
+                section.use_flow()
             section.toggled.connect(self._remember_collapsed)
             for tool in members:
-                tile = ToolTile(tool, icon_px, show_labels)
-                tile.clicked.connect(lambda _=False, tid=tool.id: open3ds.run(tid))
-                tile.customContextMenuRequested.connect(
-                    lambda pos, t=tile: self._context_menu(t, pos)
+                button = ToolButton(tool, icon_px, show_labels)
+                button.clicked.connect(lambda _=False, tid=tool.id: open3ds.run(tid))
+                button.customContextMenuRequested.connect(
+                    lambda pos, b=button: self._context_menu(b, pos)
                 )
-                section.add(tile)
+                section.add(button)
             self.content_layout.insertWidget(position, section)
             position += 1
+            if with_materials and label == MATERIALS_AFTER:
+                self.content_layout.insertWidget(position, self.materials_section)
+                self.materials_section.show()
+                position += 1
+                with_materials = False
+        if with_materials:  # no Clipboard section: Materials goes last
+            self.content_layout.insertWidget(position, self.materials_section)
+            self.materials_section.show()
+            position += 1
         if query and not sections[0][2]:
-            empty = QtWidgets.QLabel("No tool matches “%s”." % query)
-            empty.setStyleSheet("color: gray; padding: 8px;")
+            empty = theme.dim_label("No tool matches “%s”." % query)
+            empty.setContentsMargins(8, 8, 8, 8)
             self.content_layout.insertWidget(position, empty)
 
         if query:
