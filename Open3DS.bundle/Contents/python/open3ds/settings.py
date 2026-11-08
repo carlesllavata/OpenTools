@@ -19,6 +19,8 @@ DEFAULTS = {
     "hub_icon_size": "medium",
     "hub_show_labels": True,
     "hub_categories": [],
+    # Category order set by dragging the chips ([] = alphabetical, Materials after Clipboard).
+    "hub_category_order": [],
     "hub_collapsed": [],
     # Material bar at the top of the hub, and whether choosing a material from its
     # list also applies it to the selection (like the AutoCAD layer drop-down).

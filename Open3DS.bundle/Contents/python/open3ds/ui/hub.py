@@ -72,8 +72,60 @@ class ToolButton(QtWidgets.QPushButton):
                 self.setText(text)
 
 
+class Chip(QtWidgets.QPushButton):
+    """Category filter button: click to pick it, drag it onto another chip to reorder."""
+
+    MIME = "application/x-open3ds-category"
+    dropped = QtCore.Signal(str, str, bool)  # moved category, target category, after target
+
+    def __init__(self, text, value, parent=None):
+        super().__init__(text, parent)
+        self.value = value
+        self._press = None
+        self.setProperty("chip", True)
+        self.setCheckable(True)
+        self.setCursor(QtCore.Qt.PointingHandCursor)
+        self.setAcceptDrops(value is not None)
+
+    def mousePressEvent(self, event):
+        if event.button() == QtCore.Qt.LeftButton and self.value is not None:
+            self._press = event.position().toPoint()
+        super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event):
+        if self._press is not None and (event.buttons() & QtCore.Qt.LeftButton):
+            moved = (event.position().toPoint() - self._press).manhattanLength()
+            if moved >= QtWidgets.QApplication.startDragDistance():
+                self._press = None
+                self.setDown(False)
+                drag = QtGui.QDrag(self)
+                data = QtCore.QMimeData()
+                data.setData(self.MIME, self.value.encode("utf-8"))
+                drag.setMimeData(data)
+                drag.setPixmap(self.grab())
+                drag.setHotSpot(event.position().toPoint())
+                drag.exec(QtCore.Qt.MoveAction)
+                return
+        super().mouseMoveEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        self._press = None
+        super().mouseReleaseEvent(event)
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasFormat(self.MIME):
+            event.acceptProposedAction()
+
+    def dropEvent(self, event):
+        moved = bytes(event.mimeData().data(self.MIME)).decode("utf-8")
+        if moved and moved != self.value:
+            after = event.position().x() > self.width() / 2
+            self.dropped.emit(moved, self.value, after)
+        event.acceptProposedAction()
+
+
 class SectionHeader(QtWidgets.QFrame):
-    """Color bar, fold arrow, upper-case title and a dim count; click to fold."""
+    """Color bar, fold arrow, bold title and a dim count; click to fold."""
 
     clicked = QtCore.Signal()
 
@@ -91,9 +143,8 @@ class SectionHeader(QtWidgets.QFrame):
         self.title.setTextFormat(QtCore.Qt.RichText)
         font = self.title.font()
         font.setBold(True)
-        font.setLetterSpacing(QtGui.QFont.PercentageSpacing, 106)
         self.title.setFont(font)
-        text = label.upper().replace("<", "&lt;")
+        text = label.replace("<", "&lt;")
         if count is not None:
             text += "&nbsp;&nbsp;<span style='color:%s; font-weight:normal'>(%d)</span>" % (
                 theme.tokens().dim, count)
@@ -130,7 +181,8 @@ class Section(QtWidgets.QWidget):
         self.header.set_expanded(expanded)
         self.header.clicked.connect(lambda: self.set_expanded(not self.expanded))
 
-        self.body = QtWidgets.QWidget()
+        # Parented now: showing a parentless widget would flash it as a window.
+        self.body = QtWidgets.QWidget(self)
         if grid:
             self.grid = FlowLayout(self.body, spacing=4, min_item_width=BUTTON_MIN_WIDTH)
         else:
@@ -166,6 +218,7 @@ class HubWidget(QtWidgets.QWidget):
         self.setObjectName("Open3DS_Hub")
         theme.apply(self)
         self._first_tool_id = None
+        self._shown_groups = []
         self._populate_timer = QtCore.QTimer(self)
         self._populate_timer.setSingleShot(True)
         self._populate_timer.timeout.connect(self.populate)
@@ -327,18 +380,52 @@ class HubWidget(QtWidgets.QWidget):
                 widget.deleteLater()
         self.chips_layout.clear()
 
-    def _add_chip(self, text, value, checked, color=None, tooltip=""):
-        chip = QtWidgets.QPushButton(text)
-        chip.setProperty("chip", True)
-        chip.setCheckable(True)
+    def _add_chip(self, text, value, checked, color=None, tooltip="", movable=False):
+        chip = Chip(text, value if movable else None)
         chip.setChecked(checked)
-        chip.setCursor(QtCore.Qt.PointingHandCursor)
         chip.setToolTip(tooltip)
         if color:
             chip.setIcon(common.dot_icon(color, 8))
             chip.setIconSize(QtCore.QSize(8, 8))
         chip.clicked.connect(lambda _=False, v=value: self._toggle_category(v))
+        if movable:
+            chip.dropped.connect(self._move_category)
+            chip.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+            chip.customContextMenuRequested.connect(lambda pos, c=chip: self._chip_menu(c, pos))
         self.chips_layout.addWidget(chip)
+
+    # -------------------------------------------------------- category order
+    def _move_category(self, moved, target, after=False):
+        order = [g for g in self._shown_groups if g != moved]
+        if target not in order:
+            return
+        order.insert(order.index(target) + (1 if after else 0), moved)
+        self._set_option("hub_category_order", order)
+
+    def _shift_category(self, value, step):
+        order = list(self._shown_groups)
+        index = order.index(value)
+        other = index + step
+        if 0 <= other < len(order):
+            order[index], order[other] = order[other], order[index]
+            self._set_option("hub_category_order", order)
+
+    def _chip_menu(self, chip, pos):
+        order = list(self._shown_groups)
+        index = order.index(chip.value)
+        menu = QtWidgets.QMenu(self)
+        actions = (
+            ("Move to the start", lambda: self._move_category(chip.value, order[0]), index > 0),
+            ("Move left", lambda: self._shift_category(chip.value, -1), index > 0),
+            ("Move right", lambda: self._shift_category(chip.value, 1), index < len(order) - 1),
+            ("Move to the end", lambda: self._move_category(chip.value, order[-1], True),
+             index < len(order) - 1),
+        )
+        for text, slot, enabled in actions:
+            menu.addAction(text, slot).setEnabled(enabled)
+        menu.addSeparator()
+        menu.addAction("Default order", lambda: self._set_option("hub_category_order", []))
+        menu.exec(chip.mapToGlobal(pos))
 
     def _toggle_category(self, value):
         """value None = All (clear the filter); otherwise add or remove that category."""
@@ -362,20 +449,17 @@ class HubWidget(QtWidgets.QWidget):
         finally:
             self.setUpdatesEnabled(True)
 
-    def _groups(self, categories):
-        """Category names in panel order, with Materials (the material bar) after Clipboard."""
-        if self.materials_section is None:
-            return list(categories)
-        if MATERIALS_LABEL in categories:  # a tool category of that name: the bar joins it
-            return list(categories)
-        groups = []
-        for category in categories:
-            groups.append(category)
-            if category == MATERIALS_AFTER:
-                groups.append(MATERIALS_LABEL)
-        if MATERIALS_LABEL not in groups:
-            groups.append(MATERIALS_LABEL)
-        return groups
+    def _groups(self, categories, saved_order=()):
+        """Category names in panel order: the order the user set by dragging the chips,
+        then any category it does not mention yet. By default alphabetical, with
+        Materials (the material bar) after Clipboard."""
+        groups = list(categories)
+        if self.materials_section is not None and MATERIALS_LABEL not in groups:
+            # (a tool category called Materials would simply take the bar too)
+            index = groups.index(MATERIALS_AFTER) + 1 if MATERIALS_AFTER in groups else len(groups)
+            groups.insert(index, MATERIALS_LABEL)
+        ordered = [g for g in saved_order if g in groups]
+        return ordered + [g for g in groups if g not in ordered]
 
     def _build(self, current):
         settings = current.settings
@@ -385,7 +469,8 @@ class HubWidget(QtWidgets.QWidget):
         favorites = sorted(
             (t for t in tools if settings.is_favorite(t.id)), key=lambda t: t.name.lower()
         )
-        groups = self._groups(categories)
+        groups = self._groups(categories, settings.get("hub_category_order"))
+        self._shown_groups = groups
         valid = set(groups) | ({FAVORITES_FILTER} if favorites else set())
         chosen = {c for c in settings.get("hub_categories") if c in valid}
         show_all = not chosen
@@ -401,7 +486,7 @@ class HubWidget(QtWidgets.QWidget):
             tip = "Material bar" if group == MATERIALS_LABEL and not count else (
                 "%s · %d tool%s" % (group, count, "" if count == 1 else "s"))
             self._add_chip(group, group, group in chosen, look.category_color(group),
-                           tip + ". Click to show or hide it; All shows everything.")
+                           tip + ". Click to show or hide it; drag it to reorder.", movable=True)
         self.chips.setEnabled(not query)
 
         # (label, color, tools or None for the Materials section)
