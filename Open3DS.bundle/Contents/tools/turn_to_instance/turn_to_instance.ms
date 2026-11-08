@@ -7,6 +7,9 @@
     Every selected object of a compatible type becomes a full instance of the source (object,
     modifiers, material and name), keeping its own position, rotation and scale. One undo step.
 */
+-- Declared before the block compiles; otherwise, on the first run in a session, the struct
+-- name below becomes an empty local ("Unknown property in undefined").
+global O3DS_TurnToInstance
 (
     fileIn ((getFilenamePath (getSourceFileName())) + "turn_to_instance_core.ms")
 

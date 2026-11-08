@@ -66,6 +66,16 @@ Max's Python: `C:\Program Files\Autodesk\3ds Max 2027\Python\python.exe` (always
   name; Write refuses to overwrite an unread file and the old script would run instead.
 - `on` is a reserved word in MAXScript (`local on = ...` is a syntax error). Inside a struct, a member
   function must be defined above the members that call it.
+- A `.ms` tool whose block does `fileIn core` and then calls a struct the core defines must
+  declare that global *above* the block (`global O3DS_X` then `( fileIn ...; O3DS_X.f() )`):
+  the block compiles before the fileIn runs, so on the first run of a session the name becomes
+  an empty local ("Unknown property ... in undefined"). Live tests that already loaded the core
+  hide this: remove the global first (`globalVars.remove #O3DS_X`).
+- `getHandleByAnim` returns an IntegerPtr: `as string` gives "30043P". Strip the "P" before
+  building Python code for `python.Execute` (a MAXScript tool selects a material in the bar with
+  `python.Execute "import open3ds.ui.hub as h; h.show_material(<handle>)"`).
+- Live tests of `.ms` tools: run the entry with `rt.fileIn(tool.entry_file)`, not `runner.run`;
+  the runner shows a modal error dialog on failure, which hangs the bridge.
 - Viewport HUDs: `registerRedrawViewsCallback` + `gw.wText` works in 2027 (and shows in
   `gw.getViewportDib`); text drawn inside a `gw.wRect` is hidden, so highlight with color.
 - PySide6: `QAction` / `QActionGroup` live in QtGui, not QtWidgets. Qt never opens an empty
