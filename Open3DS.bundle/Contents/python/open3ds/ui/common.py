@@ -77,7 +77,7 @@ def dot_icon(color, size=10):
     pixmap.fill(QtCore.Qt.transparent)
     painter = QtGui.QPainter(pixmap)
     painter.setRenderHint(QtGui.QPainter.Antialiasing)
-    painter.setPen(QtCore.Qt.NoPen)
+    painter.setPen(QtGui.QPen(QtGui.QColor(0, 0, 0, 120), 1.0))  # visible on an orange chip too
     painter.setBrush(QtGui.QColor(color))
     painter.drawEllipse(QtCore.QRectF(1, 1, size - 2, size - 2))
     painter.end()

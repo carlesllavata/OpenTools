@@ -14,11 +14,11 @@ DEFAULTS = {
     "show_hub_on_startup": True,
     # Where the hub was left: {"area", "floating", "geometry" | "size"}.
     "hub_dock": {},
-    # Hub look: icon size key from look.ICON_SIZES, labels under icons, selected
-    # category filter ("" = all) and the sections the user collapsed.
+    # Hub look: icon size key from look.ICON_SIZES, names on the buttons, the categories
+    # picked in the chips ([] = all) and the sections the user collapsed.
     "hub_icon_size": "medium",
     "hub_show_labels": True,
-    "hub_category": "",
+    "hub_categories": [],
     "hub_collapsed": [],
     # Material bar at the top of the hub, and whether choosing a material from its
     # list also applies it to the selection (like the AutoCAD layer drop-down).

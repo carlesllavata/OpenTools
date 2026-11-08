@@ -1,7 +1,7 @@
 """The dockable Open3DS panel: tool buttons grouped by category.
 
-Layout, top to bottom: search box with rescan and options buttons, category filter
-chips, then one foldable section per category (favorites first) holding a grid of
+Layout, top to bottom: search box with rescan and options buttons, category chips
+(pick any number; none = All), then one foldable section per category (favorites first) holding a grid of
 buttons (small icon and name), the Materials section (the material bar of
 ui/material_bar.py, can be hidden) after the Clipboard section, and a status line.
 Colors come from ui.theme, so the panel follows the 3ds Max palette.
@@ -206,8 +206,6 @@ class HubWidget(QtWidgets.QWidget):
 
         self.chips = QtWidgets.QWidget()
         self.chips_layout = FlowLayout(self.chips, spacing=4)
-        self.chip_group = QtWidgets.QButtonGroup(self)
-        self.chip_group.setExclusive(True)
 
         self.content = QtWidgets.QWidget()
         self.content_layout = QtWidgets.QVBoxLayout(self.content)
@@ -327,23 +325,30 @@ class HubWidget(QtWidgets.QWidget):
             widget.hide()
             if widget is not self.materials_section:  # the material bar lives with the panel
                 widget.deleteLater()
-        for button in self.chip_group.buttons():
-            self.chip_group.removeButton(button)
         self.chips_layout.clear()
 
-    def _add_chip(self, text, value, selected, color=None, tooltip=""):
+    def _add_chip(self, text, value, checked, color=None, tooltip=""):
         chip = QtWidgets.QPushButton(text)
         chip.setProperty("chip", True)
         chip.setCheckable(True)
-        chip.setChecked(value == selected)
+        chip.setChecked(checked)
         chip.setCursor(QtCore.Qt.PointingHandCursor)
         chip.setToolTip(tooltip)
         if color:
             chip.setIcon(common.dot_icon(color, 8))
             chip.setIconSize(QtCore.QSize(8, 8))
-        chip.clicked.connect(lambda _=False, v=value: self._set_option("hub_category", v))
-        self.chip_group.addButton(chip)
+        chip.clicked.connect(lambda _=False, v=value: self._toggle_category(v))
         self.chips_layout.addWidget(chip)
+
+    def _toggle_category(self, value):
+        """value None = All (clear the filter); otherwise add or remove that category."""
+        settings = _settings()
+        if settings is None:
+            return
+        chosen = [] if value is None else [c for c in settings.get("hub_categories") if c != value]
+        if value is not None and value not in settings.get("hub_categories"):
+            chosen.append(value)
+        self._set_option("hub_categories", chosen)
 
     def populate(self, *_args):
         current = app_mod.current()
@@ -357,6 +362,21 @@ class HubWidget(QtWidgets.QWidget):
         finally:
             self.setUpdatesEnabled(True)
 
+    def _groups(self, categories):
+        """Category names in panel order, with Materials (the material bar) after Clipboard."""
+        if self.materials_section is None:
+            return list(categories)
+        if MATERIALS_LABEL in categories:  # a tool category of that name: the bar joins it
+            return list(categories)
+        groups = []
+        for category in categories:
+            groups.append(category)
+            if category == MATERIALS_AFTER:
+                groups.append(MATERIALS_LABEL)
+        if MATERIALS_LABEL not in groups:
+            groups.append(MATERIALS_LABEL)
+        return groups
+
     def _build(self, current):
         settings = current.settings
         registry = current.registry
@@ -365,25 +385,26 @@ class HubWidget(QtWidgets.QWidget):
         favorites = sorted(
             (t for t in tools if settings.is_favorite(t.id)), key=lambda t: t.name.lower()
         )
-        selected = settings.get("hub_category")
-        if selected == FAVORITES_FILTER and not favorites:
-            selected = ""
-        if selected not in ("", FAVORITES_FILTER) and selected not in categories:
-            selected = ""
+        groups = self._groups(categories)
+        valid = set(groups) | ({FAVORITES_FILTER} if favorites else set())
+        chosen = {c for c in settings.get("hub_categories") if c in valid}
+        show_all = not chosen
         query = self.search_edit.text().strip()
 
-        # Category chips (disabled while searching: search always covers every tool).
-        self._add_chip("All", "", selected, tooltip="Show every category")
+        # Category chips: pick any number of them; none (All) shows every category.
+        # Disabled while searching: search always covers every tool.
+        self._add_chip("All", None, show_all, tooltip="Show every category")
         if favorites:
-            self._add_chip("★", FAVORITES_FILTER, selected, tooltip="Favorites only")
-        for category in categories:
-            count = sum(1 for t in tools if t.category == category)
-            self._add_chip(
-                category, category, selected, look.category_color(category),
-                "%s · %d tool%s" % (category, count, "" if count == 1 else "s"),
-            )
+            self._add_chip("★", FAVORITES_FILTER, FAVORITES_FILTER in chosen, tooltip="Favorites")
+        for group in groups:
+            count = sum(1 for t in tools if t.category == group)
+            tip = "Material bar" if group == MATERIALS_LABEL and not count else (
+                "%s · %d tool%s" % (group, count, "" if count == 1 else "s"))
+            self._add_chip(group, group, group in chosen, look.category_color(group),
+                           tip + ". Click to show or hide it; All shows everything.")
         self.chips.setEnabled(not query)
 
+        # (label, color, tools or None for the Materials section)
         if query:
             matches = search.rank(query, tools, recent=settings.get("recent"))
             self._first_tool_id = matches[0].id if matches else None
@@ -391,19 +412,27 @@ class HubWidget(QtWidgets.QWidget):
         else:
             self._first_tool_id = None
             sections = []
-            if favorites and selected in ("", FAVORITES_FILTER):
+            if favorites and (show_all or FAVORITES_FILTER in chosen):
                 sections.append((FAVORITES_LABEL, FAVORITES_COLOR, favorites))
-            for category in categories:
-                if selected in ("", category):
-                    members = [t for t in tools if t.category == category]
-                    sections.append((category, look.category_color(category), members))
+            for group in groups:
+                if not (show_all or group in chosen):
+                    continue
+                members = [t for t in tools if t.category == group]
+                if members:
+                    sections.append((group, look.category_color(group), members))
+                if group == MATERIALS_LABEL and self.materials_section is not None:
+                    sections.append((MATERIALS_LABEL, None, None))
 
         icon_px = _icon_px()
         show_labels = bool(settings.get("hub_show_labels"))
         collapsed = set(settings.get("hub_collapsed"))
-        with_materials = self.materials_section is not None and not query and selected == ""
         position = 0
         for label, color, members in sections:
+            if members is None:
+                self.content_layout.insertWidget(position, self.materials_section)
+                self.materials_section.show()
+                position += 1
+                continue
             section = Section(
                 label,
                 color,
@@ -423,15 +452,10 @@ class HubWidget(QtWidgets.QWidget):
                 section.add(button)
             self.content_layout.insertWidget(position, section)
             position += 1
-            if with_materials and label == MATERIALS_AFTER:
-                self.content_layout.insertWidget(position, self.materials_section)
-                self.materials_section.show()
-                position += 1
-                with_materials = False
-        if with_materials:  # no Clipboard section: Materials goes last
-            self.content_layout.insertWidget(position, self.materials_section)
-            self.materials_section.show()
-            position += 1
+        if not show_all and not query and not sections:
+            hint = theme.dim_label("Pick a category above, or All.")
+            hint.setContentsMargins(8, 8, 8, 8)
+            self.content_layout.insertWidget(position, hint)
         if query and not sections[0][2]:
             empty = theme.dim_label("No tool matches “%s”." % query)
             empty.setContentsMargins(8, 8, 8, 8)

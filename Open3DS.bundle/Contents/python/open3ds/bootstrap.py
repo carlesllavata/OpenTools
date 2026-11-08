@@ -44,24 +44,12 @@ def start(dev_root=None):
 
     _step("register shutdown callback", _register_shutdown_callback)
 
-    if app.settings.get("show_hub_on_startup"):
-        from .ui import hub
-
-        _step("show hub", hub.show)
-
-    from . import clipboard_hud
-
-    _step("clipboard HUD", clipboard_hud.restore)
-
+    # The dev bridge first, so a broken panel can still be fixed and reloaded live.
     if app.dev:
-        from . import devbridge
-
-        _step(
-            "dev bridge",
-            devbridge.start,
-            app.dev_root / ".devbridge",
-            app.settings.get("devbridge_poll_ms"),
-        )
+        _step("dev bridge", _start_bridge, app.dev_root / ".devbridge", app.settings.get("devbridge_poll_ms"))
+    if app.settings.get("show_hub_on_startup"):
+        _step("show hub", _show_hub)
+    _step("clipboard HUD", _restore_hud)
 
     if app.registry.errors:
         from . import paths
@@ -73,6 +61,24 @@ def start(dev_root=None):
         )
     _log.info("Open3DS ready: %d tools.", len(app.registry.tools))
     return app
+
+
+def _start_bridge(folder, poll_ms):
+    from . import devbridge
+
+    devbridge.start(folder, poll_ms)
+
+
+def _show_hub():
+    from .ui import hub
+
+    hub.show()
+
+
+def _restore_hud():
+    from . import clipboard_hud
+
+    clipboard_hud.restore()
 
 
 def _register_shutdown_callback():
