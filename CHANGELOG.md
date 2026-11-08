@@ -26,6 +26,11 @@ Lo que va añadiendo cada versión de Open3DS, de la más reciente a la más ant
   seleccionarlos. Los grupos cerrados cuentan como un solo objeto (entran o salen
   enteros), siempre queda al menos uno y se deshace con un solo Ctrl+Z. El porcentaje se
   recuerda entre sesiones.
+- **Nueva herramienta: Random Wire Color** (categoría Scene). Con un clic, cada objeto
+  seleccionado recibe un color de objeto distinto (el color que aparece arriba a la derecha
+  en el panel Modify), ideal para separar objetos con máscaras por color como Mask ID. Los
+  colores se reparten para que nunca salgan dos casi iguales ni grises, negros o blancos, y
+  cada clic da una combinación nueva. Se deshace con un solo Ctrl+Z.
 
 ## 0.3.0 — 8 de noviembre de 2026
 
