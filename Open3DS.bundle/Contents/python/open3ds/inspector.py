@@ -180,7 +180,7 @@ CHECKS = (
           INFO, "Delete", "Delete the unused helpers?"),
     Check("empty_layers", "Cleanup", "Empty layers",
           "Layers with no objects and no sub-layers.",
-          INFO, "Delete", "Delete the empty layers? (This cannot be undone.)", selectable=False),
+          INFO, "Delete", "Delete the empty layers?", selectable=False),
     Check("foreign_objects", "Cleanup", "Other-engine objects",
           "Objects, modifiers, materials and maps made for a render engine other than the "
           "active one (they may not render).",

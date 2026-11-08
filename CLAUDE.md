@@ -51,8 +51,13 @@ Max's Python: `C:\Program Files\Autodesk\3ds Max 2027\Python\python.exe` (always
   an argument (`f (for n in objects where n.material == m collect n)`) fails with "Bad free thunk
   local member index". Write those loops with an explicit `if`.
 - Live tests of scene-wide fixes (delete empty layers, ungroup all...) must only run when every
-  item found belongs to the test (names `O3DS_t*`): the user's open scene is real work, and
-  layer deletion is not undoable.
+  item found belongs to the test (names `O3DS_t*`): the user's open scene is real work (it
+  keeps empty template layers like `00_INPUTS`...`ZZ_AUX` on purpose).
+- Layer deletion is undoable only inside an undo record. Outside one it is permanent, and an
+  earlier undoable move of objects out of that layer then CRASHES 3ds Max 2027 on Ctrl+Z (it
+  puts them back on the deleted layer; reproduced in 3dsmaxbatch). Delete layers inside the
+  same `maxhost.undo` / `undo on` as the moves. Test risky undo paths in `3dsmaxbatch` first
+  (log each step to a file; `local` needs a block there), never in the user's Max.
 - A .max file does not record who saved it (the summary's Author/Last Saved By are empty unless
   typed in File Properties); the Windows file owner is the best proxy (empty on the NAS).
 - XRef-ing a file made with `saveNodes` opens a modal "obsolete format" warning that hangs the

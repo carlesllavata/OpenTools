@@ -524,12 +524,17 @@ struct O3DS_InspectorStruct
     (
         local count = 0
         local layers = emptyLayers()
-        -- deleting can empty a parent layer: repeat until nothing changes
-        while layers.count > 0 do
+        -- Inside an undo record layer deletion is undoable. Outside one it is permanent, and
+        -- undoing an earlier move of objects out of a deleted layer crashes 3ds Max 2027.
+        undo "Delete Empty Layers" on
         (
-            for l in layers do if LayerManager.deleteLayerByName l.name do count += 1
-            local next = emptyLayers()
-            layers = if next.count < layers.count then next else #()
+            -- deleting can empty a parent layer: repeat until nothing changes
+            while layers.count > 0 do
+            (
+                for l in layers do if LayerManager.deleteLayerByName l.name do count += 1
+                local remaining = emptyLayers()
+                layers = if remaining.count < layers.count then remaining else #()
+            )
         )
         count
     ),
