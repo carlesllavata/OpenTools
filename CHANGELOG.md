@@ -2,9 +2,10 @@
 
 Lo que va añadiendo cada versión de Open3DS, de la más reciente a la más antigua.
 
-## En desarrollo
+## 0.4.0 — 8 de noviembre de 2026
 
-### 8 de noviembre de 2026
+Ocho herramientas nuevas para el día a día, un panel que se ordena a tu gusto y dos
+cierres de 3ds Max corregidos.
 
 - **Filtrar por varias categorías.** Los botones de categoría bajo el buscador ahora se
   marcan y desmarcan uno a uno, y el panel muestra solo las categorías elegidas (por
@@ -38,6 +39,31 @@ Lo que va añadiendo cada versión de Open3DS, de la más reciente a la más ant
   jerarquía y su capa. Funciona con geometría, splines, cámaras y luces (las de tipo
   distinto se saltan), sin estropear el FOV de las cámaras con target. Se deshace con un
   solo Ctrl+Z.
+- **Nuevos botones: Copy / Paste Material + UVW** (categoría Materials), basados en CPM
+  Lite de Aleksey Sheremetov e incluidos con su permiso. **Copy Material + UVW** guarda el
+  material de un objeto y sus modificadores de mapeado (UVW Map, Unwrap UVW, UVW Xform…);
+  **Paste Material** lo asigna a la selección; **Paste Material + UVW** además cambia el
+  mapeado de los objetos por el copiado, sin tocar el resto de su pila. Las versiones
+  **Copy** pegan una copia independiente del material ("Copy-…") y la dejan elegida en la
+  barra de materiales, lista para editar. Todo se deshace con un solo Ctrl+Z.
+- **Sección Materials ordenada.** Los botones de Materials van debajo de la barra de
+  materiales, en una sola sección que se pliega entera.
+- **Nueva herramienta: Clean DWG** (categoría Scene), basada en el script de Juan Camilo
+  Alcaraz (Alzarac) e incluida con su permiso. Para el dibujo importado de AutoCAD: escribe
+  un nombre y pulsa Start. Abre los grupos, aplana todas las líneas a Z = 0 y borra lo que
+  no son líneas; lo pasa todo a una capa nueva con ese nombre, conservando los colores; lo
+  agrupa; y borra las capas del DWG que quedan vacías. Cada paso se puede desactivar. Tus
+  capas vacías de plantilla no se tocan, y todo se deshace con un solo Ctrl+Z, capas
+  incluidas.
+- **Nuevas herramientas: 3-Point Rotate y 3-Point Scale** (categoría Modeling), basadas en
+  los scripts de Sergo Pogosyan e incluidas con su permiso. Como el girar y el escalar por
+  referencia de AutoCAD: tres clics con snaps (punto base, un punto del objeto y dónde debe
+  quedar) y listo. El giro siempre va hacia el lado correcto, sin casilla "Flip", y
+  funciona en planta y en alzado. Se deshacen con un solo Ctrl+Z.
+- **Corregido: Turn to Instance** fallaba la primera vez que se usaba en una sesión de
+  3ds Max ("Unknown property … in undefined").
+- **Corregido: cierre de 3ds Max al deshacer** después de que Forensic borrara capas
+  vacías. Ahora ese borrado también se puede deshacer.
 
 ## 0.3.0 — 8 de noviembre de 2026
 
