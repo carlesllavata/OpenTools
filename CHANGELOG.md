@@ -31,6 +31,13 @@ Lo que va añadiendo cada versión de Open3DS, de la más reciente a la más ant
   en el panel Modify), ideal para separar objetos con máscaras por color como Mask ID. Los
   colores se reparten para que nunca salgan dos casi iguales ni grises, negros o blancos, y
   cada clic da una combinación nueva. Se deshace con un solo Ctrl+Z.
+- **Nueva herramienta: Turn to Instance** (categoría Modeling), basada en el script de
+  Miled Rizk e incluida con su permiso. Seleccionas los objetos, la lanzas y haces clic en
+  el objeto origen: cada uno pasa a ser una instancia completa del origen (geometría,
+  modificadores, material y nombre numerado) sin moverse de su sitio, y conserva su
+  jerarquía y su capa. Funciona con geometría, splines, cámaras y luces (las de tipo
+  distinto se saltan), sin estropear el FOV de las cámaras con target. Se deshace con un
+  solo Ctrl+Z.
 
 ## 0.3.0 — 8 de noviembre de 2026
 
