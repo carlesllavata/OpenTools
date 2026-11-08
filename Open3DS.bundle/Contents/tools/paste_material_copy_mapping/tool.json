@@ -1,0 +1,11 @@
+{
+  "id": "paste_material_copy_mapping",
+  "name": "Paste Material Copy + UVW",
+  "category": "Materials",
+  "description": "Assigns an independent copy of the copied material and replaces the selected objects' mapping modifiers with the copied ones. Undoable.",
+  "entry": "paste_material_copy_mapping.ms",
+  "keywords": ["paste", "material", "copy", "duplicate", "mapping", "uvw", "cpm"],
+  "author": "Aleksey Sheremetov (CPM Lite); adapted by Open3DS contributors",
+  "license": "Included with the author's permission",
+  "source_url": "https://kotiger.co/CPM"
+}

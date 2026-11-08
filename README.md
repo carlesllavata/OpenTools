@@ -10,7 +10,7 @@ macros you can bind to hotkeys.
 - Tools load lazily and run isolated: one broken tool never takes the others down
 - Settings live in `%APPDATA%\Open3DS`, so they survive 3ds Max upgrades
 
-> Status: early (v0.3.0). The hub, palette and macros work, with 19 tools: scene
+> Status: early (v0.3.0). The hub, palette and macros work, with 24 tools: scene
 > checks and repairs (Forensic), asset, proxy and XRef managers, modeling helpers and
 > an object clipboard with network targets (Ignite). The interface and icons are provisional.
 > What each version adds: [CHANGELOG.md](CHANGELOG.md) (in Spanish).
@@ -28,6 +28,9 @@ macros you can bind to hotkeys.
    object with the eyedropper, then apply it to the selection or select every object
    that uses it (Shift+click adds). Type in the drop-down to filter; right-click it for the
    Material Editor and the "apply when chosen" option. Hide it from the `⋯` menu.
+   Below the bar, the Copy / Paste Material buttons copy an object's material and mapping
+   modifiers and paste them onto other objects; "Paste Material Copy" pastes an independent
+   copy of the material and makes it the current one in the bar, ready to edit.
 4. Optional: in *Customize > Hotkey Editor*, category **Open3DS**, bind
    `Open3DS Command Palette` (for example to `Ctrl+Space`) and any tool you use often.
 

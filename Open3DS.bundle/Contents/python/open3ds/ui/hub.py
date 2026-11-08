@@ -144,11 +144,7 @@ class SectionHeader(QtWidgets.QFrame):
         font = self.title.font()
         font.setBold(True)
         self.title.setFont(font)
-        text = label.replace("<", "&lt;")
-        if count is not None:
-            text += "&nbsp;&nbsp;<span style='color:%s; font-weight:normal'>(%d)</span>" % (
-                theme.tokens().dim, count)
-        self.title.setText(text)
+        self.set_title(label, count)
         layout = QtWidgets.QHBoxLayout(self)
         layout.setContentsMargins(6, 3, 4, 3)
         layout.setSpacing(4)
@@ -157,6 +153,13 @@ class SectionHeader(QtWidgets.QFrame):
             self.setCursor(QtCore.Qt.PointingHandCursor)
             self.setToolTip("Click to fold or unfold")
         layout.addWidget(self.title, 1)
+
+    def set_title(self, label, count=None):
+        text = label.replace("<", "&lt;")
+        if count is not None:
+            text += "&nbsp;&nbsp;<span style='color:%s; font-weight:normal'>(%d)</span>" % (
+                theme.tokens().dim, count)
+        self.title.setText(text)
 
     def set_expanded(self, expanded):
         self.arrow.setText("▾" if expanded else "▸")
@@ -342,8 +345,15 @@ class HubWidget(QtWidgets.QWidget):
                           expanded=MATERIALS_LABEL not in collapsed, grid=False)
         section.add(self.material_bar)
         section.toggled.connect(self._remember_collapsed)
+        section.toggled.connect(self._fold_materials_tools)
         section.hide()
         self.materials_section = section
+
+    def _fold_materials_tools(self, _label, expanded):
+        """The Materials buttons under the bar fold and unfold with it."""
+        tools = getattr(self, "_materials_tools", None)
+        if common.is_alive(tools):
+            tools.set_expanded(expanded)
 
     def _show_material_bar(self, on):
         settings = _settings()
@@ -502,31 +512,44 @@ class HubWidget(QtWidgets.QWidget):
                 if not (show_all or group in chosen):
                     continue
                 members = [t for t in tools if t.category == group]
+                if group == MATERIALS_LABEL and self.materials_section is not None:
+                    sections.append((MATERIALS_LABEL, None, None))  # the bar; its buttons go below
                 if members:
                     sections.append((group, look.category_color(group), members))
-                if group == MATERIALS_LABEL and self.materials_section is not None:
-                    sections.append((MATERIALS_LABEL, None, None))
 
         icon_px = _icon_px()
         show_labels = bool(settings.get("hub_show_labels"))
         collapsed = set(settings.get("hub_collapsed"))
         position = 0
+        bar_shown = False
+        self._materials_tools = None
         for label, color, members in sections:
             if members is None:
-                self.content_layout.insertWidget(position, self.materials_section)
-                self.materials_section.show()
+                bar = self.materials_section
+                count = next((len(m) for l, _c, m in sections if l == MATERIALS_LABEL and m), None)
+                bar.header.set_title(MATERIALS_LABEL, count)
+                self.content_layout.insertWidget(position, bar)
+                bar.show()
+                bar_shown = True
                 position += 1
                 continue
+            # The Materials buttons sit under the material bar as part of its section:
+            # no header of their own, folded with the bar (_fold_materials_tools).
+            joined = label == MATERIALS_LABEL and bar_shown and not query
             section = Section(
                 label,
                 color,
                 len(members),
-                expanded=bool(query) or label not in collapsed,
+                expanded=self.materials_section.expanded if joined else (bool(query) or label not in collapsed),
                 collapsible=not query,
             )
             if not show_labels:
                 section.use_flow()
-            section.toggled.connect(self._remember_collapsed)
+            if joined:
+                section.header.hide()
+                self._materials_tools = section
+            else:
+                section.toggled.connect(self._remember_collapsed)
             for tool in members:
                 button = ToolButton(tool, icon_px, show_labels)
                 button.clicked.connect(lambda _=False, tid=tool.id: open3ds.run(tid))
@@ -705,6 +728,19 @@ def toggle():
 def refresh():
     if common.is_alive(_dock) and isinstance(_dock.widget(), HubWidget):
         _dock.widget().populate()
+
+
+def show_material(handle):
+    """Make a material (by animatable handle) the material bar's current one, quietly.
+    Tools call it from MAXScript: python.Execute "import open3ds.ui.hub as h; h.show_material(N)".
+    Returns False when the panel or the bar is not there."""
+    if not (common.is_alive(_dock) and isinstance(_dock.widget(), HubWidget)):
+        return False
+    bar = _dock.widget().material_bar
+    if bar is None:
+        return False
+    bar.set_current(int(handle), announce=False)
+    return True
 
 
 def close():
