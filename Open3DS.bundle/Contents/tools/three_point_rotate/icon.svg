@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <!-- Open3DS original icon: base point, original and reference rays, turning arc (3-Point Rotate). MIT. -->
+  <path d="M10 38 L42 38" stroke="#7a8794" stroke-width="2" stroke-linecap="round"/>
+  <path d="M10 38 L32 12" stroke="#3f8fe0" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M30 38 A20 20 0 0 0 23.5 22.5" fill="none" stroke="#c7a516" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M21 25.5 L23.5 22 L27 23.5" fill="none" stroke="#c7a516" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="10" cy="38" r="3.5" fill="#e6e6e6" stroke="#2a6bb0" stroke-width="1.5"/>
+  <circle cx="42" cy="38" r="2.8" fill="#7a8794"/>
+  <circle cx="32" cy="12" r="2.8" fill="#3f8fe0"/>
+</svg>

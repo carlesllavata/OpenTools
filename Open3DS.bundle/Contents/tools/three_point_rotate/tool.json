@@ -1,0 +1,11 @@
+{
+  "id": "three_point_rotate",
+  "name": "3-Point Rotate",
+  "category": "Modeling",
+  "description": "Rotates the selection by reference, like AutoCAD: click the base point, a point on the object and where that point should turn to (snaps work). The angle is signed, measured in the active view's plane. One undo step.",
+  "entry": "three_point_rotate.ms",
+  "keywords": ["rotate", "rotation", "reference", "3 point", "three point", "align", "angle", "autocad", "snap"],
+  "author": "Sergo Pogosyan (3PointRotation, SergoScripts); adapted by Open3DS contributors",
+  "license": "Included with the author's permission",
+  "source_url": "http://www.sergepogosyan.com"
+}
