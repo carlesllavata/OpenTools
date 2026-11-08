@@ -10,8 +10,16 @@ Lo que va añadiendo cada versión de Open3DS, de la más reciente a la más ant
   marcan y desmarcan uno a uno, y el panel muestra solo las categorías elegidas (por
   ejemplo, Materials y Scene a la vez). **All** vuelve a mostrarlo todo. El filtro se
   recuerda entre sesiones.
-- **Materials es una categoría más**, con su propio botón justo después de Clipboard.
+- **Materials es una categoría más**, con su propio botón.
 - Los puntos de color de las categorías se ven también con el botón activo.
+- **Ordenar las categorías a tu gusto.** Arrastra un botón de categoría encima de otro
+  para cambiar el orden de los botones y de las secciones, o usa el clic derecho (mover
+  al principio, a la izquierda, a la derecha, al final). Por defecto van en orden
+  alfabético, y "Default order" vuelve a él.
+- Las cabeceras de las secciones muestran el nombre tal cual (en negrita, ya no en
+  mayúsculas), igual que los botones de arriba.
+- **Corregido el parpadeo.** Al mostrar u ocultar categorías ya no aparece un instante
+  una ventana vacía.
 
 ## 0.3.0 — 8 de noviembre de 2026
 
