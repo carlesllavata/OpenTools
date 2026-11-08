@@ -2,6 +2,17 @@
 
 Lo que va añadiendo cada versión de Open3DS, de la más reciente a la más antigua.
 
+## En desarrollo
+
+### 8 de noviembre de 2026
+
+- **Filtrar por varias categorías.** Los botones de categoría bajo el buscador ahora se
+  marcan y desmarcan uno a uno, y el panel muestra solo las categorías elegidas (por
+  ejemplo, Materials y Scene a la vez). **All** vuelve a mostrarlo todo. El filtro se
+  recuerda entre sesiones.
+- **Materials es una categoría más**, con su propio botón justo después de Clipboard.
+- Los puntos de color de las categorías se ven también con el botón activo.
+
 ## 0.3.0 — 8 de noviembre de 2026
 
 Una sola estética para toda la app, que sigue los colores de 3ds Max.
