@@ -8,6 +8,9 @@ Python 3.13 (bundled with Max), PySide6, Corona. The repo lives on a NAS share (
 - `Open3DS.bundle/` – the ApplicationPlugins package users install. Version lives in
   `PackageContents.xml` (AppVersion + ComponentEntry Version) **and** `open3ds/__init__.py`; keep them equal.
   Max 2027 silently ignores a package whose RuntimeRequirements lack `SeriesMax` (we use `2099` = no cap).
+- `CHANGELOG.md` – the user's version diary, **in Spanish**, newest first. After every commit ask whether to
+  publish an entry or make a new version (bump both version places, tag `vX.Y.Z`, push, `gh release create`
+  with that version's notes). gh lives in `%LOCALAPPDATA%\Programs\GitHubCLI\bin\gh.exe`.
 - In non-interactive sessions (3dsmaxbatch, render nodes) only tools and macros load; no hub, no bridge.
 - `Open3DS.bundle/Contents/python/open3ds/` – core. Modules without Qt/pymxs imports at top level
   (`registry`, `search`, `macros.macro_source`, `settings`, `runner`) must stay importable outside Max:
