@@ -19,7 +19,7 @@ DEFAULTS = {
     "hub_icon_size": "medium",
     "hub_show_labels": True,
     "hub_categories": [],
-    # Category order set by dragging the chips ([] = alphabetical, Materials after Clipboard).
+    # Category order set by dragging the chips ([] = alphabetical).
     "hub_category_order": [],
     "hub_collapsed": [],
     # Material bar at the top of the hub, and whether choosing a material from its

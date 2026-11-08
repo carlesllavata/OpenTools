@@ -23,7 +23,7 @@ macros you can bind to hotkeys.
    in foldable sections by category, with category filters and a search box on top. Click
    a button to run the tool; right-click it to add it to favorites. Icon size and names are
    in the `⋯` menu. The panel and the tool windows take their colors from the 3ds Max theme.
-3. Below the Clipboard section sits the **Materials** section, a layer-style drop-down of the
+3. The **Materials** section holds the material bar, a layer-style drop-down of the
    scene's materials (like the AutoCAD layer list): choose a material or pick it from an
    object with the eyedropper, then apply it to the selection or select every object
    that uses it (Shift+click adds). Type in the drop-down to filter; right-click it for the

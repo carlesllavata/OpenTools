@@ -1,9 +1,10 @@
 """The dockable Open3DS panel: tool buttons grouped by category.
 
 Layout, top to bottom: search box with rescan and options buttons, category chips
-(pick any number; none = All), then one foldable section per category (favorites first) holding a grid of
-buttons (small icon and name), the Materials section (the material bar of
-ui/material_bar.py, can be hidden) after the Clipboard section, and a status line.
+(pick any number, none = All; drag to reorder, alphabetical by default), then one
+foldable section per category (favorites first) holding a grid of buttons (small icon
+and name) or, for Materials, the material bar of ui/material_bar.py (can be hidden),
+and a status line.
 Colors come from ui.theme, so the panel follows the 3ds Max palette.
 """
 
@@ -22,7 +23,6 @@ FAVORITES_LABEL = "★ Favorites"
 FAVORITES_FILTER = "__favorites__"
 FAVORITES_COLOR = "#e0b12c"
 MATERIALS_LABEL = "Materials"
-MATERIALS_AFTER = "Clipboard"  # the Materials section follows this category
 
 BUTTON_MIN_WIDTH = 132  # grid columns: as many as fit at least this wide
 
@@ -451,13 +451,12 @@ class HubWidget(QtWidgets.QWidget):
 
     def _groups(self, categories, saved_order=()):
         """Category names in panel order: the order the user set by dragging the chips,
-        then any category it does not mention yet. By default alphabetical, with
-        Materials (the material bar) after Clipboard."""
-        groups = list(categories)
-        if self.materials_section is not None and MATERIALS_LABEL not in groups:
-            # (a tool category called Materials would simply take the bar too)
-            index = groups.index(MATERIALS_AFTER) + 1 if MATERIALS_AFTER in groups else len(groups)
-            groups.insert(index, MATERIALS_LABEL)
+        then any category it does not mention yet, alphabetically. Materials (the
+        material bar) is one more category; a tool category of that name shares it."""
+        groups = set(categories)
+        if self.materials_section is not None:
+            groups.add(MATERIALS_LABEL)
+        groups = sorted(groups, key=str.lower)
         ordered = [g for g in saved_order if g in groups]
         return ordered + [g for g in groups if g not in ordered]
 
