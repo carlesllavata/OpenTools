@@ -19,6 +19,13 @@ Lo que va añadiendo cada versión de Open3DS, de la más reciente a la más ant
 - **Menú Open3DS en la barra de menús de 3ds Max.** Muestra u oculta el panel (si lo
   cierras con la X, desde aquí vuelve), abre la paleta de comandos y tiene todas las
   herramientas ordenadas por categoría.
+- **La barra de materiales te dice qué material tiene lo que seleccionas.** Una línea fina
+  encima de la barra, **Selected:**, muestra el material del objeto seleccionado (una raya
+  si hay varios). Es solo informativa: el material con el que trabajas, el de abajo, no
+  cambia hasta que tú lo eliges, así que el cuentagotas funciona como siempre. La flecha
+  **↓** lo convierte en el material de trabajo sin usar el cuentagotas, y con doble clic
+  seleccionas todos los objetos que lo usan. Apenas consume: solo mira la selección, nunca
+  recorre la escena. Se puede ocultar con el clic derecho.
 
 ## 0.4.0 — 8 de noviembre de 2026
 
