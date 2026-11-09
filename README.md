@@ -24,6 +24,8 @@ macros you can bind to hotkeys.
    in foldable sections by category, with category filters and a search box on top. Click
    a button to run the tool; right-click it to add it to favorites. Icon size and names are
    in the `⋯` menu. The panel and the tool windows take their colors from the 3ds Max theme.
+   The **Open3DS** menu in the main menu bar shows or hides the panel (if you close it, that
+   is where it comes back), opens the command palette and lists every tool by category.
 3. The **Materials** section holds the material bar, a layer-style drop-down of the
    scene's materials (like the AutoCAD layer list): choose a material or pick it from an
    object with the eyedropper, then apply it to the selection or select every object

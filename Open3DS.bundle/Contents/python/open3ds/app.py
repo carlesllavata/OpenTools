@@ -47,10 +47,14 @@ class App:
         return self.registry
 
     def rescan(self):
-        """Re-read every tool folder and refresh macros (after adding a tool)."""
+        """Re-read every tool folder and refresh macros and the menu (after adding a tool)."""
         self.scan()
         if maxhost.in_max():
             macros.register_all(self.registry)
+            if maxhost.is_interactive():
+                from . import menus
+
+                menus.register(self.registry)
 
     def run(self, tool_id):
         tool = self.registry.get(tool_id)

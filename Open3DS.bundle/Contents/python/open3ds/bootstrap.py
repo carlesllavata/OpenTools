@@ -43,6 +43,7 @@ def start(dev_root=None):
         return app
 
     _step("register shutdown callback", _register_shutdown_callback)
+    _step("Open3DS menu", _register_menu, app.registry)
 
     # The dev bridge first, so a broken panel can still be fixed and reloaded live.
     if app.dev:
@@ -67,6 +68,12 @@ def _start_bridge(folder, poll_ms):
     from . import devbridge
 
     devbridge.start(folder, poll_ms)
+
+
+def _register_menu(registry):
+    from . import menus
+
+    menus.register(registry)
 
 
 def _show_hub():
