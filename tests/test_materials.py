@@ -45,6 +45,12 @@ class MaterialHelperTests(unittest.TestCase):
         used.in_scene = False
         self.assertIn("Not used in the scene", materials.tooltip(used))
 
+    def test_uncounted_tooltips(self):
+        # entries read for the selection only are not counted (count -1)
+        e = materials.MaterialEntry(handle=7, name="Brick", kind="PhysicalMaterial", count=-1)
+        self.assertEqual(materials.tooltip(e), "Brick\nPhysicalMaterial")
+        self.assertEqual(materials.tooltip(materials.none_entry(-1)), "Objects without a material")
+
 
 if __name__ == "__main__":
     unittest.main()

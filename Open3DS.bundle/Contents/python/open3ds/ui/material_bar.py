@@ -1,7 +1,14 @@
-"""Material bar: a layer-like drop-down of the scene's materials plus three buttons.
+"""Material bar: what the selected object has, and the material you work with.
 
-    [■ Current material        ▾] [eyedropper] [apply] [select]
+    Selected: ■ Brick                              [↓]
+    [■ Working material        ▾] [eyedropper] [apply] [select]
 
+Top row (information only, it never changes the working material): the material of
+the selected object; "—" when several objects (or none that can take a material) are
+selected; with nothing selected it keeps what it showed. ↓ makes it the working
+material; double-click selects the objects that use it.
+
+Bottom row, the working (current) material, which only changes when you choose it:
 - The drop-down lists the top-level materials used in the scene (with a color swatch
   and how many objects use each one) and "(no material)". Choosing one makes it the
   current material; type in it to filter a long list.
@@ -9,15 +16,23 @@
 - Apply: assign the current material to the selected objects (one undo step).
 - Select: select every visible, unfrozen object with the current material
   (Shift+click adds them to the selection).
-Right-click the drop-down for the Material Editor and the AutoCAD-style option
-"apply when chosen from the list".
+Right-click for the Material Editor, the AutoCAD-style option "apply when chosen from
+the list" and the option to hide the top row.
+
+The top row costs near zero: 3ds Max's NodeEventCallback batches selection,
+material-assignment and new-node changes into one event after the operation (and only
+on mouse up), the event only starts a Qt timer, and the timer makes a single MAXScript
+call that looks at the selection alone (the scene is never walked). Nothing runs while
+the bar is hidden (it catches up when shown) or the top row is switched off (no events).
 """
 
+import itertools
 from pathlib import Path
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from .. import app as app_mod, log, materials
+from . import common, theme
 from .toolwindow import guarded
 
 _log = log.get("material_bar")
@@ -28,9 +43,70 @@ HANDLE_ROLE = QtCore.Qt.UserRole + 10
 EXTRA_ROLE = QtCore.Qt.UserRole + 11
 SWATCH_ROLE = QtCore.Qt.UserRole + 12
 CHECK_MS = 2000  # how often the current material's name and existence are re-read
+FOLLOW_KEY = "material_bar_follow"
+EVENTS_GLOBAL = "O3DS_MaterialBarEvents"
 
 
 _settings = app_mod.current_settings
+
+
+# ------------------------------------------------------------- scene events
+_events_owner = None  # the bar that follows the selection
+_events_cb = None  # its NodeEventCallback
+_events_token = None
+_tokens = itertools.count(1)
+
+
+def _on_scene_event():
+    """Called (through a MAXScript stub) after each batch of changes: as cheap as
+    possible, the bar does the rest later."""
+    bar = _events_owner
+    if bar is not None and common.is_alive(bar):
+        bar.schedule_follow()
+
+
+# The handler is a MAXScript stub that drops its arguments, so the array of node
+# handles of a batch (thousands when a file is opened or merged) never reaches Python.
+# `added`: a node created and selected in one operation (create, clone, paste) reports
+# only that, not selectionChanged.
+_EVENTS_MS = """(
+    fn O3DS_MaterialBarStub ev nd = (if O3DS_MaterialBarPing != undefined do O3DS_MaterialBarPing())
+    NodeEventCallback mouseUp:true selectionChanged:O3DS_MaterialBarStub \\
+        materialStructured:O3DS_MaterialBarStub added:O3DS_MaterialBarStub
+)"""
+
+
+def _install_events(bar):
+    """Start sending selection and material-assignment changes to `bar`."""
+    global _events_owner, _events_cb, _events_token
+    from pymxs import runtime as rt
+
+    _remove_events(_events_token)
+    stale = getattr(rt, EVENTS_GLOBAL, None)  # left by an earlier load of this module
+    if stale is not None:
+        try:
+            stale.enabled = False
+        except Exception:  # noqa: BLE001 - not a callback any more
+            pass
+    rt.O3DS_MaterialBarPing = _on_scene_event
+    _events_cb = rt.execute(_EVENTS_MS)
+    setattr(rt, EVENTS_GLOBAL, _events_cb)  # keeps it alive and reachable after a reload
+    _events_owner = bar
+    _events_token = next(_tokens)
+    return _events_token
+
+
+def _remove_events(token):
+    """Stop the events installed with `token` (a newer bar's events are left alone)."""
+    global _events_owner, _events_cb, _events_token
+    if token is None or token != _events_token:
+        return
+    if _events_cb is not None:
+        try:
+            _events_cb.enabled = False
+        except Exception:  # noqa: BLE001 - 3ds Max is shutting down
+            _log.debug("Could not disable the material bar events", exc_info=True)
+    _events_owner = _events_cb = _events_token = None
 
 
 def _icon(name):
@@ -165,6 +241,78 @@ class MaterialCombo(QtWidgets.QComboBox):
         super().showPopup()
 
 
+# --------------------------------------------------------- selection row
+class _ElidedLabel(QtWidgets.QLabel):
+    """One-line label that shortens a long name with "…" instead of widening the panel."""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._full = ""
+        self.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Preferred)
+
+    def set_full_text(self, text):
+        self._full = text
+        self._elide()
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self._elide()
+
+    def _elide(self):
+        self.setText(self.fontMetrics().elidedText(self._full, QtCore.Qt.ElideRight, max(self.width(), 10)))
+
+
+class SelectionRow(QtWidgets.QFrame):
+    """Read-only line with the selected object's material, above the working bar."""
+
+    use_requested = QtCore.Signal()
+    select_requested = QtCore.Signal()
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setObjectName("Open3DS_MaterialSelection")
+        self.handle = None  # what it shows: a material handle, materials.NONE, or None ("—")
+        self.name = ""
+        self.setToolTip("Material of the selected object (— when several are selected).\n"
+                        "Double-click: select the objects that use it.")
+
+        prefix = theme.dim_label("Selected:")
+        self.swatch = QtWidgets.QLabel()
+        self.swatch.setFixedSize(16, 16)
+        self.label = _ElidedLabel()
+        self.use_button = QtWidgets.QToolButton()
+        self.use_button.setText("↓")
+        self.use_button.setAutoRaise(True)
+        self.use_button.setFixedSize(26, 20)
+        self.use_button.setToolTip("Make it the working material (below)")
+        self.use_button.clicked.connect(self.use_requested)
+
+        layout = QtWidgets.QHBoxLayout(self)
+        layout.setContentsMargins(4, 0, 0, 0)
+        layout.setSpacing(5)
+        layout.addWidget(prefix)
+        layout.addWidget(self.swatch)
+        layout.addWidget(self.label, 1)
+        layout.addWidget(self.use_button)
+        self.show_entry(None)
+
+    def show_entry(self, entry):
+        """Show a MaterialEntry, or "—" for None."""
+        self.handle = entry.handle if entry is not None else None
+        self.name = entry.name if entry is not None else ""
+        self.label.set_full_text(self.name or "—")
+        self.label.setToolTip(materials.tooltip(entry) if entry is not None else "")
+        if entry is not None:
+            self.swatch.setPixmap(swatch_icon(entry).pixmap(16, 16))
+        self.swatch.setVisible(entry is not None)
+        self.use_button.setEnabled(entry is not None)
+
+    def mouseDoubleClickEvent(self, event):
+        if self.handle is not None:
+            self.select_requested.emit()
+        super().mouseDoubleClickEvent(event)
+
+
 # -------------------------------------------------------------------- bar
 class MaterialBar(QtWidgets.QFrame):
     def __init__(self, parent=None):
@@ -205,19 +353,105 @@ class MaterialBar(QtWidgets.QFrame):
             self._select,
         )
 
-        layout = QtWidgets.QHBoxLayout(self)
+        self.selection_row = SelectionRow()
+        self.selection_row.use_requested.connect(self.guard(self._use_selected))
+        self.selection_row.select_requested.connect(self.guard(self._select_like_selected))
+
+        working = QtWidgets.QHBoxLayout()
+        working.setContentsMargins(0, 0, 0, 0)
+        working.setSpacing(2)
+        working.addWidget(self.combo, 1)
+        working.addWidget(self.pick_button)
+        working.addWidget(self.apply_button)
+        working.addWidget(self.select_button)
+
+        layout = QtWidgets.QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(2)
-        layout.addWidget(self.combo, 1)
-        layout.addWidget(self.pick_button)
-        layout.addWidget(self.apply_button)
-        layout.addWidget(self.select_button)
+        layout.addWidget(self.selection_row)
+        layout.addLayout(working)
 
         self._timer = QtCore.QTimer(self)
         self._timer.setInterval(CHECK_MS)
         self._timer.timeout.connect(self._check_current)
         self._timer.start()
+
+        self._follow_timer = QtCore.QTimer(self)
+        self._follow_timer.setSingleShot(True)
+        self._follow_timer.timeout.connect(self._follow)
+        self._events_token = None
+        settings = _settings()
+        self.set_follow(settings.get(FOLLOW_KEY) if settings is not None else True)
         QtCore.QTimer.singleShot(0, self.guard(self.refresh))
+
+    # ------------------------------------------------------ follow selection
+    def set_follow(self, on):
+        """Show the selection row (installs or removes the scene events)."""
+        on = bool(on)
+        if on and self._events_token is None:
+            try:
+                token = _install_events(self)
+            except Exception:  # noqa: BLE001 - the bar works without it
+                _log.exception("Could not follow the selection")
+                on = False
+            else:
+                self._events_token = token
+                # no reference to self: the bar is being destroyed when this runs
+                self.destroyed.connect(lambda *_a, t=token: _remove_events(t))
+                self.schedule_follow()
+        elif not on and self._events_token is not None:
+            _remove_events(self._events_token)
+            self._events_token = None
+            self._follow_timer.stop()
+        self.selection_row.setVisible(on)
+
+    @property
+    def following(self):
+        return self._events_token is not None
+
+    def schedule_follow(self, delay=0):
+        if self.following:
+            self._follow_timer.start(delay)
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        self.schedule_follow()  # catch up with what changed while hidden
+
+    def _follow(self):
+        """Selection row: the material of the only selected object ("—" for several).
+        It never touches the working material."""
+        if not self.following or not self.isVisible():
+            return  # hidden: showEvent catches up
+        try:
+            handle = materials.selected_handle()
+            if handle == materials.SELECTION_EMPTY:
+                return  # nothing selected: keep what the row shows
+            new = None if handle == materials.SELECTION_OTHER else handle
+            if new == self.selection_row.handle:
+                return
+            self.selection_row.show_entry(None if new is None else materials.entry(new, count=False))
+        except Exception:  # noqa: BLE001 - e.g. while 3ds Max is loading a file
+            _log.debug("Follow skipped", exc_info=True)
+
+    def _use_selected(self):
+        """↓: the selection row's material becomes the working one."""
+        handle = self.selection_row.handle
+        if handle is not None:
+            self.set_current(handle)
+
+    def _select_like_selected(self):
+        """Double-click on the selection row: select the objects with that material."""
+        handle = self.selection_row.handle
+        if handle is None:
+            return
+        selected, skipped = materials.select(handle)
+        if selected < 0:
+            materials.prompt("that material no longer exists.")
+            return
+        text = "selected %s with “%s”" % (materials.plural(selected, "object"), self.selection_row.name)
+        if skipped:
+            text += " (%d hidden or frozen left out)" % skipped
+        materials.prompt(text + ".")
 
     def guard(self, func):
         return guarded(TITLE, func)
@@ -252,19 +486,48 @@ class MaterialBar(QtWidgets.QFrame):
             combo.clear()
             for e in listed:
                 combo.addItem(e.name)
-                row = combo.count() - 1
-                combo.setItemData(row, e.handle, HANDLE_ROLE)
-                combo.setItemData(row, swatch_icon(e), SWATCH_ROLE)
-                combo.setItemData(row, materials.tooltip(e), QtCore.Qt.ToolTipRole)
-                extra = str(e.count) if e.in_scene else "not in scene"
-                combo.setItemData(row, extra, EXTRA_ROLE)
-                if not e.in_scene:
-                    font = combo.font()
-                    font.setItalic(True)
-                    combo.setItemData(row, font, QtCore.Qt.FontRole)
+                self._fill_row(combo.count() - 1, e)
         finally:
             combo.blockSignals(False)
         self._show_current()
+
+    def _fill_row(self, row, e):
+        combo = self.combo
+        combo.setItemText(row, e.name)
+        combo.setItemData(row, e.handle, HANDLE_ROLE)
+        combo.setItemData(row, swatch_icon(e), SWATCH_ROLE)
+        combo.setItemData(row, materials.tooltip(e), QtCore.Qt.ToolTipRole)
+        if not e.in_scene:
+            extra = "not in scene"
+        else:
+            extra = str(e.count) if e.count >= 0 else ""
+        combo.setItemData(row, extra, EXTRA_ROLE)
+        if not e.in_scene:
+            font = combo.font()
+            font.setItalic(True)
+            combo.setItemData(row, font, QtCore.Qt.FontRole)
+
+    def _load_entry(self, handle):
+        """Read one material into the list without re-reading the scene (cheap: the
+        list is fully re-read when it opens). False if the material is gone."""
+        e = materials.entry(handle, count=False)
+        if e is None:
+            return False
+        old = self._entries.get(handle)
+        if old is not None and old.count >= 0:
+            e.count = old.count  # keep the last known count
+        self._entries[handle] = e
+        combo = self.combo
+        combo.blockSignals(True)
+        try:
+            row = self._row_of(handle)
+            if row < 0:
+                combo.addItem(e.name)
+                row = combo.count() - 1
+            self._fill_row(row, e)
+        finally:
+            combo.blockSignals(False)
+        return True
 
     def _row_of(self, handle):
         for row in range(self.combo.count()):
@@ -291,30 +554,39 @@ class MaterialBar(QtWidgets.QFrame):
 
     def set_current(self, handle, announce=True):
         self.current = handle
-        if handle not in self._entries:
-            self.refresh()
-        else:
-            self._show_current()
+        if handle not in self._entries and not self._load_entry(handle):
+            self.current = None  # deleted meanwhile
+        self._show_current()
         if announce and self.current is not None:
             materials.prompt("current material: %s" % self._current_name)
 
     def _check_current(self):
-        """Cheap periodic check: the current material was renamed, deleted, or the
-        scene was replaced (new file, reset)."""
-        if not self.isVisible() or self.combo.view().isVisible() or self.combo.lineEdit().hasFocus():
+        """Cheap periodic check (one lookup per row, no scene walk): a material shown
+        was renamed, deleted, or the scene was replaced (new file, reset)."""
+        if not self.isVisible():
+            return
+        row = self.selection_row
+        if self.following and row.handle not in (None, materials.NONE):
+            try:
+                name = materials.name_of(row.handle)
+                if name != row.name:
+                    row.show_entry(None if name is None else materials.entry(row.handle, count=False))
+            except Exception:  # noqa: BLE001 - e.g. while 3ds Max is busy loading a file
+                _log.debug("Selection check skipped", exc_info=True)
+        if self.combo.view().isVisible() or self.combo.lineEdit().hasFocus():
             return
         if self.current is None or self.current == materials.NONE:
             return
         try:
-            entry = materials.entry(self.current)
+            name = materials.name_of(self.current)
+            if name is None:
+                self.current = None
+                self._show_current()
+            elif name != self._current_name:
+                self._load_entry(self.current)
+                self._show_current()
         except Exception:  # noqa: BLE001 - e.g. while 3ds Max is busy loading a file
             _log.debug("Material check skipped", exc_info=True)
-            return
-        if entry is None:
-            self.current = None
-            self._show_current()
-        elif entry.name != self._current_name:
-            self.refresh()
 
     # ------------------------------------------------------------- events
     def eventFilter(self, watched, event):
@@ -409,12 +681,22 @@ class MaterialBar(QtWidgets.QFrame):
         if settings is not None:
             settings.set("material_bar_apply_on_choose", bool(on))
 
+    def _toggle_follow(self, on):
+        settings = _settings()
+        if settings is not None:
+            settings.set(FOLLOW_KEY, bool(on))
+        self.set_follow(on)
+
     def _context_menu(self, global_pos):
         menu = QtWidgets.QMenu(self)
         menu.addAction("Get from Material Editor", self.guard(self._from_editor))
         edit = menu.addAction("Show in Material Editor", self.guard(self._edit))
         edit.setEnabled(self.current not in (None, materials.NONE))
         menu.addSeparator()
+        follow = menu.addAction("Show the selected object's material (top row)")
+        follow.setCheckable(True)
+        follow.setChecked(self.following)
+        follow.toggled.connect(self.guard(self._toggle_follow))
         auto = menu.addAction("Apply when chosen from the list (AutoCAD style)")
         auto.setCheckable(True)
         settings = _settings()

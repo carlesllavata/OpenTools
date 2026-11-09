@@ -81,6 +81,10 @@ Max's Python: `C:\Program Files\Autodesk\3ds Max 2027\Python\python.exe` (always
   `python.Execute "import open3ds.ui.hub as h; h.show_material(<handle>)"`).
 - Live tests of `.ms` tools: run the entry with `rt.fileIn(tool.entry_file)`, not `runner.run`;
   the runner shows a modal error dialog on failure, which hangs the bridge.
+- `NodeEventCallback` (accepts Python callables) batches events and fires after the operation,
+  so a live test must change the scene in one bridge call and read the result in the next. A
+  node created and selected in one operation only reports `added`, never `selectionChanged`.
+  `for n in selection` copies the whole selection first; index `selection[i]` to stop early.
 - Viewport HUDs: `registerRedrawViewsCallback` + `gw.wText` works in 2027 (and shows in
   `gw.getViewportDib`); text drawn inside a `gw.wRect` is hidden, so highlight with color.
 - PySide6: `QAction` / `QActionGroup` live in QtGui, not QtWidgets. Qt never opens an empty

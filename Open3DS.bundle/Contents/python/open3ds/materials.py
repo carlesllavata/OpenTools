@@ -54,9 +54,14 @@ def sort_entries(entries):
 
 def tooltip(entry):
     if entry.is_none:
+        if entry.count < 0:
+            return "Objects without a material"
         return "Objects without a material · %s" % plural(entry.count, "object")
     lines = [entry.name, entry.kind or "Material"]
-    lines.append(plural(entry.count, "object") if entry.in_scene else "Not used in the scene")
+    if not entry.in_scene:
+        lines.append("Not used in the scene")
+    elif entry.count >= 0:  # -1: not counted (read for the selection only)
+        lines.append(plural(entry.count, "object"))
     if entry.has_map:
         lines.append("Color from a texture map")
     return "\n".join(lines)
@@ -195,10 +200,41 @@ struct O3DS_MaterialsStruct
         users
     ),
 
-    fn infoOf h =
+    -- withCount:false skips counting the users (a walk over the whole scene)
+    fn infoOf h withCount:true =
     (
         local m = byHandle h
-        if m == undefined then undefined else describe m (usersOf m).count
+        if m == undefined then undefined else describe m (if withCount then (usersOf m).count else -1)
+    ),
+
+    fn nameOf h = (local m = byHandle h ; if m == undefined then undefined else m.name),
+
+    -- What the bar shows for the selection, without walking the scene: the handle of
+    -- the material of the only geometry or shape selected (0 = it has none), -1 when
+    -- several (or none of them) are selected, -2 when nothing is selected.
+    fn selectedHandle =
+    (
+        local count = selection.count
+        local found = undefined
+        local many = false
+        if count == 1 then (if canTake selection[1] do found = selection[1])
+        else if count > 1 do
+        (
+            -- stops at the second one: a closed group of one object still counts as one.
+            -- Indexed: "for n in selection" copies the whole selection first.
+            for i = 1 to count while not many do
+            (
+                local n = selection[i]
+                if canTake n do (if found == undefined then found = n else many = true)
+            )
+        )
+        case of
+        (
+            (count == 0): -2
+            (many or found == undefined): -1
+            (found.material == undefined): 0
+            default: (getHandleByAnim found.material) as integer
+        )
     ),
 
     -- #(applied, skipped); h == 0 clears the material
@@ -292,16 +328,33 @@ def scene_entries():
     return sort_entries(entry_from_row(r) for r in rows), int(none_count)
 
 
-def entry(handle):
-    """Fresh MaterialEntry for a handle, or None if that material is gone."""
+def entry(handle, count=True):
+    """Fresh MaterialEntry for a handle, or None if that material is gone.
+    count=False is cheap (no walk over the scene): the entry's count is then -1."""
     if handle == NONE:
-        return none_entry()
-    row = _api().infoOf(handle)
+        return none_entry(-1 if not count else 0)
+    row = _api().infoOf(handle, withCount=count)
     if row is None:
         return None
     result = entry_from_row(row)
-    result.in_scene = result.count > 0
+    result.in_scene = result.count != 0
     return result
+
+
+def name_of(handle):
+    """Current name of a material, or None if it is gone. Cheap."""
+    name = _api().nameOf(handle)
+    return None if name is None else str(name)
+
+
+SELECTION_EMPTY = -2
+SELECTION_OTHER = -1  # several objects, or none that can take a material
+
+
+def selected_handle():
+    """Material handle of the only selected geometry/shape (NONE if it has none),
+    SELECTION_OTHER or SELECTION_EMPTY. One cheap call: the scene is not walked."""
+    return int(_api().selectedHandle())
 
 
 def apply(handle):

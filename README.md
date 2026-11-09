@@ -29,8 +29,11 @@ macros you can bind to hotkeys.
 3. The **Materials** section holds the material bar, a layer-style drop-down of the
    scene's materials (like the AutoCAD layer list): choose a material or pick it from an
    object with the eyedropper, then apply it to the selection or select every object
-   that uses it (Shift+click adds). Type in the drop-down to filter; right-click it for the
-   Material Editor and the "apply when chosen" option. Hide it from the `⋯` menu.
+   that uses it (Shift+click adds). A thin row above it shows the material of the selected
+   object ("—" when several are selected) without touching the one you work with: ↓ makes
+   it the working material, double-click selects the objects that use it. Type in the
+   drop-down to filter; right-click it for the Material Editor and the "apply when chosen"
+   and "show the selected object's material" options. Hide it from the `⋯` menu.
    Below the bar, the Copy / Paste Material buttons copy an object's material and mapping
    modifiers and paste them onto other objects; "Paste Material Copy" pastes an independent
    copy of the material and makes it the current one in the bar, ready to edit.
