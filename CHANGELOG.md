@@ -16,6 +16,9 @@ Lo que va añadiendo cada versión de Open3DS, de la más reciente a la más ant
     seleccionados (cajas, marcadores…) por varias fuentes elegidas al azar según su peso,
     conservando posición, giro, escala y capa. Se deshace con un solo Ctrl+Z. Si tenías
     Ignite en una barra o con un atajo, ahora abre Random Replace.
+- **Menú Open3DS en la barra de menús de 3ds Max.** Muestra u oculta el panel (si lo
+  cierras con la X, desde aquí vuelve), abre la paleta de comandos y tiene todas las
+  herramientas ordenadas por categoría.
 
 ## 0.4.0 — 8 de noviembre de 2026
 
