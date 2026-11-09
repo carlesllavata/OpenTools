@@ -11,8 +11,9 @@ macros you can bind to hotkeys.
 - Settings live in `%APPDATA%\Open3DS`, so they survive 3ds Max upgrades
 
 > Status: early (v0.4.0). The hub, palette and macros work, with 27 tools: scene
-> checks and repairs (Forensic), asset, proxy and XRef managers, modeling helpers and
-> an object clipboard with network targets (Ignite). The interface and icons are provisional.
+> checks and repairs (Forensic), asset, proxy and XRef managers, modeling and DWG helpers,
+> material copy / paste and an object clipboard with network targets. The interface and icons
+> are provisional.
 > What each version adds: [CHANGELOG.md](CHANGELOG.md) (in Spanish).
 
 ## Install

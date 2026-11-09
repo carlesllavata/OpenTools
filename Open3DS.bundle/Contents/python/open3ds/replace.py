@@ -1,6 +1,6 @@
 """Weighted random replacement (pure Python, tested offline).
 
-Ignite's Replace Objects turns each selected object into a copy or instance of one of
+Random Replace (tool id "ignite") turns each selected object into a copy or instance of one of
 several source objects. Each source has a whole-number weight: a source with weight
 40 is picked about 40/(sum of weights) of the time; weight 0 never.
 """

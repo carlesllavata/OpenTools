@@ -17,9 +17,9 @@ Python 3.13 (bundled with Max), PySide6, Corona. The repo lives on a NAS share (
   the offline tests rely on it. Anything touching 3ds Max goes through `maxhost.py`.
 - `Open3DS.bundle/Contents/tools/<id>/tool.json` – one folder per tool; schema in README.
 - Forensic lives in `tools/scene_summary` (id kept from Scene Inspector so users' macros and toolbars keep
-  working); Ignite in `tools/ignite`, built on the Object Clipboard (modes objects / materials / modifiers /
-  animation). "Forensic" and "Ignite" are provisional names the user will change; the card look
-  (`open3ds/ui/cards.py`) is provisional too.
+  working). Random Replace lives in `tools/ignite` (id kept from the old Ignite panel, whose copy/paste
+  part moved to the Object Clipboard dashboard: its paste options show per mode there). "Forensic" is a
+  provisional name the user will change; the card look (`open3ds/ui/cards.py`) is provisional too.
 - `dev/` – `install_dev.ps1` (dev shim bundle in `%APPDATA%\Autodesk\ApplicationPlugins\Open3DS-dev.bundle`
   that loads this checkout and enables the bridge), `bridge.py` (client), `run_tests.py`.
 

@@ -1,10 +1,10 @@
 {
   "id": "ignite",
-  "name": "Ignite",
-  "category": "Clipboard",
-  "description": "One panel to copy and paste objects, modifier stacks, materials and transform keys through the clipboard slots (local or network; keys can keep each object's position and be shifted in time), and to replace the selected objects with several sources picked at random by weight.",
-  "entry": "ignite.py:run",
-  "keywords": ["ignite", "copy", "paste", "modifiers", "stack", "materials", "keys", "animation", "replace", "random", "weights", "scatter", "variation", "clipboard"],
+  "name": "Random Replace",
+  "category": "Modeling",
+  "description": "Replaces the selected objects (placeholders, boxes...) with copies or instances of several source objects picked at random by weight, keeping each one's position, rotation, scale and layer. Undoable.",
+  "entry": "random_replace.py:run",
+  "keywords": ["replace", "random", "weights", "scatter", "variation", "placeholder", "swap", "instances"],
   "author": "Open3DS contributors",
   "license": "MIT"
 }

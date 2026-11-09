@@ -1,8 +1,8 @@
 /*
-    Open3DS - Ignite core (MIT, Open3DS contributors).
-    Replace Objects: each target becomes a copy or instance of a source picked by Python.
+    Open3DS - Random Replace core (MIT, Open3DS contributors).
+    Each target becomes a copy or instance of a source picked by Python (by weight).
 */
-struct O3DS_IgniteStruct
+struct O3DS_RandomReplaceStruct
 (
     -- a source and everything parented below it
     fn withChildren n acc =
@@ -40,7 +40,7 @@ struct O3DS_IgniteStruct
         local groups = for s in sources collect (withChildren s #())
         local anchors = for g in groups collect (transMatrix (bottomCenter g))
         local result = #()
-        undo "Replace Objects" on
+        undo "Random Replace" on
         (
             for i = 1 to targets.count do
             (
@@ -65,4 +65,4 @@ struct O3DS_IgniteStruct
         result
     )
 )
-global O3DS_Ignite = O3DS_IgniteStruct()
+global O3DS_RandomReplace = O3DS_RandomReplaceStruct()

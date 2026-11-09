@@ -1,7 +1,8 @@
 """Object Clipboard window: the dashboard of the 8 clipboard slots.
 
-Target (Local or a network folder), mode (objects / materials / modifiers / keys), how Paste places
-objects, the viewport HUD, and one card per slot with its thumbnail and metadata.
+Target (Local or a network folder), mode (objects / materials / modifiers / keys), the paste options
+of the current mode (how objects are placed; modifiers as instances; keys kept in place and shifted
+in time), the viewport HUD, and one card per slot with its thumbnail and metadata.
 Logic in open3ds.object_clipboard.
 """
 
@@ -330,6 +331,35 @@ class ClipboardWindow(QtWidgets.QDialog):
         self.align = QtWidgets.QCheckBox("Align to surface")
         self.align.setToolTip("While placing, orient the objects to the face under the cursor")
         self.align.toggled.connect(lambda on: self._updating or _set("object_clipboard_align", on))
+        # modifiers mode
+        self.mod_instance = QtWidgets.QCheckBox("Paste as instances")
+        self.mod_instance.setToolTip("On: every target shares the same pasted modifiers (change one, change all). "
+                                     "Off: each target gets its own copy.")
+        self.mod_instance.toggled.connect(lambda on: self._updating or _set("object_clipboard_mod_instance", on))
+        # keys mode
+        self.keys_relative = QtWidgets.QCheckBox("Keep each object's position at frame")
+        self.keys_relative.setToolTip("Move the pasted motion so every object is where it is now at this frame. "
+                                      "Off: objects follow the copied positions exactly.")
+        self.keys_relative.toggled.connect(lambda on: self._updating or _set("object_clipboard_keys_relative", on))
+        self.keys_frame = QtWidgets.QSpinBox()
+        self.keys_frame.setRange(-100000, 100000)
+        self.keys_frame.setFixedWidth(80)
+        self.keys_relative.toggled.connect(self.keys_frame.setEnabled)
+        self.keys_frame.valueChanged.connect(lambda v: self._updating or _set("object_clipboard_keys_frame", v))
+        self.keys_offset = QtWidgets.QSpinBox()
+        self.keys_offset.setRange(-100000, 100000)
+        self.keys_offset.setPrefix("Time offset ")
+        self.keys_offset.setSuffix(" frames")
+        self.keys_offset.setFixedWidth(170)
+        self.keys_offset.setToolTip("Shift the pasted keys in time (0 = same frames as the copy)")
+        self.keys_offset.valueChanged.connect(lambda v: self._updating or _set("object_clipboard_keys_offset", v))
+        # which paste options show, per mode
+        self._mode_widgets = {
+            "objects": (self.paste_mode, self.align),
+            "modifiers": (self.mod_instance,),
+            "animation": (self.keys_relative, self.keys_frame, self.keys_offset),
+        }
+
         self.hud = QtWidgets.QCheckBox("HUD")
         self.hud.setToolTip("Show every slot in the viewport, with the one the held Shift / Ctrl / Alt keys pick")
         self.hud.toggled.connect(lambda on: self._updating or _g(lambda: clipboard_hud.set_visible(on))())
@@ -359,6 +389,11 @@ class ClipboardWindow(QtWidgets.QDialog):
         row2 = QtWidgets.QHBoxLayout()
         row2.addWidget(self.paste_mode)
         row2.addWidget(self.align)
+        row2.addWidget(self.mod_instance)
+        row2.addWidget(self.keys_relative)
+        row2.addWidget(self.keys_frame)
+        row2.addSpacing(8)
+        row2.addWidget(self.keys_offset)
         row2.addStretch(1)
         row2.addWidget(self.hud)
 
@@ -410,9 +445,16 @@ class ClipboardWindow(QtWidgets.QDialog):
             self.mode_modifiers.setChecked(cfg.mode == "modifiers")
             self.mode_keys.setChecked(cfg.mode == "animation")
             self.paste_mode.setCurrentIndex(max(0, self.paste_mode.findData(cfg.paste)))
-            self.paste_mode.setEnabled(cfg.mode == "objects")
             self.align.setChecked(cfg.align)
-            self.align.setEnabled(cfg.mode == "objects")
+            self.mod_instance.setChecked(cfg.mod_instance)
+            self.keys_relative.setChecked(cfg.keys_relative)
+            for spin, value in ((self.keys_frame, cfg.keys_frame), (self.keys_offset, cfg.keys_offset)):
+                if not spin.hasFocus():  # never overwrite a number while it is being typed
+                    spin.setValue(value)
+            self.keys_frame.setEnabled(cfg.keys_relative)
+            for mode, widgets in self._mode_widgets.items():
+                for widget in widgets:
+                    widget.setVisible(cfg.mode == mode)
             self.hud.setChecked(clipboard_hud.is_running())
         finally:
             self._updating = False
