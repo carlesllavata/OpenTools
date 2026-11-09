@@ -2,6 +2,21 @@
 
 Lo que va añadiendo cada versión de Open3DS, de la más reciente a la más antigua.
 
+## En desarrollo
+
+### 9 de noviembre de 2026
+
+- **Ignite desaparece; lo suyo se reparte.** Repetía lo que ya hace el Object Clipboard
+  (mismas ranuras, mismo copiar y pegar), así que solo se quedan las dos cosas que tenía
+  propias:
+  - **Opciones de pegado en el Object Clipboard.** Debajo del destino aparecen las
+    opciones del modo elegido: en **Modifiers**, pegar como instancias; en **Keys**,
+    mantener la posición de cada objeto en un frame y desplazar las claves en el tiempo.
+  - **Nueva herramienta: Random Replace** (categoría Modeling). Sustituye los objetos
+    seleccionados (cajas, marcadores…) por varias fuentes elegidas al azar según su peso,
+    conservando posición, giro, escala y capa. Se deshace con un solo Ctrl+Z. Si tenías
+    Ignite en una barra o con un atajo, ahora abre Random Replace.
+
 ## 0.4.0 — 8 de noviembre de 2026
 
 Ocho herramientas nuevas para el día a día, un panel que se ordena a tu gusto y dos
