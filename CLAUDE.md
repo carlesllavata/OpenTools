@@ -21,6 +21,9 @@ and `.devbridge` logs refer to that. Part of the Open3D suite: see `..\..\CLAUDE
   text in `LICENSE`, the license named in the README, and `SPDX-License-Identifier: GPL-3.0-or-later` as the
   first comment line of every source file (after a shebang or BOM). Only code that may be distributed under
   it goes in: the user's own, public-domain or GPL-compatible code.
+- **README check on every release.** Each time a new version of a tool is published on GitHub (tag and
+  release), review its `README.md` against the code and the state of that version first: version, install and
+  uninstall steps, features, limits, commands, paths and links. Fix what is out of date in that same release.
 - **Keeping these in sync.** This block is identical in the `CLAUDE.md` of the suite root, `launcher/` and
   every app in `apps/` (today `OpenTools` and `OpenManager`). When it changes in one of them, make the same
   change in all of them; every new tool's `CLAUDE.md` starts with this block.
