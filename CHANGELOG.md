@@ -2,9 +2,11 @@
 
 What each version of OpenTools (formerly Open3DS) adds, newest first.
 
-## In development
+## 0.5.0 — 10 November 2026
 
-### 10 November 2026
+Open3DS is now **OpenTools**, with its own menu in the 3ds Max menu bar. Ignite makes way for
+Random Replace and paste options in the Object Clipboard, and the material bar shows the
+material of your selection.
 
 - **Open3DS is now OpenTools.** It is part of Open3D, a growing suite of open-source tools
   for 3D work. Everything that showed "Open3DS" now says "OpenTools": the panel, the menu in
@@ -17,9 +19,9 @@ What each version of OpenTools (formerly Open3DS) adds, newest first.
   - **Your settings and clipboard slots** now live in `%APPDATA%\OpenTools` and
     `%LOCALAPPDATA%\OpenTools`. Move the contents of the old `Open3DS` folders there if you
     want to keep them; otherwise OpenTools starts with its defaults.
-
-### 9 November 2026
-
+  - **Old entries in the Hotkey Editor:** delete the `Open3DS-*.mcr` files from your usermacros
+    folder (`%LOCALAPPDATA%\Autodesk\3dsMax\<version> - 64bit\ENU\usermacros`) and restart
+    3ds Max, so the dead **Open3DS** category disappears.
 - **Ignite is gone; its parts move elsewhere.** It repeated what the Object Clipboard already
   does (same slots, same copy and paste), so only the two things of its own stay:
   - **Paste options in the Object Clipboard.** Below the target, the options of the chosen
@@ -29,7 +31,7 @@ What each version of OpenTools (formerly Open3DS) adds, newest first.
     markers…) with several sources picked at random by weight, keeping position, rotation,
     scale and layer. One Ctrl+Z undoes it. If you had Ignite on a toolbar or a shortcut, it
     now opens Random Replace.
-- **Open3DS menu in the 3ds Max menu bar.** Shows or hides the panel (if you close it with
+- **OpenTools menu in the 3ds Max menu bar.** Shows or hides the panel (if you close it with
   the X, this brings it back), opens the command palette and lists every tool by category.
 - **The material bar tells you which material your selection has.** A thin line above the
   bar, **Selected:**, shows the selected object's material (a dash if there are several). It
