@@ -7,6 +7,8 @@ What each version of OpenTools (formerly Open3DS) adds, newest first.
 - **OpenTools is now free software under the GNU GPL v3 or later** (it was under the MIT license). You can
   still use it, share it and change it freely; if you share a changed version, it has to stay under the same
   license with its source. The full text is in `LICENSE`.
+- **README brought up to date:** the current version, the Open3D suite, removing an old `Open3DS.bundle` and
+  where your settings stay when you uninstall.
 
 ## 0.5.0 — 10 November 2026
 

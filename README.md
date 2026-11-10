@@ -8,18 +8,24 @@ macros you can bind to hotkeys.
 - 3ds Max 2025 and later (Python 3 / PySide6 + MAXScript, no compiled plugins)
 - Every tool is a folder with a small `tool.json` manifest; the hub builds itself from them
 - Tools load lazily and run isolated: one broken tool never takes the others down
-- Settings live in `%APPDATA%\OpenTools`, so they survive 3ds Max upgrades
+- Settings live in `%APPDATA%\OpenTools` (clipboard slots in `%LOCALAPPDATA%\OpenTools`), so they
+  survive 3ds Max upgrades
 
-> Status: early (v0.4.0). The hub, palette and macros work, with 27 tools: scene
+OpenTools is part of [Open3D](https://github.com/carlesllavata/Open3D), a suite of open-source tools for
+3D work. It was called **Open3DS** until version 0.5.0.
+
+> Status: early (v0.5.0). The hub, palette and macros work, with 27 tools: scene
 > checks and repairs (Forensic), asset, proxy and XRef managers, modeling and DWG helpers,
 > material copy / paste and an object clipboard with network targets. The interface and icons
 > are provisional.
-> What each version adds: [CHANGELOG.md](CHANGELOG.md) (in Spanish).
+> What each version adds: [CHANGELOG.md](CHANGELOG.md).
 
 ## Install
 
-1. Copy the `OpenTools.bundle` folder to `%APPDATA%\Autodesk\ApplicationPlugins\`
-   (create the folder if it does not exist).
+The Open3D Launcher will install and update OpenTools for you once it is published there. Until then:
+
+1. With 3ds Max closed, copy the `OpenTools.bundle` folder to `%APPDATA%\Autodesk\ApplicationPlugins\`
+   (create the folder if it does not exist). If an old `Open3DS.bundle` is there, delete it.
 2. Start 3ds Max. The OpenTools panel docks on the right: tool buttons (icon and name)
    in foldable sections by category, with category filters and a search box on top. Click
    a button to run the tool; right-click it to add it to favorites. Icon size and names are
@@ -40,7 +46,8 @@ macros you can bind to hotkeys.
 4. Optional: in *Customize > Hotkey Editor*, category **OpenTools**, bind
    `OpenTools Command Palette` (for example to `Ctrl+Space`) and any tool you use often.
 
-To uninstall, delete that folder.
+To uninstall, delete that folder with 3ds Max closed. Your settings stay in `%APPDATA%\OpenTools` and
+`%LOCALAPPDATA%\OpenTools`; delete those too for a clean removal.
 
 ## Layout
 
@@ -74,7 +81,7 @@ Create `OpenTools.bundle/Contents/tools/<tool_id>/tool.json`:
 
 | Field | Required | Notes |
 |---|---|---|
-| `id` | yes | lowercase letters, digits and `_`; must be unique. The macro is named `OpenTools_<id>` |
+| `id` | yes | 2–48 lowercase letters, digits and `_`, starting with a letter; must be unique. The macro is named `OpenTools_<id>` |
 | `name` | yes | shown in the hub, palette and Hotkey Editor |
 | `entry` | yes | `file.ms` (MAXScript, run with `fileIn`) or `file.py:function` (Python) |
 | `category` | no | groups tools in the hub (default `General`) |
@@ -95,7 +102,9 @@ GPL-compatible license. `license` states the tool's license.
 Requirements: 3ds Max 2025+ on Windows. The Python bundled with 3ds Max is enough.
 
 ```powershell
-# Load OpenTools straight from this checkout (instead of a copied bundle) and enable the dev bridge
+# Load OpenTools straight from this checkout (instead of a copied bundle) and enable the dev bridge.
+# Don't keep OpenTools.bundle installed at the same time: 3ds Max loads only one of them.
+# Remove it again with dev\uninstall_dev.ps1. Restart 3ds Max after either.
 powershell -ExecutionPolicy Bypass -File dev\install_dev.ps1
 
 # Run the offline tests
