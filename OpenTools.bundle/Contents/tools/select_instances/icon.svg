@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-  <!-- OpenTools original icon: three linked boxes inside a selection frame (Select Instances). MIT. -->
+  <!-- OpenTools original icon: three linked boxes inside a selection frame (Select Instances). GPL-3.0-or-later. -->
   <rect x="3" y="9" width="42" height="30" rx="4" fill="none" stroke="#5ba84f" stroke-width="2" stroke-dasharray="4 3"/>
   <path d="M12 24 H36" stroke="#c7a516" stroke-width="2.5"/>
   <g stroke="#3d7a34" stroke-width="1.5">

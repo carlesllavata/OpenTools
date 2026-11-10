@@ -1,5 +1,5 @@
--- OpenTools - Paste Material + UVW. Based on CPM Lite by Aleksey Sheremetov (https://kotiger.co/CPM),
--- included with the author's permission. The work is done in copy_material_mapping/cpm_core.ms.
+-- SPDX-License-Identifier: GPL-3.0-or-later
+-- OpenTools - Paste Material + UVW. The work is done in copy_material_mapping/cpm_core.ms.
 global OTL_CPM  -- declared before the block compiles; otherwise, on the first run in a session,
                  -- the name below becomes an empty local ("Unknown property in undefined")
 (

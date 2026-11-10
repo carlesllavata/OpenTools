@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Scene material bar: a layer-like list of the scene's materials.
 
 Works like the layer drop-down of AutoCAD, but for materials: choose a "current"

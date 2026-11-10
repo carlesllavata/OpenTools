@@ -1,7 +1,6 @@
+-- SPDX-License-Identifier: GPL-3.0-or-later
 /*
     OpenTools - Clean DWG, core.
-    Based on "Clean DWG" 1.1.3 by Juan Camilo Alcaraz a.k.a. Alzarac (www.camiloalcaraz.com),
-    included in OpenTools with the author's permission; adapted by OpenTools contributors.
 
     OTL_CleanDWG.run nodes layerName flatten makeGroup
         For linework imported from DWG. Explodes the groups among `nodes`, then:

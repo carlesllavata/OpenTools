@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Runs the offline tests (no 3ds Max needed).
 
     "C:\\Program Files\\Autodesk\\3ds Max 2027\\Python\\python.exe" -I dev/run_tests.py

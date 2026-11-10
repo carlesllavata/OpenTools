@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Material bar: what the selected object has, and the material you work with.
 
     Selected: ■ Brick                              [↓]

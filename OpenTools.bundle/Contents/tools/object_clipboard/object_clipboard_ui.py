@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Object Clipboard window: the dashboard of the 8 clipboard slots.
 
 Target (Local or a network folder), mode (objects / materials / modifiers / keys), the paste options

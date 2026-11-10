@@ -6,5 +6,5 @@
   "entry": "xref_manager.py:run",
   "keywords": ["xref", "xrefs", "reference", "external", "scene", "objects", "display", "box", "update", "merge"],
   "author": "OpenTools contributors",
-  "license": "MIT"
+  "license": "GPL-3.0-or-later"
 }

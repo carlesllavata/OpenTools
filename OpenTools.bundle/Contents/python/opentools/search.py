@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Fuzzy search used by the hub filter and the command palette."""
 
 # (field, weight, allow subsequence matching). Fuzzy matching on long free text

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Proxy Display Manager: every proxy in the scene in one list, to switch how they
 show in the viewport (box, preview, points, full mesh), show them as boxes, hide or
 select them, and spot missing proxy files."""

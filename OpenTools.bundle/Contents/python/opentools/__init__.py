@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """OpenTools: one-install hub for everyday 3ds Max tools.
 
 Public entry points (used by the generated macroScripts):

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """3ds Max side of Forensic: runs the checks of inspector_core.ms."""
 
 import os

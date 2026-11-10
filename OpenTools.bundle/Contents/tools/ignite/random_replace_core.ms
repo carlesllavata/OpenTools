@@ -1,5 +1,6 @@
+-- SPDX-License-Identifier: GPL-3.0-or-later
 /*
-    OpenTools - Random Replace core (MIT, OpenTools contributors).
+    OpenTools - Random Replace core.
     Each target becomes a copy or instance of a source picked by Python (by weight).
 */
 struct OTL_RandomReplaceStruct

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Small Qt helpers shared by the hub and the palette."""
 
 import os

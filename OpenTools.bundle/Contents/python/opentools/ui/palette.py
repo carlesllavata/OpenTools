@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Command palette: type a few letters, press Enter, the tool runs.
 
 Bind the "OpenTools Command Palette" macro to a hotkey (e.g. Ctrl+Space).

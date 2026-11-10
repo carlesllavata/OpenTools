@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Base for small floating tool windows: one instance at a time, remembered position
 (and size, when "size" is in DEFAULTS), and options stored in settings ("tool_options")."""
 

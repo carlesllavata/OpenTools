@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-  <!-- OpenTools original icon: arrow dropping a material onto a box (apply). MIT. -->
+  <!-- OpenTools original icon: arrow dropping a material onto a box (apply). GPL-3.0-or-later. -->
   <g stroke="#3a2a14" stroke-width="0.8" stroke-linejoin="round">
     <path d="M4 14 L12 10 L20 14 L12 18 Z" fill="#f2b469"/>
     <path d="M4 14 V19 L12 23 V18 Z" fill="#e08a2c"/>

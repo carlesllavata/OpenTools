@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Forensic window: the whole scene at a glance in cards (counts, problems and their
 one-click repairs), every modifier in the scene, and the file's details.
 

@@ -2,6 +2,12 @@
 
 What each version of OpenTools (formerly Open3DS) adds, newest first.
 
+## In development
+
+- **OpenTools is now free software under the GNU GPL v3 or later** (it was under the MIT license). You can
+  still use it, share it and change it freely; if you share a changed version, it has to stay under the same
+  license with its source. The full text is in `LICENSE`.
+
 ## 0.5.0 — 10 November 2026
 
 Open3DS is now **OpenTools**, with its own menu in the 3ds Max menu bar. Ignite makes way for
@@ -70,14 +76,12 @@ fixed.
   separating objects with color masks such as Mask ID. The colors are spread so that two are
   never nearly the same, and none come out grey, black or white; every click gives a new
   combination. One Ctrl+Z undoes it.
-- **New tool: Turn to Instance** (Modeling category), based on Miled Rizk's script and
-  included with their permission. Select the objects, launch it and click the source object:
+- **New tool: Turn to Instance** (Modeling category). Select the objects, launch it and click the source object:
   each one becomes a full instance of the source (geometry, modifiers, material and numbered
   name) without moving, and keeps its hierarchy and its layer. Works with geometry, splines,
   cameras and lights (objects of a different type are skipped), without breaking the FOV of
   target cameras. One Ctrl+Z undoes it.
-- **New buttons: Copy / Paste Material + UVW** (Materials category), based on Aleksey
-  Sheremetov's CPM Lite and included with their permission. **Copy Material + UVW** stores an
+- **New buttons: Copy / Paste Material + UVW** (Materials category). **Copy Material + UVW** stores an
   object's material and its mapping modifiers (UVW Map, Unwrap UVW, UVW Xform…); **Paste
   Material** assigns it to the selection; **Paste Material + UVW** also replaces the objects'
   mapping with the copied one, without touching the rest of their stack. The **Copy**
@@ -85,14 +89,12 @@ fixed.
   material bar, ready to edit. One Ctrl+Z undoes all of it.
 - **Materials section tidied up.** The Materials buttons sit below the material bar, in a
   single section that folds as a whole.
-- **New tool: Clean DWG** (Scene category), based on Juan Camilo Alcaraz's (Alzarac) script
-  and included with their permission. For drawings imported from AutoCAD: type a name and press
+- **New tool: Clean DWG** (Scene category). For drawings imported from AutoCAD: type a name and press
   Start. It opens the groups, flattens every line to Z = 0 and deletes whatever is not a
   line; moves everything to a new layer with that name, keeping the colors; groups it; and
   deletes the DWG layers left empty. Each step can be turned off. Your empty template layers
   are left alone, and one Ctrl+Z undoes all of it, layers included.
-- **New tools: 3-Point Rotate and 3-Point Scale** (Modeling category), based on Sergo
-  Pogosyan's scripts and included with their permission. Like AutoCAD's rotate and scale by
+- **New tools: 3-Point Rotate and 3-Point Scale** (Modeling category). Like AutoCAD's rotate and scale by
   reference: three clicks with snaps (base point, a point on the object and where it should
   end up) and done. The rotation always goes the right way, with no "Flip" checkbox, and
   works in plan and in elevation. One Ctrl+Z undoes them.

@@ -1,3 +1,4 @@
+-- SPDX-License-Identifier: GPL-3.0-or-later
 -- OpenTools startup: puts Contents/python on sys.path and starts the hub.
 -- Runs as a "post-start-up script" of the ApplicationPlugins bundle.
 (

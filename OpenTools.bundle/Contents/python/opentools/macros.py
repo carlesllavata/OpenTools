@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Generates one macroScript per tool so every tool can be bound to a hotkey,
 put on a toolbar or quad menu (Customize > Hotkey Editor, category "OpenTools")."""
 

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Viewport HUD of the object clipboard.
 
 A redraw callback (OTL_ClipHUD_Draw in object_clipboard.ms) draws, at the bottom

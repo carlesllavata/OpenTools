@@ -1,5 +1,6 @@
+-- SPDX-License-Identifier: GPL-3.0-or-later
 /*
-    OpenTools - Proxy Display Manager core (MIT, OpenTools contributors).
+    OpenTools - Proxy Display Manager core.
     Lists proxy objects quickly; Python decides labels and display values.
 */
 struct OTL_ProxyStruct

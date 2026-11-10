@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Tool discovery: every folder with a tool.json manifest is a tool.
 
 Pure Python (no pymxs/Qt) so it can be tested outside 3ds Max.

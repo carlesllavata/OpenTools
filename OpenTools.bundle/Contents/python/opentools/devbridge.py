@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Development bridge: run Python files dropped into a folder inside the live 3ds Max.
 
 Only started when OpenTools is loaded through dev/install_dev.ps1. The client is

@@ -6,5 +6,5 @@
   "entry": "proxy_manager.py:run",
   "keywords": ["proxy", "proxies", "vrayproxy", "cproxy", "corona", "vray", "display", "viewport", "box", "point cloud", "preview", "speed"],
   "author": "OpenTools contributors",
-  "license": "MIT"
+  "license": "GPL-3.0-or-later"
 }

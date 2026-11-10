@@ -2,19 +2,35 @@
 
 Open-source, single-install hub for 3ds Max (2025+). The user's environment: 3ds Max 2027,
 Python 3.13 (bundled with Max), PySide6, Corona. The repo lives on a NAS share (`Z:` maps to
-`\\192.168.2.10\...`). Talk to the user in Spanish; everything in the repo is in English: code, comments,
-docs, commit messages, the changelog and GitHub release notes.
+`\\192.168.2.10\...`).
 
 Called **Open3DS** until 10 November 2026 (prefix `O3DS_`, package `open3ds`, `Open3DS.bundle`); renamed to
 OpenTools as a clean cut, with no compatibility layer. Old names in the git history, older changelog entries
 and `.devbridge` logs refer to that. Part of the Open3D suite: see `..\..\CLAUDE.md`.
 
+## Open3D suite standards
+<!-- Shared block: keep it word for word the same in every Open3D CLAUDE.md (suite root, launcher, each app).
+     Any change here is made in all of them in the same session. -->
+- **One repo per tool.** Every tool of the Open3D suite, and the launcher, has its own git repository.
+  Everything in it is in English: code, comments, docs, app text, commit messages and release notes.
+- **Version diary.** Every series of changes to a tool is recorded in `CHANGELOG.md` at the root of its repo,
+  in English, newest first, written for users (what changed for them, not code details). Changes not yet
+  released go under `## In development`.
+- **Language with the user.** Claude always talks to the user in Spanish (castellano).
+- **License: GNU GPL v3 or later** (`GPL-3.0-or-later`) for every tool of the suite and the launcher: the full
+  text in `LICENSE`, the license named in the README, and `SPDX-License-Identifier: GPL-3.0-or-later` as the
+  first comment line of every source file (after a shebang or BOM). Only code that may be distributed under
+  it goes in: the user's own, public-domain or GPL-compatible code.
+- **Keeping these in sync.** This block is identical in the `CLAUDE.md` of the suite root, `launcher/` and
+  every app in `apps/` (today `OpenTools` and `OpenManager`). When it changes in one of them, make the same
+  change in all of them; every new tool's `CLAUDE.md` starts with this block.
+
 ## Layout
 - `OpenTools.bundle/` – the ApplicationPlugins package users install. Version lives in
   `PackageContents.xml` (AppVersion + ComponentEntry Version) **and** `opentools/__init__.py`; keep them equal.
   Max 2027 silently ignores a package whose RuntimeRequirements lack `SeriesMax` (we use `2099` = no cap).
-- `CHANGELOG.md` – the user's version diary, **in English** (it was Spanish until 9 November 2026), newest
-  first, written for users. After every commit ask whether to publish an entry or make a new version (bump
+- `CHANGELOG.md` – the version diary (see the suite standards; it was Spanish until 9 November 2026).
+  After every commit ask whether to publish an entry or make a new version (bump
   both version places, tag `vX.Y.Z`, push, `gh release create` with that version's notes, also in English). gh lives in `%LOCALAPPDATA%\Programs\GitHubCLI\bin\gh.exe`.
 - In non-interactive sessions (3dsmaxbatch, render nodes) only tools and macros load; no hub, no bridge.
 - `OpenTools.bundle/Contents/python/opentools/` – core. Modules without Qt/pymxs imports at top level
@@ -104,9 +120,12 @@ Max's Python: `C:\Program Files\Autodesk\3ds Max 2027\Python\python.exe` (always
   Buttons follow Forensic's style; the user wants Forensic's layout left as it is. Heavy geometry loops go in a MAXScript `*_core.ms` next to the tool.
 
 ## Rules
-- Before adding a script the user hands over, ask where it comes from and its license. Own or permissively
-  licensed code goes in with attribution; proprietary/unlicensed scripts are reimplemented clean-room from a
-  description of behaviour, never from their source. Never decrypt `.mse` or bundle `.dlo/.gup`.
+- Before adding a script the user hands over, ask where it comes from and its license. Only code that may go
+  under GPL-3.0-or-later goes in (see the suite standards); proprietary/unlicensed scripts are reimplemented
+  clean-room from a description of behaviour, never from their source. Never decrypt `.mse` or bundle `.dlo/.gup`.
+- Licensed MIT until 10 November 2026, then GPL-3.0-or-later. The tools that started from public-domain
+  scripts (Turn to Instance, Copy/Paste Material (+ UVW), Clean DWG, 3-Point Rotate/Scale) carry no third-party
+  author credits, by the user's decision: their authors waived authorship. Don't add credits back.
 - No SiNi/IgNite names, icons or text.
 - Git: `C:\Program Files\Git\cmd\git.exe` (may not be on PATH in older shells). Branch `main`.
   The repo is on a NAS, so it is listed in the global `safe.directory`.

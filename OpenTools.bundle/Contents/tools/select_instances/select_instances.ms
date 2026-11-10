@@ -1,3 +1,4 @@
+-- SPDX-License-Identifier: GPL-3.0-or-later
 -- Sample MAXScript tool: select all instances of the selected object.
 (
     if selection.count != 1 then

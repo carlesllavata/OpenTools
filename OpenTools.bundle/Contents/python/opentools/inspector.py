@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Forensic helpers (pure Python, tested offline).
 
 The Forensic tool (tools/scene_summary) checks a scene for problems and cleans

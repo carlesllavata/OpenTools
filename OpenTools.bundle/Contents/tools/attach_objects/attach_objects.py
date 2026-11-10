@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Attach Objects window; the geometry work is MAXScript (attach_core.ms) for speed."""
 
 from pathlib import Path

@@ -6,5 +6,5 @@
   "entry": "clipboard_target.py:run",
   "keywords": ["clipboard", "network", "target", "remote", "local", "server", "cycle"],
   "author": "OpenTools contributors",
-  "license": "MIT"
+  "license": "GPL-3.0-or-later"
 }

@@ -6,5 +6,5 @@
   "entry": "stamp_paste.py:run",
   "keywords": ["clipboard", "stamp", "scatter", "place", "paste", "instances", "props", "furniture"],
   "author": "OpenTools contributors",
-  "license": "MIT"
+  "license": "GPL-3.0-or-later"
 }

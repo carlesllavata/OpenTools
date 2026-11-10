@@ -1,5 +1,6 @@
+-- SPDX-License-Identifier: GPL-3.0-or-later
 /*
-    OpenTools - XRef Display Manager core (MIT, OpenTools contributors).
+    OpenTools - XRef Display Manager core.
     XRef scenes (xrefs.*) and XRef object records (objXRefMgr) by index.
 */
 struct OTL_XRefStruct

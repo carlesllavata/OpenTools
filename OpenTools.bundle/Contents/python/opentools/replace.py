@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Weighted random replacement (pure Python, tested offline).
 
 Random Replace (tool id "ignite") turns each selected object into a copy or instance of one of

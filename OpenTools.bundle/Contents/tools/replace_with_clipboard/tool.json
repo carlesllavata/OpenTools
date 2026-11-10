@@ -6,5 +6,5 @@
   "entry": "replace_with_clipboard.py:run",
   "keywords": ["clipboard", "replace", "swap", "dummies", "placeholders", "instances"],
   "author": "OpenTools contributors",
-  "license": "MIT"
+  "license": "GPL-3.0-or-later"
 }

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Object clipboard: 8 slots of objects, materials, modifiers or keys, local or on network targets.
 
 - Copy saves the selection (or materials) of a slot to a folder; Paste merges it back.

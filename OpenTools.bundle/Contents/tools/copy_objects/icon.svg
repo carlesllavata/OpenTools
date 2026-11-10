@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-  <!-- OpenTools original icon: two stacked cubes, the front one being copied (Copy Objects). MIT. -->
+  <!-- OpenTools original icon: two stacked cubes, the front one being copied (Copy Objects). GPL-3.0-or-later. -->
   <g stroke="#1f7a6f" stroke-width="1.5" stroke-linejoin="round">
     <path d="M6 16 L18 10 L30 16 L30 30 L18 36 L6 30 Z" fill="#2fa395" opacity="0.45"/>
     <path d="M18 22 L30 16 L42 22 L42 36 L30 42 L18 36 Z" fill="#2fa395"/>

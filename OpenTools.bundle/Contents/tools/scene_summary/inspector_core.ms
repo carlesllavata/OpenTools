@@ -1,5 +1,6 @@
+-- SPDX-License-Identifier: GPL-3.0-or-later
 /*
-    OpenTools - Forensic core (MIT, OpenTools contributors).
+    OpenTools - Forensic core.
 
     Every check returns #(count, items) where items is an array of #(label, node)
     (node may be undefined). Fixes return how many things they changed. Loops that

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """The dockable OpenTools panel: tool buttons grouped by category.
 
 Layout, top to bottom: search box with rescan and options buttons, category chips

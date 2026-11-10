@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Pure helpers for how tools look in the hub: badge colors, initials and tile labels.
 
 No Qt imports, so it can be tested outside 3ds Max.

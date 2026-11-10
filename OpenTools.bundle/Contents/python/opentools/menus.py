@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """The "OpenTools" menu in 3ds Max's main menu bar (3ds Max 2025+ menu system).
 
 Show / hide the panel, the command palette, and one submenu per category with every tool.

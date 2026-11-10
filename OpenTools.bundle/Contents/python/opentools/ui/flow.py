@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """A layout that places widgets left to right and wraps them onto new rows.
 
 With min_item_width, it is a grid instead: as many equal columns as fit (each at

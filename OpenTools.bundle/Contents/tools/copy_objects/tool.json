@@ -6,5 +6,5 @@
   "entry": "copy_objects.py:run",
   "keywords": ["clipboard", "copy", "transfer", "between files", "instances", "save selected", "network", "slot"],
   "author": "OpenTools contributors",
-  "license": "MIT"
+  "license": "GPL-3.0-or-later"
 }

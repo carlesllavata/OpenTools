@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Random Replace window: replace the selected objects with sources picked at random by weight.
 
 Weights: opentools.replace; placement: random_replace_core.ms. The tool keeps the id "ignite"

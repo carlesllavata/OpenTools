@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Scene asset management: list, relink, clean, collect and package external files.
 
 Built on 3ds Max's own Asset Tracking (ATSOps), so every file a plugin registers

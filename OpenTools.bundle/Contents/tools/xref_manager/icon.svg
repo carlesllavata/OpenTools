@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-  <!-- OpenTools original icon: a document linked to a box in the scene (XRef Display Manager). MIT. -->
+  <!-- OpenTools original icon: a document linked to a box in the scene (XRef Display Manager). GPL-3.0-or-later. -->
   <path d="M4 4 H19 L25 10 V30 H4 Z" fill="#e8e8e8" stroke="#8a8a8a" stroke-width="1.3" stroke-linejoin="round"/>
   <path d="M19 4 V10 H25" fill="#cfcfcf" stroke="#8a8a8a" stroke-width="1.3" stroke-linejoin="round"/>
   <text x="14.5" y="24" font-family="Segoe UI, Arial" font-size="8" font-weight="bold" fill="#2fa395" text-anchor="middle">MAX</text>

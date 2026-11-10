@@ -6,5 +6,5 @@
   "entry": "reset_xform_collapse.ms",
   "keywords": ["reset xform", "xform", "collapse", "freeze transform", "scale", "rotation", "mirror", "clean"],
   "author": "OpenTools contributors",
-  "license": "MIT"
+  "license": "GPL-3.0-or-later"
 }

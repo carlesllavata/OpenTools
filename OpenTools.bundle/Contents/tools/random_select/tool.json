@@ -6,5 +6,5 @@
   "entry": "random_select.py:run",
   "keywords": ["random", "select", "percentage", "subset", "thin out", "scatter", "variation"],
   "author": "OpenTools contributors",
-  "license": "MIT"
+  "license": "GPL-3.0-or-later"
 }

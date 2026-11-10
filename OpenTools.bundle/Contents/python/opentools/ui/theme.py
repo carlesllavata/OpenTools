@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """One look for every OpenTools window, built from the running 3ds Max palette.
 
 Surfaces, text and borders are derived from QApplication.palette(), so the panel and

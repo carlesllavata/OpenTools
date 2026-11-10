@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-  <!-- OpenTools original icon: a local computer and a network server swapped by arrows (Next Clipboard Target). MIT. -->
+  <!-- OpenTools original icon: a local computer and a network server swapped by arrows (Next Clipboard Target). GPL-3.0-or-later. -->
   <rect x="3" y="8" width="18" height="13" rx="1.5" fill="#4fb0c6" stroke="#25677a" stroke-width="1.4"/>
   <path d="M8 25 h8 M12 21 v4" stroke="#9a9a9a" stroke-width="2" stroke-linecap="round"/>
   <rect x="29" y="24" width="16" height="7" rx="1.5" fill="#bdbdbd" stroke="#6a6a6a" stroke-width="1.3"/>

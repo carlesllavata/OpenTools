@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Detach Elements window; the geometry work is MAXScript (detach_core.ms) for speed."""
 
 from pathlib import Path

@@ -68,7 +68,7 @@ Create `OpenTools.bundle/Contents/tools/<tool_id>/tool.json`:
   "entry": "select_instances.ms",
   "keywords": ["instance", "select"],
   "author": "Your Name",
-  "license": "MIT"
+  "license": "GPL-3.0-or-later"
 }
 ```
 
@@ -86,8 +86,9 @@ Create `OpenTools.bundle/Contents/tools/<tool_id>/tool.json`:
 Python tools are loaded as a package, so a tool can split its code into several
 files and use relative imports (`from . import helpers`).
 
-Only add code you wrote yourself or code whose license allows redistribution
-under this repository's license, and credit it in `author`/`license`/`source_url`.
+Only add code that may be distributed under this repository's license
+(GPL-3.0-or-later): code you wrote yourself, public-domain code or code under a
+GPL-compatible license. `license` states the tool's license.
 
 ## Development
 
@@ -112,4 +113,10 @@ runs when OpenTools was loaded through `dev/install_dev.ps1`.
 
 ## License
 
-MIT, see [LICENSE](LICENSE).
+Copyright (C) 2026 Carles Llavata and OpenTools contributors.
+
+OpenTools is free software: you can redistribute it and/or modify it under the terms of the GNU General
+Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option)
+any later version. It is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See [LICENSE](LICENSE) for the full
+text of the GNU General Public License v3 (SPDX: `GPL-3.0-or-later`).

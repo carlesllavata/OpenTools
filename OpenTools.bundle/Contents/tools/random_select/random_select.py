@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Random Select: keeps a random percentage of the current selection.
 
 Closed groups count as one item (the whole group is kept or dropped). Clicking again while the

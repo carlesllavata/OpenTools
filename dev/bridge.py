@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Client for the OpenTools dev bridge: runs Python inside the live 3ds Max.
 
 Run with the Python bundled with 3ds Max (any Python 3.8+ works):

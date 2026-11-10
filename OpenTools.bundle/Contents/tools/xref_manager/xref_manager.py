@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """XRef Display Manager: the scene's XRef scenes and XRef object records in one window,
 to show them as boxes, hide, disable, update, select, merge or remove them, and spot
 missing XRef files."""

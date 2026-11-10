@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Runs tools lazily and in isolation: a failing tool is logged and reported,
 never propagated to the hub or to 3ds Max."""
 

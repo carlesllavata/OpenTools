@@ -6,5 +6,5 @@
   "entry": "random_wire_color.ms",
   "keywords": ["wire color", "object color", "random", "color", "mask", "mask id", "id", "matte", "multimatte", "render element", "wirecolor"],
   "author": "OpenTools contributors",
-  "license": "MIT"
+  "license": "GPL-3.0-or-later"
 }

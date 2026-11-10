@@ -6,5 +6,5 @@
   "entry": "paste_on_cursor.py:run",
   "keywords": ["clipboard", "place", "cursor", "paste", "drop"],
   "author": "OpenTools contributors",
-  "license": "MIT"
+  "license": "GPL-3.0-or-later"
 }

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Pure helpers for Random Select (no 3ds Max imports, so the offline tests can load them)."""
 
 import random as _random

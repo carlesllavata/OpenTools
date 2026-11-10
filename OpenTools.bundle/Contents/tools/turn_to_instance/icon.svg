@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-  <!-- OpenTools original icon: a sphere turned into a copy of the source box (Turn to Instance). MIT. -->
+  <!-- OpenTools original icon: a sphere turned into a copy of the source box (Turn to Instance). GPL-3.0-or-later. -->
   <g stroke="#2a6bb0" stroke-width="1.5" stroke-linejoin="round">
     <path d="M3 17 L11 13 L19 17 L11 21 Z" fill="#7fb6ef"/>
     <path d="M3 17 L11 21 L11 31 L3 27 Z" fill="#3f8fe0"/>

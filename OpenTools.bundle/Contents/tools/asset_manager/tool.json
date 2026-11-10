@@ -6,5 +6,5 @@
   "entry": "asset_manager.py:run",
   "keywords": ["relink", "bitmaps", "missing maps", "textures", "collect", "archive", "zip", "paths", "asset tracking", "proxies", "ies"],
   "author": "OpenTools contributors",
-  "license": "MIT"
+  "license": "GPL-3.0-or-later"
 }

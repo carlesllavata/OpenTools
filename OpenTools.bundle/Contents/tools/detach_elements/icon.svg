@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-  <!-- OpenTools original icon: a cube coming apart into pieces (Detach Elements). MIT. -->
+  <!-- OpenTools original icon: a cube coming apart into pieces (Detach Elements). GPL-3.0-or-later. -->
   <g stroke="#2a6bb0" stroke-width="1.5" stroke-linejoin="round">
     <path d="M6 18 L17 12 L28 18 L17 24 Z" fill="#7fb6ef"/>
     <path d="M6 18 L17 24 L17 37 L6 31 Z" fill="#3f8fe0"/>

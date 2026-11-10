@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Card widgets shared by the Forensic and Random Replace windows: a header with a title bar,
 pills for status, segmented tabs and cards whose rows hold a label, a value and small
 buttons. A masonry area lays cards out in as many columns as the window width allows.

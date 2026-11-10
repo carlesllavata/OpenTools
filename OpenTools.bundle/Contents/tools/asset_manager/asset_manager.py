@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Asset Manager window: list, relink, clean and collect the scene's external files.
 All the work is in opentools.assets (also usable from scripts)."""
 

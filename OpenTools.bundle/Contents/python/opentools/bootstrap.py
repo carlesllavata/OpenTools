@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Startup, shutdown and live reload of OpenTools inside 3ds Max."""
 
 import sys

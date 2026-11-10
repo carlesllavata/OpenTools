@@ -6,5 +6,5 @@
   "entry": "attach_objects.py:run",
   "keywords": ["attach", "combine", "merge objects", "join", "collapse", "normals", "reset normals", "specify normals"],
   "author": "OpenTools contributors",
-  "license": "MIT"
+  "license": "GPL-3.0-or-later"
 }

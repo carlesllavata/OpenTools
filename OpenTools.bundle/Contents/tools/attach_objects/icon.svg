@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-  <!-- OpenTools original icon: small cubes joining into one block (Attach Objects). MIT. -->
+  <!-- OpenTools original icon: small cubes joining into one block (Attach Objects). GPL-3.0-or-later. -->
   <g stroke="#2a6bb0" stroke-width="1.5" stroke-linejoin="round">
     <path d="M3 10 L9 7 L15 10 L9 13 Z" fill="#7fb6ef"/>
     <path d="M3 10 L9 13 L9 19 L3 16 Z" fill="#3f8fe0"/>

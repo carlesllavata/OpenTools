@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Thin layer over 3ds Max APIs, imported lazily so the core works outside Max."""
 
 import contextlib

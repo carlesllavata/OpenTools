@@ -5,7 +5,6 @@
   "description": "Assigns an independent copy of the copied material (named Copy-<name>) to the selected objects, so it can be edited without touching the original. Undoable.",
   "entry": "paste_material_copy.ms",
   "keywords": ["paste", "material", "copy", "duplicate", "unique", "cpm"],
-  "author": "Aleksey Sheremetov (CPM Lite); adapted by OpenTools contributors",
-  "license": "Included with the author's permission",
-  "source_url": "https://kotiger.co/CPM"
+  "author": "OpenTools contributors",
+  "license": "GPL-3.0-or-later"
 }

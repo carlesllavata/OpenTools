@@ -5,7 +5,6 @@
   "description": "Select objects, run it and pick a source: each selected object becomes a full instance of the source (object, modifiers, material and name) and keeps its own position, rotation and scale. Works with geometry, shapes, cameras and lights. Undoable.",
   "entry": "turn_to_instance.ms",
   "keywords": ["instance", "replace", "instance replace", "convert", "swap", "source", "clone", "reference"],
-  "author": "Miled Rizk (original Turn To Instance); extended by OpenTools contributors",
-  "license": "Included with the author's permission",
-  "source_url": "http://www.youtube.com/c/MiledRizk"
+  "author": "OpenTools contributors",
+  "license": "GPL-3.0-or-later"
 }

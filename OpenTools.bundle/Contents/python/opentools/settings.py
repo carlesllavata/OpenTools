@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """User settings stored as JSON in %APPDATA%\\OpenTools\\settings.json."""
 
 import copy

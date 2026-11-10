@@ -6,5 +6,5 @@
   "entry": "select_instances.ms",
   "keywords": ["instance", "select", "clones"],
   "author": "OpenTools contributors",
-  "license": "MIT"
+  "license": "GPL-3.0-or-later"
 }

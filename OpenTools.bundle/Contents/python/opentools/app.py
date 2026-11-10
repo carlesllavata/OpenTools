@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Application state shared by the hub, the palette and the macros."""
 
 from pathlib import Path

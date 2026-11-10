@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Proxy types known to the Proxy Display Manager (pure Python, tested offline).
 
 Each render engine stores the viewport display of its proxies in its own parameter

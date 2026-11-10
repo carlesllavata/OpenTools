@@ -6,5 +6,5 @@
   "entry": "detach_elements.py:run",
   "keywords": ["detach", "explode", "split", "elements", "material id", "separate", "break"],
   "author": "OpenTools contributors",
-  "license": "MIT"
+  "license": "GPL-3.0-or-later"
 }

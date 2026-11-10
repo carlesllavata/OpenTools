@@ -5,7 +5,6 @@
   "description": "Scales the selection by reference, like AutoCAD: click the base point, a point at the current distance and a point at the distance it should have (snaps work). Uniform scale, one undo step.",
   "entry": "three_point_scale.ms",
   "keywords": ["scale", "reference", "3 point", "three point", "resize", "size", "length", "autocad", "snap"],
-  "author": "Sergo Pogosyan (3PointScale, SergoScripts); adapted by OpenTools contributors",
-  "license": "Included with the author's permission",
-  "source_url": "http://www.sergepogosyan.com"
+  "author": "OpenTools contributors",
+  "license": "GPL-3.0-or-later"
 }

@@ -1,8 +1,6 @@
+-- SPDX-License-Identifier: GPL-3.0-or-later
 /*
     OpenTools - 3-Point Rotate / 3-Point Scale, shared core.
-    Based on 3PointRotation and 3PointScale 1.2 (SergoScripts) by Sergo Pogosyan
-    (contact@sergepogosyan.com), included in OpenTools with the author's permission;
-    adapted by OpenTools contributors.
 
     Three snapped clicks: base point, original point, reference point (AutoCAD's rotate /
     scale by reference). Only the top-level objects of the selection are transformed, so

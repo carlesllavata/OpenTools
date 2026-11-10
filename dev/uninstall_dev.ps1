@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 <#
 .SYNOPSIS
     Removes the OpenTools-dev bundle installed by dev\install_dev.ps1.

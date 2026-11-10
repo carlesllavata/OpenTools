@@ -6,5 +6,5 @@
   "entry": "forensic.py:run",
   "keywords": ["forensic", "inspector", "summary", "info", "statistics", "inspect", "check", "clean", "cleanup", "repair", "virus", "malware", "missing", "plugins", "modifiers", "collapse", "shadows", "visibility", "displacement", "animation", "cad", "blocks", "xref", "helpers", "layers", "normals"],
   "author": "OpenTools contributors",
-  "license": "MIT"
+  "license": "GPL-3.0-or-later"
 }

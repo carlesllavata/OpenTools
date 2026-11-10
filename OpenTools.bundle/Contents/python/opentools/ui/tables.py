@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Small helpers for the sortable object lists used by tool windows."""
 
 from PySide6 import QtCore, QtGui, QtWidgets

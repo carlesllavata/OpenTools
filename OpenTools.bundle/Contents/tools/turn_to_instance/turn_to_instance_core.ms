@@ -1,7 +1,6 @@
+-- SPDX-License-Identifier: GPL-3.0-or-later
 /*
     OpenTools - Turn to Instance, core.
-    Based on "Turn To Instance" by Miled Rizk (http://www.youtube.com/c/MiledRizk),
-    included in OpenTools with the author's permission; extended by OpenTools contributors.
 
     OTL_TurnToInstance.convert targets source
         Turns every eligible target node into a full instance of `source`: same object,

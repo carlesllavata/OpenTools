@@ -6,5 +6,5 @@
   "entry": "random_replace.py:run",
   "keywords": ["replace", "random", "weights", "scatter", "variation", "placeholder", "swap", "instances"],
   "author": "OpenTools contributors",
-  "license": "MIT"
+  "license": "GPL-3.0-or-later"
 }

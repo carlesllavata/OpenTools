@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-  <!-- OpenTools original icon: three boxes, each in its own wire color (Random Wire Color). MIT. -->
+  <!-- OpenTools original icon: three boxes, each in its own wire color (Random Wire Color). GPL-3.0-or-later. -->
   <g stroke-width="1.5" stroke-linejoin="round">
     <g stroke="#8a2a2a">
       <path d="M4 22 L12 18 L20 22 L12 26 Z" fill="#f07a7a"/>

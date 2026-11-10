@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-  <!-- OpenTools original icon: a tilted box squared back to the axes (Reset XForm + Collapse). MIT. -->
+  <!-- OpenTools original icon: a tilted box squared back to the axes (Reset XForm + Collapse). GPL-3.0-or-later. -->
   <g transform="rotate(-18 16 22)" opacity="0.45">
     <path d="M6 16 L16 11 L26 16 L16 21 Z" fill="#7fb6ef" stroke="#2a6bb0" stroke-width="1.2"/>
     <path d="M6 16 L16 21 L16 33 L6 28 Z" fill="#3f8fe0" stroke="#2a6bb0" stroke-width="1.2"/>

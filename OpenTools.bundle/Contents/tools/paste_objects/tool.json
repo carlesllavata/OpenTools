@@ -6,5 +6,5 @@
   "entry": "paste_objects.py:run",
   "keywords": ["clipboard", "paste", "merge", "transfer", "between files", "instances", "network", "slot"],
   "author": "OpenTools contributors",
-  "license": "MIT"
+  "license": "GPL-3.0-or-later"
 }

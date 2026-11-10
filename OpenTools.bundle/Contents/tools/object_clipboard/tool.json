@@ -6,5 +6,5 @@
   "entry": "object_clipboard_ui.py:run",
   "keywords": ["clipboard", "slots", "copy", "paste", "transfer", "between files", "thumbnails", "merge", "network", "materials", "stamp", "lock"],
   "author": "OpenTools contributors",
-  "license": "MIT"
+  "license": "GPL-3.0-or-later"
 }

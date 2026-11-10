@@ -1,5 +1,6 @@
+-- SPDX-License-Identifier: GPL-3.0-or-later
 /*
-    OpenTools - Random Wire Color (MIT, OpenTools contributors).
+    OpenTools - Random Wire Color.
 
     Gives every selected object a different wire color (the object color in the Modify panel),
     in one undo step, so wire-color masks (Corona CMasking_WireColor, V-Ray VRayWireColor...)

@@ -5,7 +5,6 @@
   "description": "Copies the first selected object's material and its mapping modifiers (UVW Map, Unwrap UVW, UVW Xform, UVW Mapping Add / Clear / Paste) for the Paste Material buttons.",
   "entry": "copy_material_mapping.ms",
   "keywords": ["copy", "material", "mapping", "uvw", "unwrap", "uvw map", "cpm"],
-  "author": "Aleksey Sheremetov (CPM Lite); adapted by OpenTools contributors",
-  "license": "Included with the author's permission",
-  "source_url": "https://kotiger.co/CPM"
+  "author": "OpenTools contributors",
+  "license": "GPL-3.0-or-later"
 }

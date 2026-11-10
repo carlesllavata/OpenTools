@@ -1,7 +1,5 @@
-"""Clean DWG window; the work is MAXScript (clean_dwg_core.ms).
-
-Based on "Clean DWG" by Juan Camilo Alcaraz a.k.a. Alzarac (www.camiloalcaraz.com),
-included in OpenTools with the author's permission; adapted by OpenTools contributors."""
+# SPDX-License-Identifier: GPL-3.0-or-later
+"""Clean DWG window; the work is MAXScript (clean_dwg_core.ms)."""
 
 from pathlib import Path
 

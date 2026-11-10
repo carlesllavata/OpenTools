@@ -1,5 +1,6 @@
+-- SPDX-License-Identifier: GPL-3.0-or-later
 /*
-    OpenTools - Reset XForm + Collapse (MIT, OpenTools contributors).
+    OpenTools - Reset XForm + Collapse.
 
     For every selected geometry or shape object: Reset XForm (as in Utilities), then
     collapse the stack, in one undo step.

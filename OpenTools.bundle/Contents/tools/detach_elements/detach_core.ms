@@ -1,5 +1,6 @@
+-- SPDX-License-Identifier: GPL-3.0-or-later
 /*
-    OpenTools - Detach Elements core (MIT, OpenTools contributors).
+    OpenTools - Detach Elements core.
     Splits Editable Poly / Editable Mesh objects into one object per element or per
     material ID. Independent implementation; the UI lives in detach_elements.py.
 */

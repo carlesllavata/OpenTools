@@ -1,7 +1,6 @@
+-- SPDX-License-Identifier: GPL-3.0-or-later
 /*
     OpenTools - Turn to Instance.
-    Based on "Turn To Instance" by Miled Rizk (http://www.youtube.com/c/MiledRizk),
-    included in OpenTools with the author's permission; extended by OpenTools contributors.
 
     Select the objects to convert, run the tool, then pick the source object in a viewport.
     Every selected object of a compatible type becomes a full instance of the source (object,

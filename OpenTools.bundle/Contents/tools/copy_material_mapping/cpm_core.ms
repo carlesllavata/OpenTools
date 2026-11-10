@@ -1,7 +1,6 @@
+-- SPDX-License-Identifier: GPL-3.0-or-later
 /*
     OpenTools - Copy / Paste Material and Mapping, shared core.
-    Based on "CPM Lite" 1.1 by Aleksey Sheremetov (https://kotiger.co/CPM), included in
-    OpenTools with the author's permission; adapted by OpenTools contributors.
 
     OTL_CPM.copyFrom()                     stores the first selected object's material and
                                             its mapping modifiers (UVW Map, Unwrap UVW,

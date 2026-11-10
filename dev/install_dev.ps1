@@ -1,4 +1,5 @@
-﻿<#
+﻿# SPDX-License-Identifier: GPL-3.0-or-later
+<#
 .SYNOPSIS
     Installs a small "OpenTools-dev" bundle that loads OpenTools straight from this
     checkout and turns on the dev bridge. Restart 3ds Max afterwards.

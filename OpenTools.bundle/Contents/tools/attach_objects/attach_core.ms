@@ -1,5 +1,6 @@
+-- SPDX-License-Identifier: GPL-3.0-or-later
 /*
-    OpenTools - Attach Objects core (MIT, OpenTools contributors).
+    OpenTools - Attach Objects core.
     Attaches many objects into one Editable Poly / Editable Mesh / Spline (or one per
     material) quickly, by attaching in batches and then attaching the batches, instead
     of growing a single object one piece at a time. Independent implementation; the UI

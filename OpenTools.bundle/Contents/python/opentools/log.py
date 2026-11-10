@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Logging to a rotating file plus the MAXScript Listener."""
 
 import logging
