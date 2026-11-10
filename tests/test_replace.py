@@ -3,7 +3,7 @@ import unittest
 
 import helpers  # noqa: F401 - quiets logging
 
-from open3ds import replace
+from opentools import replace
 
 
 class ReplaceTests(unittest.TestCase):

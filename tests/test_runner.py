@@ -7,8 +7,8 @@ from unittest import mock
 
 from helpers import make_tool
 
-from open3ds import runner
-from open3ds.registry import load_manifest
+from opentools import runner
+from opentools.registry import load_manifest
 
 
 class RunnerTests(unittest.TestCase):
@@ -16,7 +16,7 @@ class RunnerTests(unittest.TestCase):
         self._tmp = tempfile.TemporaryDirectory()
         self.root = Path(self._tmp.name)
         self.out = self.root / "out.json"
-        self.warn = mock.patch("open3ds.maxhost.warn").start()
+        self.warn = mock.patch("opentools.maxhost.warn").start()
         self.addCleanup(mock.patch.stopall)
         self.addCleanup(runner.purge_tool_modules)
 
@@ -38,7 +38,7 @@ class RunnerTests(unittest.TestCase):
         )
         self.assertTrue(runner.run(tool))
         self.assertEqual(json.loads(self.out.read_text()), 42)
-        self.assertIn("open3ds_tools.rel_tool.main", sys.modules)
+        self.assertIn("opentools_tools.rel_tool.main", sys.modules)
 
     def test_failure_is_isolated_and_reported(self):
         tool = self._tool("boom", "def run():\n    raise RuntimeError('kaboom')\n")
@@ -49,7 +49,7 @@ class RunnerTests(unittest.TestCase):
     def test_import_error_is_isolated(self):
         tool = self._tool("bad_import", "import does_not_exist_xyz\ndef run(): pass\n")
         self.assertFalse(runner.run(tool))
-        self.assertNotIn("open3ds_tools.bad_import.main", sys.modules)
+        self.assertNotIn("opentools_tools.bad_import.main", sys.modules)
 
     def test_missing_function(self):
         tool = self._tool("nofunc", "def other(): pass\n")

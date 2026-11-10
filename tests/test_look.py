@@ -2,7 +2,7 @@ import unittest
 
 import helpers  # noqa: F401 - quiets logging
 
-from open3ds import look
+from opentools import look
 
 
 def measure(text):

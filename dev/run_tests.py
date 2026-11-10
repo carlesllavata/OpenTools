@@ -9,7 +9,7 @@ import unittest
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.dont_write_bytecode = True  # keep __pycache__ off the network share
-sys.path.insert(0, os.path.join(REPO, "Open3DS.bundle", "Contents", "python"))
+sys.path.insert(0, os.path.join(REPO, "OpenTools.bundle", "Contents", "python"))
 
 
 def main():

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <!-- OpenTools original icon: a cube coming apart into pieces (Detach Elements). MIT. -->
+  <g stroke="#2a6bb0" stroke-width="1.5" stroke-linejoin="round">
+    <path d="M6 18 L17 12 L28 18 L17 24 Z" fill="#7fb6ef"/>
+    <path d="M6 18 L17 24 L17 37 L6 31 Z" fill="#3f8fe0"/>
+    <path d="M17 24 L28 18 L28 31 L17 37 Z" fill="#2f7bc8"/>
+    <path d="M26 9 L34 5 L42 9 L34 13 Z" fill="#7fb6ef"/>
+    <path d="M26 9 L34 13 L34 21 L26 17 Z" fill="#3f8fe0"/>
+    <path d="M34 13 L42 9 L42 17 L34 21 Z" fill="#2f7bc8"/>
+    <path d="M32 31 L38 28 L44 31 L38 34 Z" fill="#7fb6ef"/>
+    <path d="M32 31 L38 34 L38 41 L32 38 Z" fill="#3f8fe0"/>
+    <path d="M38 34 L44 31 L44 38 L38 41 Z" fill="#2f7bc8"/>
+  </g>
+  <path d="M29 22 L33 20 M30 27 L34 28" stroke="#c7a516" stroke-width="2" stroke-linecap="round"/>
+</svg>

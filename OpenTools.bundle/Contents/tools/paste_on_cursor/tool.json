@@ -1,0 +1,10 @@
+{
+  "id": "paste_on_cursor",
+  "name": "Paste on Cursor",
+  "category": "Clipboard",
+  "description": "Pastes a clipboard slot attached to the mouse: click where it goes (drag up or down to scale), right-click or Esc to cancel. Shift / Ctrl / Alt pick the slot.",
+  "entry": "paste_on_cursor.py:run",
+  "keywords": ["clipboard", "place", "cursor", "paste", "drop"],
+  "author": "OpenTools contributors",
+  "license": "MIT"
+}

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <!-- OpenTools original icon: arrow dropping a material onto a box (apply). MIT. -->
+  <g stroke="#3a2a14" stroke-width="0.8" stroke-linejoin="round">
+    <path d="M4 14 L12 10 L20 14 L12 18 Z" fill="#f2b469"/>
+    <path d="M4 14 V19 L12 23 V18 Z" fill="#e08a2c"/>
+    <path d="M12 18 V23 L20 19 V14 Z" fill="#b8681a"/>
+  </g>
+  <path d="M12 1 V10.5" stroke="#d4d4d4" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M8.2 7 L12 10.8 L15.8 7" fill="none" stroke="#d4d4d4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

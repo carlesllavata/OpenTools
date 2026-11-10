@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <!-- OpenTools original icon: small cubes joining into one block (Attach Objects). MIT. -->
+  <g stroke="#2a6bb0" stroke-width="1.5" stroke-linejoin="round">
+    <path d="M3 10 L9 7 L15 10 L9 13 Z" fill="#7fb6ef"/>
+    <path d="M3 10 L9 13 L9 19 L3 16 Z" fill="#3f8fe0"/>
+    <path d="M9 13 L15 10 L15 16 L9 19 Z" fill="#2f7bc8"/>
+    <path d="M3 32 L9 29 L15 32 L9 35 Z" fill="#7fb6ef"/>
+    <path d="M3 32 L9 35 L9 41 L3 38 Z" fill="#3f8fe0"/>
+    <path d="M9 35 L15 32 L15 38 L9 41 Z" fill="#2f7bc8"/>
+    <path d="M24 19 L34 14 L44 19 L34 24 Z" fill="#7fb6ef"/>
+    <path d="M24 19 L34 24 L34 37 L24 32 Z" fill="#3f8fe0"/>
+    <path d="M34 24 L44 19 L44 32 L34 37 Z" fill="#2f7bc8"/>
+  </g>
+  <path d="M15 15 L22 20 M15 34 L22 28" stroke="#c7a516" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M19 18.5 L22.5 20.5 L21.5 16.5 M19 29.5 L22.5 27.5 L21.5 31.5" fill="none" stroke="#c7a516" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

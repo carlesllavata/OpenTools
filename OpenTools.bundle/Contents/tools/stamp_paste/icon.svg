@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <!-- OpenTools original icon: a stamp leaving copies of a box (Stamp Paste). MIT. -->
+  <g stroke="#1f7a6f" stroke-width="1.4" stroke-linejoin="round"><path d="M2 33 l9 -4.5 l9 4.5 l-9 4.5 Z" fill="#7fd6c7"/><path d="M2 33 v10 l9 4.5 v-10 Z" fill="#2fa395"/><path d="M11 37.5 v10 l9 -4.5 v-10 Z" fill="#23877b"/></g>
+  <g stroke="#1f7a6f" stroke-width="1.4" stroke-linejoin="round"><path d="M22 35 l9 -4.5 l9 4.5 l-9 4.5 Z" fill="#7fd6c7"/><path d="M22 35 v10 l9 4.5 v-10 Z" fill="#2fa395"/><path d="M31 39.5 v10 l9 -4.5 v-10 Z" fill="#23877b"/></g>
+  <path d="M25 4 h10 v8 l5 4 v5 h-20 v-5 l5 -4 Z" fill="#e0a12c" stroke="#8a5a10" stroke-width="1.4" stroke-linejoin="round"/>
+  <path d="M19 24 h22" stroke="#8a5a10" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M30 27 v4 M26 28 l-1.5 3 M34 28 l1.5 3" stroke="#e8e8e8" stroke-width="1.6" stroke-linecap="round"/>
+</svg>

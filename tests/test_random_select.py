@@ -5,7 +5,7 @@ from pathlib import Path
 
 import helpers  # noqa: F401 - quiets logging
 
-_PATH = (Path(__file__).resolve().parents[1] / "Open3DS.bundle" / "Contents" / "tools"
+_PATH = (Path(__file__).resolve().parents[1] / "OpenTools.bundle" / "Contents" / "tools"
          / "random_select" / "picking.py")
 _spec = importlib.util.spec_from_file_location("random_select_picking", _PATH)
 picking = importlib.util.module_from_spec(_spec)

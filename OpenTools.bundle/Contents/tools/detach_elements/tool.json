@@ -1,0 +1,10 @@
+{
+  "id": "detach_elements",
+  "name": "Detach Elements",
+  "category": "Modeling",
+  "description": "Splits Editable Poly / Editable Mesh objects into one object per element or per material ID, with random wire colors, centered pivots, seamless smoothing along the cuts and trimmed Multi/Sub-Object materials.",
+  "entry": "detach_elements.py:run",
+  "keywords": ["detach", "explode", "split", "elements", "material id", "separate", "break"],
+  "author": "OpenTools contributors",
+  "license": "MIT"
+}

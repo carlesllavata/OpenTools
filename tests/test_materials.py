@@ -2,7 +2,7 @@ import unittest
 
 import helpers  # noqa: F401 - quiets logging
 
-from open3ds import materials
+from opentools import materials
 
 
 def entry(name, handle=1):

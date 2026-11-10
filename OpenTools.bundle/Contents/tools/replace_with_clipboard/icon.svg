@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <!-- OpenTools original icon: a dashed placeholder box replaced by a real one (Replace with Clipboard). MIT. -->
+  <g fill="none" stroke="#bdbdbd" stroke-width="1.5" stroke-dasharray="2.6 2" stroke-linejoin="round"><path d="M3 12 l8 -4 l8 4 l-8 4 Z"/><path d="M3 12 v9 l8 4 v-9 M11 25 l8 -4 v-9"/></g>
+  <path d="M20 18 C28 18 30 22 30 27" fill="none" stroke="#e0b12c" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M26 24 L30 28.5 L34 24" fill="none" stroke="#e0b12c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <g stroke="#1f7a6f" stroke-width="1.4" stroke-linejoin="round"><path d="M21 31 l9 -4.5 l9 4.5 l-9 4.5 Z" fill="#7fd6c7"/><path d="M21 31 v10 l9 4.5 v-10 Z" fill="#2fa395"/><path d="M30 35.5 v10 l9 -4.5 v-10 Z" fill="#23877b"/></g>
+</svg>

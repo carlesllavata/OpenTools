@@ -1,8 +1,22 @@
 # Changelog
 
-What each version of Open3DS adds, newest first.
+What each version of OpenTools (formerly Open3DS) adds, newest first.
 
 ## In development
+
+### 10 November 2026
+
+- **Open3DS is now OpenTools.** It is part of Open3D, a growing suite of open-source tools
+  for 3D work. Everything that showed "Open3DS" now says "OpenTools": the panel, the menu in
+  the menu bar, the messages and the install folder. What you need to redo once:
+  - **Reinstall:** delete `Open3DS.bundle` from `%APPDATA%\Autodesk\ApplicationPlugins\` and copy
+    `OpenTools.bundle` there instead.
+  - **Shortcuts and toolbar buttons:** the actions are now in the **OpenTools** category
+    (Customize > Hotkey Editor / Customize User Interface). Bind them again; the old Open3DS
+    ones stop working.
+  - **Your settings and clipboard slots** now live in `%APPDATA%\OpenTools` and
+    `%LOCALAPPDATA%\OpenTools`. Move the contents of the old `Open3DS` folders there if you
+    want to keep them; otherwise OpenTools starts with its defaults.
 
 ### 9 November 2026
 

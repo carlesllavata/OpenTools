@@ -6,7 +6,7 @@ import unittest
 
 import helpers  # noqa: F401 - quiets logging
 
-from open3ds import inspector
+from opentools import inspector
 
 
 def property_set(properties):
@@ -93,7 +93,7 @@ class CheckTableTests(unittest.TestCase):
     def test_core_has_every_check(self):
         """Each check has a c_<id> in the MAXScript core and each fix an f_<id>."""
         import os
-        core = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "Open3DS.bundle", "Contents",
+        core = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "OpenTools.bundle", "Contents",
                             "tools", "scene_summary", "inspector_core.ms")
         with open(core, encoding="utf-8") as handle:
             source = handle.read().lower()

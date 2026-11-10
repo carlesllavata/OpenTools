@@ -6,7 +6,7 @@ from pathlib import Path
 
 import helpers  # noqa: F401 - quiets logging
 
-from open3ds import assets
+from opentools import assets
 
 
 def write(path, data=b"x"):

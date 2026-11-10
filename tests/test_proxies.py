@@ -2,7 +2,7 @@ import unittest
 
 import helpers  # noqa: F401 - quiets logging
 
-from open3ds import proxies
+from opentools import proxies
 
 
 class ProxyTypeTests(unittest.TestCase):

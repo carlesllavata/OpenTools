@@ -1,0 +1,10 @@
+{
+  "id": "ignite",
+  "name": "Random Replace",
+  "category": "Modeling",
+  "description": "Replaces the selected objects (placeholders, boxes...) with copies or instances of several source objects picked at random by weight, keeping each one's position, rotation, scale and layer. Undoable.",
+  "entry": "random_replace.py:run",
+  "keywords": ["replace", "random", "weights", "scatter", "variation", "placeholder", "swap", "instances"],
+  "author": "OpenTools contributors",
+  "license": "MIT"
+}

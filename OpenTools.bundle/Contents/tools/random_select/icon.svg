@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <!-- OpenTools original icon: a grid of boxes with a random few picked out (Random Select). MIT. -->
+  <rect x="3" y="3" width="42" height="42" rx="4" fill="none" stroke="#5ba84f" stroke-width="2" stroke-dasharray="4 3"/>
+  <g fill="#5ba84f" opacity="0.35">
+    <rect x="9" y="9" width="8" height="8" rx="1.5"/>
+    <rect x="31" y="9" width="8" height="8" rx="1.5"/>
+    <rect x="20" y="20" width="8" height="8" rx="1.5"/>
+    <rect x="9" y="31" width="8" height="8" rx="1.5"/>
+    <rect x="20" y="31" width="8" height="8" rx="1.5"/>
+    <rect x="31" y="20" width="8" height="8" rx="1.5"/>
+  </g>
+  <g fill="#c7a516" stroke="#8a720e" stroke-width="1.2">
+    <rect x="20" y="9" width="8" height="8" rx="1.5"/>
+    <rect x="9" y="20" width="8" height="8" rx="1.5"/>
+    <rect x="31" y="31" width="8" height="8" rx="1.5"/>
+  </g>
+</svg>

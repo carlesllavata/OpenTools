@@ -3,11 +3,11 @@ from types import SimpleNamespace
 
 import helpers  # noqa: F401 - quiets logging
 
-from open3ds import menus
+from opentools import menus
 
 
 def _tool(tool_id, name, category):
-    return SimpleNamespace(id=tool_id, name=name, category=category, macro_name="Open3DS_" + tool_id)
+    return SimpleNamespace(id=tool_id, name=name, category=category, macro_name="OpenTools_" + tool_id)
 
 
 TOOLS = [
@@ -35,10 +35,10 @@ class MenuTests(unittest.TestCase):
 
     def test_source(self):
         src = menus.menu_source(TOOLS)
-        self.assertIn('CreateMacroScriptAction "%s" "Open3DS_Hub" "Open3DS"' % menus.guid("hub"), src)
-        self.assertIn('"Open3DS_clean_dwg"', src)
+        self.assertIn('CreateMacroScriptAction "%s" "OpenTools_Hub" "OpenTools"' % menus.guid("hub"), src)
+        self.assertIn('"OpenTools_clean_dwg"', src)
         self.assertIn('title:"Say \\"hi\\""', src)  # titles are escaped
-        self.assertIn("callbacks.addScript #cuiRegisterMenus O3DS_RegisterMenus id:#Open3DSMenu", src)
+        self.assertIn("callbacks.addScript #cuiRegisterMenus OTL_RegisterMenus id:#OpenToolsMenu", src)
         self.assertEqual(src.count("sub = m.CreateSubMenu"), 3)
 
 

@@ -4,8 +4,8 @@ from pathlib import Path
 
 from helpers import make_tool
 
-from open3ds import paths
-from open3ds.registry import ManifestError, Registry, load_manifest, parse_entry
+from opentools import paths
+from opentools.registry import ManifestError, Registry, load_manifest, parse_entry
 
 
 class ParseEntryTests(unittest.TestCase):
@@ -49,7 +49,7 @@ class LoadManifestTests(unittest.TestCase):
         self.assertEqual(tool.entry_func, "run")
         self.assertEqual(tool.category, "General")
         self.assertEqual(tool.keywords, ("x",))
-        self.assertEqual(tool.macro_name, "Open3DS_my_tool")
+        self.assertEqual(tool.macro_name, "OpenTools_my_tool")
         self.assertTrue(tool.supports(2027))
         self.assertFalse(tool.supports(2024))
 

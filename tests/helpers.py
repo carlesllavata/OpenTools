@@ -4,8 +4,8 @@ import json
 import logging
 from pathlib import Path
 
-# Keep the open3ds logger quiet during tests.
-_logger = logging.getLogger("open3ds")
+# Keep the opentools logger quiet during tests.
+_logger = logging.getLogger("opentools")
 _logger.addHandler(logging.NullHandler())
 _logger.propagate = False
 

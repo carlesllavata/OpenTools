@@ -1,0 +1,10 @@
+{
+  "id": "asset_manager",
+  "name": "Asset Manager",
+  "category": "Files",
+  "description": "Every external file of the scene (bitmaps of any renderer, proxies, IES, HDRI, caches, XRefs) with its status and the objects using it. Relinks missing files from search folders, strips or resolves paths, collects everything into a folder with a copy of the scene and an optional zip.",
+  "entry": "asset_manager.py:run",
+  "keywords": ["relink", "bitmaps", "missing maps", "textures", "collect", "archive", "zip", "paths", "asset tracking", "proxies", "ies"],
+  "author": "OpenTools contributors",
+  "license": "MIT"
+}

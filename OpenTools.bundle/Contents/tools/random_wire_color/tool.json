@@ -1,0 +1,10 @@
+{
+  "id": "random_wire_color",
+  "name": "Random Wire Color",
+  "category": "Scene",
+  "description": "Gives every selected object a different wire color (the object color in the Modify panel), well spread so wire-color masks such as Mask ID separate each object. Click again for a new combination. Undoable.",
+  "entry": "random_wire_color.ms",
+  "keywords": ["wire color", "object color", "random", "color", "mask", "mask id", "id", "matte", "multimatte", "render element", "wirecolor"],
+  "author": "OpenTools contributors",
+  "license": "MIT"
+}

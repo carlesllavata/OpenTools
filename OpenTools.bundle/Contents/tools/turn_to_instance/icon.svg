@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <!-- OpenTools original icon: a sphere turned into a copy of the source box (Turn to Instance). MIT. -->
+  <g stroke="#2a6bb0" stroke-width="1.5" stroke-linejoin="round">
+    <path d="M3 17 L11 13 L19 17 L11 21 Z" fill="#7fb6ef"/>
+    <path d="M3 17 L11 21 L11 31 L3 27 Z" fill="#3f8fe0"/>
+    <path d="M11 21 L19 17 L19 27 L11 31 Z" fill="#2f7bc8"/>
+  </g>
+  <circle cx="37" cy="13" r="6" fill="none" stroke="#7a8794" stroke-width="1.5" stroke-dasharray="3 2"/>
+  <path d="M37 21 V26" stroke="#c7a516" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M34 23.5 L37 27 L40 23.5" fill="none" stroke="#c7a516" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <g stroke="#2a6bb0" stroke-width="1.5" stroke-linejoin="round">
+    <path d="M29 33 L37 29 L45 33 L37 37 Z" fill="#7fb6ef"/>
+    <path d="M29 33 L37 37 L37 46 L29 42 Z" fill="#3f8fe0"/>
+    <path d="M37 37 L45 33 L45 42 L37 46 Z" fill="#2f7bc8"/>
+  </g>
+  <path d="M20 22 C26 22 28 30 28 34" fill="none" stroke="#c7a516" stroke-width="1.6" stroke-dasharray="2.5 2" stroke-linecap="round"/>
+</svg>

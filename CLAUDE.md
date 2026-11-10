@@ -1,33 +1,37 @@
-# Open3DS – notes for Claude
+# OpenTools – notes for Claude
 
 Open-source, single-install hub for 3ds Max (2025+). The user's environment: 3ds Max 2027,
 Python 3.13 (bundled with Max), PySide6, Corona. The repo lives on a NAS share (`Z:` maps to
 `\\192.168.2.10\...`). Talk to the user in Spanish; everything in the repo is in English: code, comments,
 docs, commit messages, the changelog and GitHub release notes.
 
+Called **Open3DS** until 10 November 2026 (prefix `O3DS_`, package `open3ds`, `Open3DS.bundle`); renamed to
+OpenTools as a clean cut, with no compatibility layer. Old names in the git history, older changelog entries
+and `.devbridge` logs refer to that. Part of the Open3D suite: see `..\..\CLAUDE.md`.
+
 ## Layout
-- `Open3DS.bundle/` – the ApplicationPlugins package users install. Version lives in
-  `PackageContents.xml` (AppVersion + ComponentEntry Version) **and** `open3ds/__init__.py`; keep them equal.
+- `OpenTools.bundle/` – the ApplicationPlugins package users install. Version lives in
+  `PackageContents.xml` (AppVersion + ComponentEntry Version) **and** `opentools/__init__.py`; keep them equal.
   Max 2027 silently ignores a package whose RuntimeRequirements lack `SeriesMax` (we use `2099` = no cap).
 - `CHANGELOG.md` – the user's version diary, **in English** (it was Spanish until 9 November 2026), newest
   first, written for users. After every commit ask whether to publish an entry or make a new version (bump
   both version places, tag `vX.Y.Z`, push, `gh release create` with that version's notes, also in English). gh lives in `%LOCALAPPDATA%\Programs\GitHubCLI\bin\gh.exe`.
 - In non-interactive sessions (3dsmaxbatch, render nodes) only tools and macros load; no hub, no bridge.
-- `Open3DS.bundle/Contents/python/open3ds/` – core. Modules without Qt/pymxs imports at top level
+- `OpenTools.bundle/Contents/python/opentools/` – core. Modules without Qt/pymxs imports at top level
   (`registry`, `search`, `macros.macro_source`, `settings`, `runner`) must stay importable outside Max:
   the offline tests rely on it. Anything touching 3ds Max goes through `maxhost.py`.
-- `Open3DS.bundle/Contents/tools/<id>/tool.json` – one folder per tool; schema in README.
+- `OpenTools.bundle/Contents/tools/<id>/tool.json` – one folder per tool; schema in README.
 - Forensic lives in `tools/scene_summary` (id kept from Scene Inspector so users' macros and toolbars keep
   working). Random Replace lives in `tools/ignite` (id kept from the old Ignite panel, whose copy/paste
   part moved to the Object Clipboard dashboard: its paste options show per mode there). "Forensic" is a
-  provisional name the user will change; the card look (`open3ds/ui/cards.py`) is provisional too.
-- `dev/` – `install_dev.ps1` (dev shim bundle in `%APPDATA%\Autodesk\ApplicationPlugins\Open3DS-dev.bundle`
+  provisional name the user will change; the card look (`opentools/ui/cards.py`) is provisional too.
+- `dev/` – `install_dev.ps1` (dev shim bundle in `%APPDATA%\Autodesk\ApplicationPlugins\OpenTools-dev.bundle`
   that loads this checkout and enables the bridge), `bridge.py` (client), `run_tests.py`.
 
 ## Commands
 Max's Python: `C:\Program Files\Autodesk\3ds Max 2027\Python\python.exe` (always run with `-I`).
 - Tests: `python -I dev\run_tests.py`
-- Live Max: `python -I dev\bridge.py ping | reload | -c "code" | file.py` (code gets `rt`, `pymxs`, `open3ds`;
+- Live Max: `python -I dev\bridge.py ping | reload | -c "code" | file.py` (code gets `rt`, `pymxs`, `opentools`;
   assign `_result` to return a value). After editing core code, run `reload`; tool code reloads on every run in dev mode.
   From Windows PowerShell 5.1, `-c` mangles embedded double quotes: write anything non-trivial to a .py file
   (scratchpad) and pass the file. Avoid code that opens modal dialogs (messageBox) – it blocks the bridge
@@ -36,7 +40,7 @@ Max's Python: `C:\Program Files\Autodesk\3ds Max 2027\Python\python.exe` (always
 
 ## 3ds Max gotchas (verified in 2027)
 - `with pymxs.undo(...)` silently swallows every exception raised inside it. Always use
-  `open3ds.maxhost.undo(label, enabled=True)`, which closes the undo record and re-raises.
+  `opentools.maxhost.undo(label, enabled=True)`, which closes the undo record and re-raises.
 - MAXScript is case-insensitive: a parameter or local named like a built-in function
   (`centerPivot` vs `CenterPivot`) shadows it ("Call needs function or class, got: true").
 - Undo a viewport change with `actionMan.executeAction 0 "40104"` (Undo Viewport Operation);
@@ -52,7 +56,7 @@ Max's Python: `C:\Program Files\Autodesk\3ds Max 2027\Python\python.exe` (always
   an argument (`f (for n in objects where n.material == m collect n)`) fails with "Bad free thunk
   local member index". Write those loops with an explicit `if`.
 - Live tests of scene-wide fixes (delete empty layers, ungroup all...) must only run when every
-  item found belongs to the test (names `O3DS_t*`): the user's open scene is real work (it
+  item found belongs to the test (names `OTL_t*`): the user's open scene is real work (it
   keeps empty template layers like `00_INPUTS`...`ZZ_AUX` on purpose).
 - Layer deletion is undoable only inside an undo record. Outside one it is permanent, and an
   earlier undoable move of objects out of that layer then CRASHES 3ds Max 2027 on Ctrl+Z (it
@@ -73,13 +77,13 @@ Max's Python: `C:\Program Files\Autodesk\3ds Max 2027\Python\python.exe` (always
 - `on` is a reserved word in MAXScript (`local on = ...` is a syntax error). Inside a struct, a member
   function must be defined above the members that call it.
 - A `.ms` tool whose block does `fileIn core` and then calls a struct the core defines must
-  declare that global *above* the block (`global O3DS_X` then `( fileIn ...; O3DS_X.f() )`):
+  declare that global *above* the block (`global OTL_X` then `( fileIn ...; OTL_X.f() )`):
   the block compiles before the fileIn runs, so on the first run of a session the name becomes
   an empty local ("Unknown property ... in undefined"). Live tests that already loaded the core
-  hide this: remove the global first (`globalVars.remove #O3DS_X`).
+  hide this: remove the global first (`globalVars.remove #OTL_X`).
 - `getHandleByAnim` returns an IntegerPtr: `as string` gives "30043P". Strip the "P" before
   building Python code for `python.Execute` (a MAXScript tool selects a material in the bar with
-  `python.Execute "import open3ds.ui.hub as h; h.show_material(<handle>)"`).
+  `python.Execute "import opentools.ui.hub as h; h.show_material(<handle>)"`).
 - Live tests of `.ms` tools: run the entry with `rt.fileIn(tool.entry_file)`, not `runner.run`;
   the runner shows a modal error dialog on failure, which hangs the bridge.
 - `NodeEventCallback` (accepts Python callables) batches events and fires after the operation,
@@ -90,13 +94,13 @@ Max's Python: `C:\Program Files\Autodesk\3ds Max 2027\Python\python.exe` (always
   `gw.getViewportDib`); text drawn inside a `gw.wRect` is hidden, so highlight with color.
 - PySide6: `QAction` / `QActionGroup` live in QtGui, not QtWidgets. Qt never opens an empty
   QMenu, so a menu filled only in `aboutToShow` never appears: fill it once when created.
-- Tool windows: subclass `open3ds.ui.toolwindow.ToolWindow` (one instance, remembered position,
+- Tool windows: subclass `opentools.ui.toolwindow.ToolWindow` (one instance, remembered position,
   options in settings `tool_options`; a `"size"` in DEFAULTS is restored and saved by the base,
   `self.confirm(title, text)` asks Yes/Cancel) and wrap button actions with `self.guard(...)`, otherwise
-  errors in Qt slots are lost. Settings of the running app: `open3ds.app.current_settings()`.
-- Look: every Open3DS window gets `ui/theme.py` (`theme.apply(root)`; ToolWindow does it). Colors come
+  errors in Qt slots are lost. Settings of the running app: `opentools.app.current_settings()`.
+- Look: every OpenTools window gets `ui/theme.py` (`theme.apply(root)`; ToolWindow does it). Colors come
   from the 3ds Max palette (`theme.tokens()`); only the orange accent and status colors are fixed.
-  No hard-coded greys or `color: gray` in tools: use `theme.dim_label()` / objectName `O3DS_Dim`.
+  No hard-coded greys or `color: gray` in tools: use `theme.dim_label()` / objectName `OTL_Dim`.
   Buttons follow Forensic's style; the user wants Forensic's layout left as it is. Heavy geometry loops go in a MAXScript `*_core.ms` next to the tool.
 
 ## Rules

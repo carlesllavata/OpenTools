@@ -5,9 +5,9 @@ from pathlib import Path
 
 import helpers  # noqa: F401 - quiets logging
 
-from open3ds import macros, search
-from open3ds.registry import Tool
-from open3ds.settings import RECENT_LIMIT, Settings
+from opentools import macros, search
+from opentools.registry import Tool
+from opentools.settings import RECENT_LIMIT, Settings
 
 
 def tool(tool_id, name, category="General", keywords=(), description=""):
@@ -65,10 +65,10 @@ class MacroTests(unittest.TestCase):
 
     def test_tool_macro_source(self):
         source = macros.tool_macro_source(TOOLS[0])
-        self.assertIn("macroScript Open3DS_select_instances", source)
-        self.assertIn('category:"Open3DS"', source)
+        self.assertIn("macroScript OpenTools_select_instances", source)
+        self.assertIn('category:"OpenTools"', source)
         self.assertIn('buttonText:"Select Instances"', source)
-        self.assertIn("python.Execute \"import open3ds; open3ds.run('select_instances')\"", source)
+        self.assertIn("python.Execute \"import opentools; opentools.run('select_instances')\"", source)
 
     def test_rejects_bad_macro_name(self):
         with self.assertRaises(ValueError):

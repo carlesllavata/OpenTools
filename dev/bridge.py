@@ -1,4 +1,4 @@
-"""Client for the Open3DS dev bridge: runs Python inside the live 3ds Max.
+"""Client for the OpenTools dev bridge: runs Python inside the live 3ds Max.
 
 Run with the Python bundled with 3ds Max (any Python 3.8+ works):
 
@@ -7,9 +7,9 @@ Run with the Python bundled with 3ds Max (any Python 3.8+ works):
     python -I dev/bridge.py -c "print(rt.objects.count)"
     python -I dev/bridge.py path/to/script.py
 
-Inside the code: `rt` (pymxs.runtime), `pymxs` and `open3ds` are predefined;
+Inside the code: `rt` (pymxs.runtime), `pymxs` and `opentools` are predefined;
 assign `_result = ...` to get a value back. Exit code: 0 ok, 1 error in Max,
-2 no answer (3ds Max closed, or Open3DS not loaded through dev/install_dev.ps1).
+2 no answer (3ds Max closed, or OpenTools not loaded through dev/install_dev.ps1).
 """
 
 import argparse
@@ -25,16 +25,16 @@ ROOT = os.path.join(REPO, ".devbridge")
 PING = """
 import sys
 _result = {
-    "open3ds": open3ds.__version__,
-    "max_year": open3ds.maxhost.max_year(),
+    "opentools": opentools.__version__,
+    "max_year": opentools.maxhost.max_year(),
     "python": sys.version.split()[0],
-    "tools": sorted(open3ds.app.current().registry.tools) if open3ds.app.current() else None,
-    "errors": [[str(p), m] for p, m in open3ds.app.current().registry.errors] if open3ds.app.current() else None,
+    "tools": sorted(opentools.app.current().registry.tools) if opentools.app.current() else None,
+    "errors": [[str(p), m] for p, m in opentools.app.current().registry.errors] if opentools.app.current() else None,
 }
 """
 
 RELOAD = """
-app = open3ds.reload()
+app = opentools.reload()
 _result = {"tools": len(app.registry.tools), "errors": [[str(p), m] for p, m in app.registry.errors]}
 """
 
@@ -111,7 +111,7 @@ def main(argv=None):
             print("3ds Max took the job but did not answer within %.0fs (still running?)." % args.timeout, file=sys.stderr)
         else:
             print(
-                "No answer from 3ds Max. Is it open, with Open3DS loaded via dev/install_dev.ps1?",
+                "No answer from 3ds Max. Is it open, with OpenTools loaded via dev/install_dev.ps1?",
                 file=sys.stderr,
             )
         return 2
