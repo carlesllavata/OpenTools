@@ -13,7 +13,7 @@ This module must stay importable outside 3ds Max, so nothing here imports
 pymxs or Qt at module level.
 """
 
-__version__ = "0.5.1"
+__version__ = "0.5.2"
 
 
 def run(tool_id):

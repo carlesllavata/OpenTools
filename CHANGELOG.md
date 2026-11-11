@@ -2,7 +2,7 @@
 
 What each version of OpenTools (formerly Open3DS) adds, newest first.
 
-## In development
+## 0.5.2 — 11 November 2026
 
 - **Clean-up.** Code nothing used any more was removed. The tools work exactly as before.
 - **The Asset Manager is now two tools: Relink Assets and Collect Assets.** Both list the scene's external

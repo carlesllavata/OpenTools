@@ -14,7 +14,7 @@ macros you can bind to hotkeys.
 OpenTools is part of [Open3D](https://github.com/carlesllavata/Open3D), a suite of open-source tools for
 3D work. It was called **Open3DS** until version 0.5.0.
 
-> Status: early (v0.5.1). The hub, palette and macros work, with 28 tools: scene
+> Status: early (v0.5.2). The hub, palette and macros work, with 28 tools: scene
 > checks and repairs (Auditor), relinking and collecting the scene's files (Relink Assets, Collect Assets),
 > proxy and XRef managers, modeling and DWG helpers, material copy / paste and a clipboard of objects,
 > materials and more with network targets. The interface and icons
@@ -48,7 +48,7 @@ OpenTools is part of [Open3D](https://github.com/carlesllavata/Open3D), a suite 
 4. Optional: in *Customize > Hotkey Editor*, category **OpenTools**, bind
    `OpenTools Command Palette` (for example to `Ctrl+Space`) and any tool you use often.
 
-To uninstall, click **Remove** next to OpenTools in the launcher, or delete the `OpenTools.bundle` folder
+To uninstall, choose **Uninstall…** in OpenTools' menu in the launcher, or delete the `OpenTools.bundle` folder
 with 3ds Max closed. Your settings stay in `%APPDATA%\OpenTools` and
 `%LOCALAPPDATA%\OpenTools`; delete those too for a clean removal.
 
