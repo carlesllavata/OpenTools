@@ -14,7 +14,7 @@ macros you can bind to hotkeys.
 OpenTools is part of [Open3D](https://github.com/carlesllavata/Open3D), a suite of open-source tools for
 3D work. It was called **Open3DS** until version 0.5.0.
 
-> Status: early (v0.5.0). The hub, palette and macros work, with 27 tools: scene
+> Status: early (v0.5.1). The hub, palette and macros work, with 27 tools: scene
 > checks and repairs (Forensic), asset, proxy and XRef managers, modeling and DWG helpers,
 > material copy / paste and an object clipboard with network targets. The interface and icons
 > are provisional.
@@ -22,10 +22,11 @@ OpenTools is part of [Open3D](https://github.com/carlesllavata/Open3D), a suite 
 
 ## Install
 
-The Open3D Launcher will install and update OpenTools for you once it is published there. Until then:
-
-1. With 3ds Max closed, copy the `OpenTools.bundle` folder to `%APPDATA%\Autodesk\ApplicationPlugins\`
-   (create the folder if it does not exist). If an old `Open3DS.bundle` is there, delete it.
+1. The easy way: install the [Open3D Launcher](https://github.com/carlesllavata/Open3D/releases/latest)
+   and click **Install** next to OpenTools, with 3ds Max closed. The launcher also tells you when a new
+   version is out and updates it. By hand instead: with 3ds Max closed, copy the `OpenTools.bundle` folder
+   to `%APPDATA%\Autodesk\ApplicationPlugins\` (create the folder if it does not exist). Either way, if an
+   old `Open3DS.bundle` is there, delete it.
 2. Start 3ds Max. The OpenTools panel docks on the right: tool buttons (icon and name)
    in foldable sections by category, with category filters and a search box on top. Click
    a button to run the tool; right-click it to add it to favorites. Icon size and names are
@@ -46,7 +47,8 @@ The Open3D Launcher will install and update OpenTools for you once it is publish
 4. Optional: in *Customize > Hotkey Editor*, category **OpenTools**, bind
    `OpenTools Command Palette` (for example to `Ctrl+Space`) and any tool you use often.
 
-To uninstall, delete that folder with 3ds Max closed. Your settings stay in `%APPDATA%\OpenTools` and
+To uninstall, click **Remove** next to OpenTools in the launcher, or delete the `OpenTools.bundle` folder
+with 3ds Max closed. Your settings stay in `%APPDATA%\OpenTools` and
 `%LOCALAPPDATA%\OpenTools`; delete those too for a clean removal.
 
 ## Layout

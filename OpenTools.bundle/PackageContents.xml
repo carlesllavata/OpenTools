@@ -5,13 +5,13 @@
     ProductType="Application"
     Name="OpenTools"
     Description="Open-source hub that bundles everyday 3ds Max tools in a single install."
-    AppVersion="0.5.0"
+    AppVersion="0.5.1"
     ProductCode="{6E1B9C4A-3F27-4D8E-9A51-0C7D2B84F913}"
     UpgradeCode="{B4D27E90-58A1-4C3F-8E66-1F9A0D3C7B25}">
     <CompanyDetails Name="OpenTools contributors" />
     <RuntimeRequirements OS="Win64" Platform="3ds Max" SeriesMin="2025" SeriesMax="2099" />
     <Components Description="post-start-up scripts parts">
         <RuntimeRequirements OS="Win64" Platform="3ds Max" SeriesMin="2025" SeriesMax="2099" />
-        <ComponentEntry AppName="OpenTools" Version="0.5.0" ModuleName="./Contents/scripts/opentools_startup.ms" />
+        <ComponentEntry AppName="OpenTools" Version="0.5.1" ModuleName="./Contents/scripts/opentools_startup.ms" />
     </Components>
 </ApplicationPackage>

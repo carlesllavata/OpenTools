@@ -2,8 +2,16 @@
 
 What each version of OpenTools (formerly Open3DS) adds, newest first.
 
-## In development
+## 0.5.1 — 11 November 2026
 
+OpenTools is now free software under the GNU GPL v3 or later, and you can install and update it with the
+Open3D Launcher. Nothing changes in how the tools work.
+
+- **Install and update OpenTools with the Open3D Launcher.** Download the launcher from
+  [its release page](https://github.com/carlesllavata/Open3D/releases/latest), install it and click
+  **Install** next to OpenTools: it puts OpenTools in `ApplicationPlugins` for you and tells you when a new
+  version is out. If you copied OpenTools there by hand, the launcher finds it and updates it in place.
+  Close 3ds Max before installing or updating.
 - **OpenTools is now free software under the GNU GPL v3 or later** (it was under the MIT license). You can
   still use it, share it and change it freely; if you share a changed version, it has to stay under the same
   license with its source. The full text is in `LICENSE`.
