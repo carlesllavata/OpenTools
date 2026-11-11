@@ -60,36 +60,3 @@ def initials(name):
         word = words[0]
         return (word[0].upper() + word[1:2].lower()) if len(word) > 1 else word.upper()
     return (words[0][0] + words[1][0]).upper()
-
-
-def wrap_label(text, width, measure, max_lines=2):
-    """Break text into at most max_lines lines no wider than width.
-
-    measure(str) -> width in pixels. The last line is elided with an ellipsis if needed.
-    """
-    words = (text or "").split()
-    if not words:
-        return ""
-    lines = []
-    current = ""
-    for index, word in enumerate(words):
-        candidate = word if not current else current + " " + word
-        if measure(candidate) <= width or not current:
-            current = candidate
-            continue
-        lines.append(current)
-        current = word
-        if len(lines) == max_lines - 1:
-            current = " ".join(words[index:])
-            break
-    lines.append(current)
-    return "\n".join(_elide(line, width, measure) for line in lines[:max_lines])
-
-
-def _elide(text, width, measure):
-    if measure(text) <= width:
-        return text
-    ellipsis = "…"
-    while text and measure(text + ellipsis) > width:
-        text = text[:-1]
-    return text.rstrip() + ellipsis

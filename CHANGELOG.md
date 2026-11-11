@@ -4,6 +4,7 @@ What each version of OpenTools (formerly Open3DS) adds, newest first.
 
 ## In development
 
+- **Clean-up.** Code nothing used any more was removed. The tools work exactly as before.
 - **The Asset Manager is now two tools: Relink Assets and Collect Assets.** Both list the scene's external
   files the same way. **Relink Assets** finds missing files in your search folders, relinks a file by hand
   (right-click) and cleans paths (strip missing paths, clear render element paths, relative / absolute /
