@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Forensic window: the whole scene at a glance in cards (counts, problems and their
+"""Auditor window: the whole scene at a glance in cards (counts, problems and their
 one-click repairs), every modifier in the scene, and the file's details.
 
 Checks live in inspector_core.ms (MAXScript) and opentools/inspector.py (pure helpers).
@@ -38,9 +38,9 @@ def _prompt(text, ms=4000):
     rt.displayTempPrompt("OpenTools: " + text, ms)
 
 
-class ForensicWindow(toolwindow.ToolWindow):
+class AuditorWindow(toolwindow.ToolWindow):
     TOOL_ID = "scene_summary"
-    TITLE = "Forensic"
+    TITLE = "Auditor"
     DEFAULTS = {"size": [1120, 760], "tab": 0}
 
     def __init__(self, parent=None):
@@ -52,7 +52,7 @@ class ForensicWindow(toolwindow.ToolWindow):
 
         _holder, layout = cards.root(self)
 
-        header = cards.Header("FORENSIC", "Scene check and cleanup · OpenTools %s" % opentools.__version__)
+        header = cards.Header("AUDITOR", "Scene check and cleanup · OpenTools %s" % opentools.__version__)
         layout.addWidget(header)
 
         self.scan_button = cards.button("Scan", self.guard(self.scan), accent=True,
@@ -95,7 +95,11 @@ class ForensicWindow(toolwindow.ToolWindow):
         tab = int(self.options["tab"]) if 0 <= int(self.options["tab"]) < 3 else 0
         self.tabs.set_current(tab)
         self.pages.setCurrentIndex(tab)
-        QtCore.QTimer.singleShot(0, self.guard(self.scan))
+        for row in self.rows.values():
+            for button in (row.select_button, row.fix_button):
+                if button is not None:
+                    button.setEnabled(False)
+        self.set_status("Press Scan to check the scene.")
 
     def _show_tab(self, index):
         self.pages.setCurrentIndex(index)
@@ -219,7 +223,7 @@ class ForensicWindow(toolwindow.ToolWindow):
 
     def fix(self, check_id):
         check = inspector.CHECKS_BY_ID[check_id]
-        if check_id in inspector.OPENS_ASSET_MANAGER:
+        if check_id in inspector.OPENS_RELINK:
             opentools.run("asset_manager")
             return
         result = self.results.get(check_id)
@@ -502,4 +506,4 @@ class _SortItem(QtWidgets.QTreeWidgetItem):
 
 
 def run():
-    return toolwindow.show(ForensicWindow)
+    return toolwindow.show(AuditorWindow)

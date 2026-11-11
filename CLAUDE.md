@@ -43,10 +43,13 @@ and `.devbridge` logs refer to that. Part of the Open3D suite: see `..\..\CLAUDE
   (`registry`, `search`, `macros.macro_source`, `settings`, `runner`) must stay importable outside Max:
   the offline tests rely on it. Anything touching 3ds Max goes through `maxhost.py`.
 - `OpenTools.bundle/Contents/tools/<id>/tool.json` – one folder per tool; schema in README.
-- Forensic lives in `tools/scene_summary` (id kept from Scene Inspector so users' macros and toolbars keep
-  working). Random Replace lives in `tools/ignite` (id kept from the old Ignite panel, whose copy/paste
-  part moved to the Object Clipboard dashboard: its paste options show per mode there). "Forensic" is a
-  provisional name the user will change; the card look (`opentools/ui/cards.py`) is provisional too.
+- Tool ids never change when a tool is renamed (macros, toolbars and saved options hang on them).
+  The Auditor (called Forensic until 2026-11-11) lives in `tools/scene_summary` (id kept from Scene
+  Inspector). Random Replace lives in `tools/ignite` (id kept from the old Ignite panel, whose copy/paste
+  part moved to the Clipboard dashboard, `tools/object_clipboard`, called Object Clipboard until 2026-11-11:
+  its paste options show per mode there). The Asset Manager was split on 2026-11-11: Relink Assets keeps
+  its id and folder (`tools/asset_manager`), Collect Assets is `tools/collect_assets`; both build on the file
+  list in `opentools/ui/assetlist.py`. The card look (`opentools/ui/cards.py`) is provisional.
 - `dev/` – `install_dev.ps1` (dev shim bundle in `%APPDATA%\Autodesk\ApplicationPlugins\OpenTools-dev.bundle`
   that loads this checkout and enables the bridge), `bridge.py` (client), `run_tests.py`.
 
@@ -123,7 +126,7 @@ Max's Python: `C:\Program Files\Autodesk\3ds Max 2027\Python\python.exe` (always
 - Look: every OpenTools window gets `ui/theme.py` (`theme.apply(root)`; ToolWindow does it). Colors come
   from the 3ds Max palette (`theme.tokens()`); only the orange accent and status colors are fixed.
   No hard-coded greys or `color: gray` in tools: use `theme.dim_label()` / objectName `OTL_Dim`.
-  Buttons follow Forensic's style; the user wants Forensic's layout left as it is. Heavy geometry loops go in a MAXScript `*_core.ms` next to the tool.
+  Buttons follow the Auditor's style; the user wants the Auditor's layout left as it is. Heavy geometry loops go in a MAXScript `*_core.ms` next to the tool.
 
 ## Rules
 - Before adding a script the user hands over, ask where it comes from and its license. Only code that may go

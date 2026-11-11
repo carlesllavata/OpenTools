@@ -1,6 +1,6 @@
 -- SPDX-License-Identifier: GPL-3.0-or-later
 /*
-    OpenTools - Object Clipboard helpers.
+    OpenTools - Clipboard helpers.
 
     - OTL_PlaceTool: interactive placement of pasted objects. They follow the mouse
       (on surfaces when the cursor is over an object, else on the active grid);

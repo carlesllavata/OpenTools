@@ -86,7 +86,7 @@ class CheckTableTests(unittest.TestCase):
                 self.assertTrue(check.fix, check.id)
             if check.kind == inspector.STAT:
                 self.assertFalse(check.fix, check.id)
-        for check_id in inspector.OPENS_ASSET_MANAGER:
+        for check_id in inspector.OPENS_RELINK:
             self.assertTrue(inspector.CHECKS_BY_ID[check_id].fix)
         # every card has something in it
         self.assertEqual({c.group for c in inspector.CHECKS}, set(inspector.GROUPS))
@@ -102,7 +102,7 @@ class CheckTableTests(unittest.TestCase):
             if check.id == "malware":
                 continue  # Python side (security_scan / remove_malware)
             self.assertIn("fn c_%s " % check.id, source, check.id)
-            if check.fix and check.id not in inspector.OPENS_ASSET_MANAGER:
+            if check.fix and check.id not in inspector.OPENS_RELINK:
                 self.assertIn("fn f_%s " % check.id, source, check.id)
 
     def test_status(self):

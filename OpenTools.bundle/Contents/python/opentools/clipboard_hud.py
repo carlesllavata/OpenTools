@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Viewport HUD of the object clipboard.
+"""Viewport HUD of the clipboard.
 
 A redraw callback (OTL_ClipHUD_Draw in object_clipboard.ms) draws, at the bottom
 left of the active viewport, one row per target (local and the active network

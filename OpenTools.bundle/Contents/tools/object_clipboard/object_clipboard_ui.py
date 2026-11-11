@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Object Clipboard window: the dashboard of the 8 clipboard slots.
+"""Clipboard window: the dashboard of the 8 clipboard slots.
 
 Target (Local or a network folder), mode (objects / materials / modifiers / keys), the paste options
 of the current mode (how objects are placed; modifiers as instances; keys kept in place and shifted
@@ -20,7 +20,7 @@ WINDOW_NAME = "OpenTools_ObjectClipboard"
 GEOMETRY_KEY = "object_clipboard_window_8"  # new key: the 8-slot window wants a new default size
 SAVE_AS_CHOICES = (0, 2025, 2026)  # 0 = the running version
 POLL_MS = 1500
-TITLE = "Object Clipboard"
+TITLE = "Clipboard"
 COLORS = {"objects": "#2fa395", "materials": "#e08a2c", "modifiers": "#6f6fdb", "animation": "#d35f9e",
           "locked": "#d9534f"}
 

@@ -14,7 +14,7 @@ def _tool(tool_id, name, category):
 TOOLS = [
     _tool("random_select", "Random Select", "Selection"),
     _tool("clean_dwg", "Clean DWG", "Scene"),
-    _tool("forensic", "Forensic", "Scene"),
+    _tool("scene_summary", "Auditor", "Scene"),
     _tool("odd", 'Say "hi"', "Modeling"),
 ]
 
@@ -32,7 +32,7 @@ class MenuTests(unittest.TestCase):
         submenus = [i[2] for i in items if i[0] == "submenu"]
         self.assertEqual(submenus, ["Modeling", "Scene", "Selection"])  # alphabetical
         scene = items[items.index(("submenu", "cat.Scene", "Scene", None)) + 1:][:2]
-        self.assertEqual([i[2] for i in scene], ["Clean DWG", "Forensic"])  # by name
+        self.assertEqual([i[2] for i in scene], ["Auditor", "Clean DWG"])  # by name, not by list order
 
     def test_source(self):
         src = menus.menu_source(TOOLS)

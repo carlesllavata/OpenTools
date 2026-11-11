@@ -1,10 +1,10 @@
 {
   "id": "asset_manager",
-  "name": "Asset Manager",
+  "name": "Relink Assets",
   "category": "Files",
-  "description": "Every external file of the scene (bitmaps of any renderer, proxies, IES, HDRI, caches, XRefs) with its status and the objects using it. Relinks missing files from search folders, strips or resolves paths, collects everything into a folder with a copy of the scene and an optional zip.",
-  "entry": "asset_manager.py:run",
-  "keywords": ["relink", "bitmaps", "missing maps", "textures", "collect", "archive", "zip", "paths", "asset tracking", "proxies", "ies"],
+  "description": "Every external file of the scene (bitmaps of any renderer, proxies, IES, HDRI, caches, XRefs) with its status and the objects using it. Finds missing files in search folders and relinks them (or one by hand), strips missing paths, clears render element paths and makes paths relative, absolute or UNC.",
+  "entry": "relink_assets.py:run",
+  "keywords": ["relink", "bitmaps", "missing maps", "missing files", "textures", "paths", "relative", "unc", "strip paths", "asset tracking", "proxies", "ies", "asset manager"],
   "author": "OpenTools contributors",
   "license": "GPL-3.0-or-later"
 }

@@ -40,7 +40,7 @@ class XRefManagerWindow(toolwindow.ToolWindow):
         refresh = QtWidgets.QPushButton("Refresh")
         refresh.setIcon(common.standard_icon("SP_BrowserReload"))
         refresh.clicked.connect(self.guard(self.refresh))
-        self.summary = QtWidgets.QLabel()
+        self.summary = QtWidgets.QLabel("Not scanned yet: press Refresh to list the scene's XRefs.")
         top = QtWidgets.QHBoxLayout()
         top.addWidget(refresh)
         top.addWidget(self.summary, 1)
@@ -54,7 +54,6 @@ class XRefManagerWindow(toolwindow.ToolWindow):
         layout = QtWidgets.QVBoxLayout(self)
         layout.addLayout(top)
         layout.addWidget(self.tabs, 1)
-        QtCore.QTimer.singleShot(0, self.guard(self.refresh))
 
     # ================================================================ scenes
     def _scenes_tab(self):
@@ -215,7 +214,10 @@ class XRefManagerWindow(toolwindow.ToolWindow):
         self.refresh()
 
     def _record_nodes_flag(self, attr, value, label):
-        nodes = [n for row in self._record_rows() for n in row.data(0, tables.DATA_ROLE)["nodes"] if rt.isValidNode(n)]
+        rows = self._record_rows()
+        if not rows:
+            return
+        nodes = [n for row in rows for n in row.data(0, tables.DATA_ROLE)["nodes"] if rt.isValidNode(n)]
         with maxhost.undo(label):
             for n in nodes:
                 setattr(n, attr, value)

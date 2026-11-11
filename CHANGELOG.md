@@ -2,6 +2,25 @@
 
 What each version of OpenTools (formerly Open3DS) adds, newest first.
 
+## In development
+
+- **The Asset Manager is now two tools: Relink Assets and Collect Assets.** Both list the scene's external
+  files the same way. **Relink Assets** finds missing files in your search folders, relinks a file by hand
+  (right-click) and cleans paths (strip missing paths, clear render element paths, relative / absolute /
+  UNC). **Collect Assets** copies the files into one folder, with the same options as before (relink to the
+  copies, Latin-only names, a copy of the scene for an older 3ds Max, zip). Toolbar buttons and hotkeys made
+  for the Asset Manager now open Relink Assets, and Collect Assets starts with the collect options you had
+  set there.
+- **Forensic is now called Auditor.** Same checks and repairs; its toolbar buttons and hotkeys keep working.
+- **Object Clipboard is now called Clipboard.** Same window and slots; its toolbar buttons and hotkeys keep
+  working.
+- **Relink Assets, Collect Assets, the Auditor, Proxy Manager and XRef Display Manager no longer scan the
+  scene when you open them.** They open at once and wait for you: press **Refresh** (or **Scan** in the
+  Auditor) to list the files, proxies or XRefs, or to run the checks. Until then the window says it has not
+  scanned yet, the options (Selected objects only, Include XRefs) don't start a scan, and the buttons that
+  need the list wait for it (the asset tools and Proxy Manager remind you to press Refresh). The Auditor's
+  Select and repair buttons turn on after the first scan.
+
 ## 0.5.1 — 11 November 2026
 
 OpenTools is now free software under the GNU GPL v3 or later, and you can install and update it with the

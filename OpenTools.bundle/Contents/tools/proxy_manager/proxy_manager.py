@@ -95,12 +95,13 @@ class ProxyManagerWindow(toolwindow.ToolWindow):
         super().__init__(parent)
         self.setWindowFlags(QtCore.Qt.Tool | QtCore.Qt.WindowCloseButtonHint | QtCore.Qt.WindowMaximizeButtonHint)
         self.items = []
+        self.scanned = False
 
         refresh = QtWidgets.QPushButton("Refresh")
         refresh.setIcon(common.standard_icon("SP_BrowserReload"))
         refresh.clicked.connect(self.guard(self.refresh))
         self.selected_only = self.check("selected_only", "Selected objects only")
-        self.selected_only.toggled.connect(self.guard(self.refresh))
+        self.selected_only.toggled.connect(self.guard(lambda *_: self.scanned and self.refresh()))
         self.filter = QtWidgets.QComboBox()
         for value, label in (("all", "All proxies"), ("missing", "Missing file"), ("hidden", "Hidden"),
                              ("box", "Shown as box")):
@@ -121,7 +122,7 @@ class ProxyManagerWindow(toolwindow.ToolWindow):
         self.tree.itemDoubleClicked.connect(self.guard(self._select_rows))
         self.tree.customContextMenuRequested.connect(self._context_menu)
         self.tree.itemSelectionChanged.connect(self._update_scope)
-        self.summary = QtWidgets.QLabel()
+        self.summary = QtWidgets.QLabel("Not scanned yet: press Refresh to list the scene's proxies.")
         self.scope = QtWidgets.QLabel()
         self.scope.setObjectName("OTL_Dim")
         self.scope.setMinimumWidth(180)
@@ -144,7 +145,7 @@ class ProxyManagerWindow(toolwindow.ToolWindow):
             ("Hide", "Hide these proxies", g(lambda: self._flag("isHidden", True, "Hide Proxies"))),
             ("Unhide", "Unhide these proxies", g(lambda: self._flag("isHidden", False, "Unhide Proxies"))),
             None,
-            ("Relink missing…", "Find missing proxy files in the Asset Manager", g(lambda: opentools.run("asset_manager"))),
+            ("Relink missing…", "Find missing proxy files in Relink Assets", g(lambda: opentools.run("asset_manager"))),
         )
 
         layout = QtWidgets.QVBoxLayout(self)
@@ -156,12 +157,12 @@ class ProxyManagerWindow(toolwindow.ToolWindow):
         layout.addLayout(info)
         layout.addLayout(display_row)
         layout.addLayout(node_row)
-        QtCore.QTimer.singleShot(0, self.guard(self.refresh))
 
     # ----------------------------------------------------------------- list
     def refresh(self):
         names = {row.text(0) for row in self.tree.selectedItems()}
         self.items = scan(self.selected_only.isChecked())
+        self.scanned = True
         users = Counter(item.file.lower() for item in self.items if item.file)
         self.tree.setSortingEnabled(False)
         self.tree.clear()
@@ -228,11 +229,16 @@ class ProxyManagerWindow(toolwindow.ToolWindow):
             "%d highlighted" % len(highlighted) if highlighted else "all %d listed" % shown))
 
     def _chosen(self):
+        if not self.scanned:
+            rt.displayTempPrompt("OpenTools: press Refresh first to list the proxies.", 3000)
+            return []
         return [row.data(0, tables.DATA_ROLE) for row in tables.chosen_rows(self.tree)]
 
     # -------------------------------------------------------------- actions
     def _display(self, mode):
         items = self._chosen()
+        if not items:
+            return
         changed, skipped = set_display(items, mode)
         text = "OpenTools: %s on %d prox%s" % (proxies.MODE_LABELS[mode], changed, "y" if changed == 1 else "ies")
         if skipped:
@@ -242,13 +248,19 @@ class ProxyManagerWindow(toolwindow.ToolWindow):
         self.refresh()
 
     def _flag(self, flag, value, label):
-        count = set_node_flag(self._chosen(), flag, value, label)
+        items = self._chosen()
+        if not items:
+            return
+        count = set_node_flag(items, flag, value, label)
         rt.displayTempPrompt("OpenTools: %s · %d prox%s." % (label, count, "y" if count == 1 else "ies"), 3000)
         rt.redrawViews()
         self.refresh()
 
     def _select_rows(self, *_args):
-        nodes = [item.node for item in self._chosen() if rt.isValidNode(item.node)]
+        items = self._chosen()
+        if not self.scanned:
+            return
+        nodes = [item.node for item in items if rt.isValidNode(item.node)]
         hidden = [n for n in nodes if n.isHidden]
         if nodes:
             rt.select(rt.Array(*nodes))

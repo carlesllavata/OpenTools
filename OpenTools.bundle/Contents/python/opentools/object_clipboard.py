@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Object clipboard: 8 slots of objects, materials, modifiers or keys, local or on network targets.
+"""Clipboard: 8 slots of objects, materials, modifiers or keys, local or on network targets.
 
 - Copy saves the selection (or materials) of a slot to a folder; Paste merges it back.
   Holding Shift / Ctrl / Alt while clicking Copy or Paste picks the slot:
@@ -583,9 +583,9 @@ def paste_objects(slot=1, how=None, route=None):
     saved_in = info.get("saved_as") or info.get("max_year")
     if not nodes and isinstance(saved_in, int) and year and saved_in > year:
         maxhost.warn(
-            "Object Clipboard",
+            "OpenTools Clipboard",
             "Slot %d was saved for 3ds Max %d; 3ds Max %d cannot read it.\n"
-            "In the Object Clipboard menu, set 'Save for 3ds Max' to %d or older and copy again."
+            "In the menu of the Clipboard window, set 'Save for 3ds Max' to %d or older and copy again."
             % (int(slot), saved_in, year, year),
         )
         return 0

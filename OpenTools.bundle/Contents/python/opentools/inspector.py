@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Forensic helpers (pure Python, tested offline).
+"""Auditor helpers (pure Python, tested offline).
 
-The Forensic tool (tools/scene_summary) checks a scene for problems and cleans
+The Auditor tool (tools/scene_summary) checks a scene for problems and cleans
 it up. This module holds what does not need 3ds Max:
 
-- CHECKS: every row of the Forensic cards (counts and checks) with its card, text and fix.
+- CHECKS: every row of the Auditor cards (counts and checks) with its card, text and fix.
 - Malicious MAXScript detection (known signatures plus a "writes to the startup
   folder" heuristic) and parsing of `callbacks.show` output.
 - Which render engine a class belongs to (renderer mismatch).
@@ -23,7 +23,7 @@ from dataclasses import dataclass
 # ------------------------------------------------------------------- checks
 OK, INFO, WARNING, CRITICAL = "ok", "info", "warning", "critical"
 
-# Cards of the Forensic window, in reading order.
+# Cards of the Auditor window, in reading order.
 GROUPS = ("Render", "Object states", "Scene totals", "Plugin objects", "Geometry", "Animation",
           "Materials & modifiers", "References", "Cleanup", "Health")
 
@@ -209,8 +209,8 @@ CHECKS = (
           WARNING),
 )
 
-# Fixes that open the Asset Manager instead of changing the scene.
-OPENS_ASSET_MANAGER = ("missing_files", "missing_xrefs")
+# Fixes that open Relink Assets instead of changing the scene.
+OPENS_RELINK = ("missing_files", "missing_xrefs")
 
 CHECKS_BY_ID = {c.id: c for c in CHECKS}
 

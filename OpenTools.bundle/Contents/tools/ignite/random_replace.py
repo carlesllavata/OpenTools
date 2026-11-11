@@ -2,7 +2,7 @@
 """Random Replace window: replace the selected objects with sources picked at random by weight.
 
 Weights: opentools.replace; placement: random_replace_core.ms. The tool keeps the id "ignite"
-(it grew out of the Ignite panel, whose copy / paste part now lives in the Object Clipboard
+(it grew out of the Ignite panel, whose copy / paste part now lives in the Clipboard
 dashboard), so toolbar buttons and hotkeys made for Ignite keep working.
 """
 
