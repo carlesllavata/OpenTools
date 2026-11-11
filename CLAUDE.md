@@ -35,6 +35,9 @@ and `.devbridge` logs refer to that. Part of the Open3D suite: see `..\..\CLAUDE
 - `CHANGELOG.md` – the version diary (see the suite standards; it was Spanish until 9 November 2026).
   After every commit ask whether to publish an entry or make a new version (bump
   both version places, tag `vX.Y.Z`, push, `gh release create` with that version's notes, also in English). gh lives in `%LOCALAPPDATA%\Programs\GitHubCLI\bin\gh.exe`.
+  Since 0.5.1 (2026-11-11) OpenTools is in the Open3D Launcher's public catalog: after a release, publishing it
+  there is `python -I tools\publish.py opentools` in `..\..\launcher` (ask the user first). That makes the
+  bundle's code public.
 - In non-interactive sessions (3dsmaxbatch, render nodes) only tools and macros load; no hub, no bridge.
 - `OpenTools.bundle/Contents/python/opentools/` – core. Modules without Qt/pymxs imports at top level
   (`registry`, `search`, `macros.macro_source`, `settings`, `runner`) must stay importable outside Max:
