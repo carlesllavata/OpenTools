@@ -2,6 +2,23 @@
 
 What each version of OpenTools (formerly Open3DS) adds, newest first.
 
+## In development
+
+- **New tool: Render Elements** (category Rendering). Renders only the render elements you tick, without
+  rendering the rest. It was a separate app, OpenElements, and now lives in OpenTools.
+  - Masks and geometry elements (Cryptomatte, masks, IDs, wire colour, Z-depth, normals, world position, UVW,
+    texture maps, albedo, alpha) render in seconds, because the lighting is not computed.
+  - Elements that need lighting (reflection, GI, LightMix...) can be rendered on their own too; they take as
+    long as the full render, and the window says so before you start.
+  - **Mask of the selection:** a white-on-black mask of the selected objects, for that render only. Object IDs,
+    materials and the scene's render elements are not touched.
+  - Each element is saved next to the scene's render output as `<output name>_<element name>`, in the same
+    format or another one. The main image is never written, so the beauty you already have is safe.
+  - Every render setting the tool changes is put back after the render, also when it fails; if one can't be
+    put back, the window says which. A scene saved in the middle of a render is repaired when the tool opens.
+  - Corona is tested. V-Ray is written but not tested on a real render yet; V-Ray GPU renders at full cost.
+  - If you installed OpenElements, uninstall it from the Open3D Launcher: Render Elements replaces it.
+
 ## 0.5.2 — 11 November 2026
 
 - **Clean-up.** Code nothing used any more was removed. The tools work exactly as before.

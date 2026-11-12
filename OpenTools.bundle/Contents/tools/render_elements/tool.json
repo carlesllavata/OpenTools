@@ -1,0 +1,10 @@
+{
+  "id": "render_elements",
+  "name": "Render Elements",
+  "category": "Rendering",
+  "description": "Renders only the render elements you tick, without the rest. Masks and geometry elements (Cryptomatte, IDs, Z-depth, normals...) render in seconds because no lighting is computed; a mask of the selected objects can be added for that render only. Files go next to the render output; the main image is never written.",
+  "entry": "render_elements.py:run",
+  "keywords": ["render", "elements", "passes", "aov", "mask", "cryptomatte", "matte", "zdepth", "wire color", "object id", "corona", "vray"],
+  "author": "OpenTools contributors",
+  "license": "GPL-3.0-or-later"
+}

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <!-- OpenTools original icon: a stack of render passes, the front one a white-on-black mask (Render Elements). GPL-3.0-or-later. -->
+  <rect x="17" y="4" width="27" height="21" rx="2.5" fill="#7d8b96" stroke="#4d565e" stroke-width="1.3"/>
+  <rect x="11" y="11" width="27" height="21" rx="2.5" fill="#d9534f" stroke="#9e3532" stroke-width="1.3"/>
+  <rect x="4" y="19" width="29" height="23" rx="2.5" fill="#1d1e21" stroke="#8a8a8a" stroke-width="1.3"/>
+  <path d="M9 37 L16 27 L21 33 L24 29 L29 37 Z" fill="#e8e8e8"/>
+  <circle cx="26" cy="25" r="2.6" fill="#e8e8e8"/>
+</svg>
