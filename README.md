@@ -14,7 +14,7 @@ macros you can bind to hotkeys.
 OpenTools is part of [Open3D](https://github.com/carlesllavata/Open3D), a suite of open-source tools for
 3D work. It was called **Open3DS** until version 0.5.0.
 
-> Status: early (v0.5.2). The hub, palette and macros work, with 29 tools: scene
+> Status: early (v0.6.0). The hub, palette and macros work, with 29 tools: scene
 > checks and repairs (Auditor), relinking and collecting the scene's files (Relink Assets, Collect Assets),
 > proxy and XRef managers, rendering only the render elements you choose (Render Elements, for Corona and
 > V-Ray), modeling and DWG helpers, material copy / paste and a clipboard of objects,
@@ -63,7 +63,8 @@ OpenTools.bundle/                Autodesk ApplicationPlugins package (what users
     python/opentools/            Core: registry, runner, macros, settings, UI, dev bridge
     tools/<tool_id>/             One folder per tool: tool.json + code
 dev/                             Developer scripts (dev install, bridge client, test runner)
-tests/                           Offline tests that run without 3ds Max
+tests/                           Offline tests that run without 3ds Max (test_*.py), plus
+                                 batch_*.ms checks that run in 3dsmaxbatch
 ```
 
 ## Adding a tool
@@ -113,6 +114,10 @@ powershell -ExecutionPolicy Bypass -File dev\install_dev.ps1
 
 # Run the offline tests
 & "C:\Program Files\Autodesk\3ds Max 2027\Python\python.exe" -I dev\run_tests.py
+
+# Render Elements with Corona in a headless 3ds Max (resets the scene: never in a Max with work open);
+# the result is in %TEMP%\OpenTools_render_elements_test\result.txt
+& "C:\Program Files\Autodesk\3ds Max 2027\3dsmaxbatch.exe" tests\batch_render_elements.ms
 
 # Talk to the running 3ds Max (needs the dev install)
 & "C:\Program Files\Autodesk\3ds Max 2027\Python\python.exe" -I dev\bridge.py ping

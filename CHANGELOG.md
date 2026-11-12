@@ -2,7 +2,7 @@
 
 What each version of OpenTools (formerly Open3DS) adds, newest first.
 
-## In development
+## 0.6.0 — 12 November 2026
 
 - **New tool: Render Elements** (category Rendering). Renders only the render elements you tick, without
   rendering the rest. It was a separate app, OpenElements, and now lives in OpenTools.
@@ -17,7 +17,9 @@ What each version of OpenTools (formerly Open3DS) adds, newest first.
   - Every render setting the tool changes is put back after the render, also when it fails; if one can't be
     put back, the window says which. A scene saved in the middle of a render is repaired when the tool opens.
   - Corona is tested. V-Ray is written but not tested on a real render yet; V-Ray GPU renders at full cost.
-  - If you installed OpenElements, uninstall it from the Open3D Launcher: Render Elements replaces it.
+  - OpenElements is discontinued and Render Elements replaces it. If you installed it, remove it: uninstall it
+    in the Open3D Launcher, or delete `OpenElements.bundle` from `%APPDATA%\Autodesk\ApplicationPlugins` with
+    3ds Max closed.
 
 ## 0.5.2 — 11 November 2026
 
